@@ -1,0 +1,86 @@
+name: simpleflow
+description: "A Flutter application with Clean Architecture."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Core - State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Navigation
+  go_router: ^14.8.1
+
+  # Data Local
+  drift: ^2.23.1
+  sqlite3_flutter_libs: ^0.5.28
+  path_provider: ^2.1.5
+
+  # Data Remote
+  supabase_flutter: ^2.9.0
+
+  # UI
+  fl_chart: ^0.70.2
+  filesize: ^2.0.1
+  intl: ^0.20.2
+
+  # Utils
+  uuid: ^4.5.1
+  fpdart: ^1.1.0
+  logger: ^2.5.0
+
+  cupertino_icons: ^1.0.8
+
+  path: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  #flutter_lints: ^6.0.0
+  very_good_analysis: ^6.0.0
+
+  # Testing
+  sqlite3: ^2.4.6
+
+  # Code Generation
+  build_runner: ^2.4.14
+  riverpod_generator: ^2.6.4
+  drift_dev: ^2.23.1
+
+  # App Icons
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/icons/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
