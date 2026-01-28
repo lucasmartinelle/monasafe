@@ -6,29 +6,160 @@ part of 'database_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appDatabaseHash() => r'59cce38d45eeaba199eddd097d8e149d66f9f3e1';
+String _$supabaseClientHash() => r'2df5a38617329a3bb0a7e149189bea875722d7b8';
 
-/// Provider singleton pour la base de données
+/// Provider pour le client Supabase
 ///
-/// Utilise keepAlive pour maintenir l'instance en vie durant toute
-/// la durée de l'application
-///
-/// Copied from [appDatabase].
-@ProviderFor(appDatabase)
-final appDatabaseProvider = Provider<AppDatabase>.internal(
-  appDatabase,
-  name: r'appDatabaseProvider',
+/// Copied from [supabaseClient].
+@ProviderFor(supabaseClient)
+final supabaseClientProvider = Provider<SupabaseClient>.internal(
+  supabaseClient,
+  name: r'supabaseClientProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$appDatabaseHash,
+      : _$supabaseClientHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef AppDatabaseRef = ProviderRef<AppDatabase>;
-String _$accountRepositoryHash() => r'7f03ca567259c321e513b3af9f6ef8ceb5c700ce';
+typedef SupabaseClientRef = ProviderRef<SupabaseClient>;
+String _$authServiceHash() => r'684fe7f13fd9c55d75ec575ea7b9d40f6262c912';
+
+/// Provider pour le service d'authentification
+///
+/// Copied from [authService].
+@ProviderFor(authService)
+final authServiceProvider = Provider<AuthService>.internal(
+  authService,
+  name: r'authServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$authServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AuthServiceRef = ProviderRef<AuthService>;
+String _$accountServiceHash() => r'9943eb08e24bb9a079ab8ad2317173833ed97217';
+
+/// Provider pour le service des comptes
+///
+/// Copied from [accountService].
+@ProviderFor(accountService)
+final accountServiceProvider = Provider<AccountService>.internal(
+  accountService,
+  name: r'accountServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$accountServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AccountServiceRef = ProviderRef<AccountService>;
+String _$categoryServiceHash() => r'13e359a64654383b5dccf97eca8daf36c5426f76';
+
+/// Provider pour le service des catégories
+///
+/// Copied from [categoryService].
+@ProviderFor(categoryService)
+final categoryServiceProvider = Provider<CategoryService>.internal(
+  categoryService,
+  name: r'categoryServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$categoryServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CategoryServiceRef = ProviderRef<CategoryService>;
+String _$transactionServiceHash() =>
+    r'cf7c8bd9520b40dadaeeb2f3c18a1610d1b3a084';
+
+/// Provider pour le service des transactions
+///
+/// Copied from [transactionService].
+@ProviderFor(transactionService)
+final transactionServiceProvider = Provider<TransactionService>.internal(
+  transactionService,
+  name: r'transactionServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$transactionServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef TransactionServiceRef = ProviderRef<TransactionService>;
+String _$statisticsServiceHash() => r'd81c23f2834b23c156ce5e248d3a2bdca6ac4786';
+
+/// Provider pour le service des statistiques
+///
+/// Copied from [statisticsService].
+@ProviderFor(statisticsService)
+final statisticsServiceProvider = Provider<StatisticsService>.internal(
+  statisticsService,
+  name: r'statisticsServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$statisticsServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef StatisticsServiceRef = ProviderRef<StatisticsService>;
+String _$settingsServiceHash() => r'8acd7f9da1733ab8885213fb3bcf3d2c56733933';
+
+/// Provider pour le service des paramètres
+///
+/// Copied from [settingsService].
+@ProviderFor(settingsService)
+final settingsServiceProvider = Provider<SettingsService>.internal(
+  settingsService,
+  name: r'settingsServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$settingsServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SettingsServiceRef = ProviderRef<SettingsService>;
+String _$budgetServiceHash() => r'3b62d7e5b7ddb88cc84ef70c1d719dc392fa4537';
+
+/// Provider pour le service des budgets
+///
+/// Copied from [budgetService].
+@ProviderFor(budgetService)
+final budgetServiceProvider = Provider<BudgetService>.internal(
+  budgetService,
+  name: r'budgetServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$budgetServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef BudgetServiceRef = ProviderRef<BudgetService>;
+String _$accountRepositoryHash() => r'1c9849d93b8862cba52d2c333ec3d38bb2650022';
 
 /// Provider pour le repository des comptes
 ///
@@ -48,7 +179,7 @@ final accountRepositoryProvider = Provider<AccountRepository>.internal(
 // ignore: unused_element
 typedef AccountRepositoryRef = ProviderRef<AccountRepository>;
 String _$categoryRepositoryHash() =>
-    r'42c6ab4c980b47a5a35ee196ece32f45ed2478aa';
+    r'2f43f0b32f6f7b9ad22ada0f86277441a613cd24';
 
 /// Provider pour le repository des catégories
 ///
@@ -68,7 +199,7 @@ final categoryRepositoryProvider = Provider<CategoryRepository>.internal(
 // ignore: unused_element
 typedef CategoryRepositoryRef = ProviderRef<CategoryRepository>;
 String _$transactionRepositoryHash() =>
-    r'06cf04f85e83dc88ef5bc426dd005e5599d85c50';
+    r'71ceace6f968e8a725bc51fbc6430b350538b82f';
 
 /// Provider pour le repository des transactions
 ///
@@ -88,7 +219,7 @@ final transactionRepositoryProvider = Provider<TransactionRepository>.internal(
 // ignore: unused_element
 typedef TransactionRepositoryRef = ProviderRef<TransactionRepository>;
 String _$settingsRepositoryHash() =>
-    r'e31ef047767d19f0f35e396bb632aeaa345c272c';
+    r'566dbf8ec464800466e3e520114e977ee31e38f4';
 
 /// Provider pour le repository des paramètres
 ///
@@ -107,8 +238,46 @@ final settingsRepositoryProvider = Provider<SettingsRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SettingsRepositoryRef = ProviderRef<SettingsRepository>;
+String _$authStateStreamHash() => r'1acc24521b9c86483247d5f49239bba4368415c9';
+
+/// Stream de l'état d'authentification
+///
+/// Copied from [authStateStream].
+@ProviderFor(authStateStream)
+final authStateStreamProvider = AutoDisposeStreamProvider<AuthState>.internal(
+  authStateStream,
+  name: r'authStateStreamProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$authStateStreamHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AuthStateStreamRef = AutoDisposeStreamProviderRef<AuthState>;
+String _$isAuthenticatedHash() => r'2569058bb99f5164d9b3cf4648bd7e1a0c588304';
+
+/// Provider pour vérifier si l'utilisateur est authentifié
+///
+/// Copied from [isAuthenticated].
+@ProviderFor(isAuthenticated)
+final isAuthenticatedProvider = AutoDisposeProvider<bool>.internal(
+  isAuthenticated,
+  name: r'isAuthenticatedProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$isAuthenticatedHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef IsAuthenticatedRef = AutoDisposeProviderRef<bool>;
 String _$onboardingCompletedStreamHash() =>
-    r'b168a9ef32385cdfa22282b06163dcee3979831a';
+    r'a228e1f7c8d143cc04727c7b34834db5255705d2';
 
 /// Stream de l'état de l'onboarding
 ///
@@ -128,7 +297,7 @@ final onboardingCompletedStreamProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef OnboardingCompletedStreamRef = AutoDisposeStreamProviderRef<bool>;
-String _$accountsStreamHash() => r'8b36923114d9a6dfb0513bfc1ff528b2186810be';
+String _$accountsStreamHash() => r'70354fa0db210f7c158c6f18bc2c6a39f8dd7a14';
 
 /// Stream de tous les comptes
 ///
@@ -148,7 +317,7 @@ final accountsStreamProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AccountsStreamRef = AutoDisposeStreamProviderRef<List<Account>>;
-String _$categoriesStreamHash() => r'db36b68285d3ca90fbaca0f08c3b9db2b1f4809f';
+String _$categoriesStreamHash() => r'851e4932e07c099fc0a34e393936e63872efc550';
 
 /// Stream de toutes les catégories
 ///
@@ -169,7 +338,7 @@ final categoriesStreamProvider =
 // ignore: unused_element
 typedef CategoriesStreamRef = AutoDisposeStreamProviderRef<List<Category>>;
 String _$expenseCategoriesStreamHash() =>
-    r'a5fa49c6980e872309a18c1197df7f62edccbba3';
+    r'3c80ea245147e37b9bb78e028ac617b69abcea65';
 
 /// Stream des catégories de dépenses
 ///
@@ -191,7 +360,7 @@ final expenseCategoriesStreamProvider =
 typedef ExpenseCategoriesStreamRef =
     AutoDisposeStreamProviderRef<List<Category>>;
 String _$incomeCategoriesStreamHash() =>
-    r'd17b2ea58a8d8f7b32c8edf0590ba1ededfa6944';
+    r'cabfc7a44b3629dd53d388a439749b4c4cc466fc';
 
 /// Stream des catégories de revenus
 ///
@@ -213,7 +382,7 @@ final incomeCategoriesStreamProvider =
 typedef IncomeCategoriesStreamRef =
     AutoDisposeStreamProviderRef<List<Category>>;
 String _$recentTransactionsStreamHash() =>
-    r'4c8221988eb758196b985828885bc04cbb266648';
+    r'3047e8f20cb1966ed89add36caeef6a4b9cdeed3';
 
 /// Stream des transactions récentes (10 dernières)
 ///
@@ -235,7 +404,7 @@ final recentTransactionsStreamProvider =
 typedef RecentTransactionsStreamRef =
     AutoDisposeStreamProviderRef<List<TransactionWithDetails>>;
 String _$financialSummaryStreamHash() =>
-    r'379f7fb525323137e2d95d3af57ab5235f61dc2e';
+    r'6d72861ef6fb7d0b3c84f9e7098078073a4c6cef';
 
 /// Stream du résumé financier
 ///
@@ -257,7 +426,7 @@ final financialSummaryStreamProvider =
 typedef FinancialSummaryStreamRef =
     AutoDisposeStreamProviderRef<FinancialSummary>;
 String _$accountCalculatedBalanceStreamHash() =>
-    r'19343e624e350eb21c204edd5571a1fa53d99445';
+    r'a4f2d886c734022d65fdbb518528dc3e5293cac2';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -418,5 +587,26 @@ class _AccountCalculatedBalanceStreamProviderElement
       (origin as AccountCalculatedBalanceStreamProvider).accountId;
 }
 
+String _$transactionsRefreshTriggerHash() =>
+    r'd5a7d0279dc8c400186cb9a9e57aeb9635f99645';
+
+/// Trigger de rafraîchissement pour les données liées aux transactions.
+/// Incrémenté après chaque création/modification/suppression de transaction.
+/// Les providers qui watchent ce trigger se recalculent automatiquement.
+///
+/// Copied from [TransactionsRefreshTrigger].
+@ProviderFor(TransactionsRefreshTrigger)
+final transactionsRefreshTriggerProvider =
+    NotifierProvider<TransactionsRefreshTrigger, int>.internal(
+      TransactionsRefreshTrigger.new,
+      name: r'transactionsRefreshTriggerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$transactionsRefreshTriggerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$TransactionsRefreshTrigger = Notifier<int>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -7,8 +7,7 @@ import 'package:simpleflow/src/common_widgets/category_icon.dart';
 import 'package:simpleflow/src/common_widgets/selectable_option_container.dart';
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/utils/icon_mapper.dart';
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
-import 'package:simpleflow/src/data/local/database.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/data/providers/database_providers.dart';
 import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
 

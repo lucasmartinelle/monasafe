@@ -1,10 +1,7 @@
-import 'package:drift/drift.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
-import 'package:simpleflow/src/data/local/daos/statistics_dao.dart';
-import 'package:simpleflow/src/data/local/daos/transaction_dao.dart';
-import 'package:simpleflow/src/data/local/database.dart';
-import 'package:uuid/uuid.dart';
+
+import 'package:simpleflow/src/data/models/models.dart';
+import 'package:simpleflow/src/data/services/services.dart';
 
 /// Erreurs possibles lors des opérations sur les transactions
 sealed class TransactionError {
@@ -50,17 +47,23 @@ class TransactionStatisticsError extends TransactionError {
 
 /// Repository pour la gestion des transactions
 class TransactionRepository {
+  TransactionRepository(
+    this._transactionService,
+    this._accountService,
+    this._categoryService,
+    this._statisticsService,
+  );
 
-  TransactionRepository(this._db);
-  final AppDatabase _db;
-  final Uuid _uuid = const Uuid();
+  final TransactionService _transactionService;
+  final AccountService _accountService;
+  final CategoryService _categoryService;
+  final StatisticsService _statisticsService;
 
   /// Récupère toutes les transactions avec leurs détails
   Future<Either<TransactionError, List<TransactionWithDetails>>>
       getAllTransactions() async {
     try {
-      final transactions =
-          await _db.transactionDao.getAllTransactionsWithDetails();
+      final transactions = await _transactionService.getAllTransactionsWithDetails();
       return Right(transactions);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -69,7 +72,7 @@ class TransactionRepository {
 
   /// Stream de toutes les transactions
   Stream<List<TransactionWithDetails>> watchAllTransactions() {
-    return _db.transactionDao.watchAllTransactionsWithDetails();
+    return _transactionService.watchAllTransactionsWithDetails();
   }
 
   /// Récupère les transactions d'un compte sur une période
@@ -80,7 +83,7 @@ class TransactionRepository {
     DateTime endDate,
   ) async {
     try {
-      final transactions = await _db.transactionDao
+      final transactions = await _transactionService
           .getTransactionsByAccountAndPeriod(accountId, startDate, endDate);
       return Right(transactions);
     } catch (e) {
@@ -94,7 +97,7 @@ class TransactionRepository {
     DateTime startDate,
     DateTime endDate,
   ) {
-    return _db.transactionDao
+    return _transactionService
         .watchTransactionsByAccountAndPeriod(accountId, startDate, endDate);
   }
 
@@ -106,7 +109,7 @@ class TransactionRepository {
   ) async {
     try {
       final transactions =
-          await _db.transactionDao.getTransactionsByPeriod(startDate, endDate);
+          await _transactionService.getTransactionsByPeriod(startDate, endDate);
       return Right(transactions);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -118,15 +121,14 @@ class TransactionRepository {
     DateTime startDate,
     DateTime endDate,
   ) {
-    return _db.transactionDao.watchTransactionsByPeriod(startDate, endDate);
+    return _transactionService.watchTransactionsByPeriod(startDate, endDate);
   }
 
   /// Récupère les N dernières transactions
   Future<Either<TransactionError, List<TransactionWithDetails>>>
       getRecentTransactions(int limit) async {
     try {
-      final transactions =
-          await _db.transactionDao.getRecentTransactions(limit);
+      final transactions = await _transactionService.getRecentTransactions(limit);
       return Right(transactions);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -135,7 +137,7 @@ class TransactionRepository {
 
   /// Stream des N dernières transactions
   Stream<List<TransactionWithDetails>> watchRecentTransactions(int limit) {
-    return _db.transactionDao.watchRecentTransactions(limit);
+    return _transactionService.watchRecentTransactions(limit);
   }
 
   /// Crée une nouvelle transaction
@@ -149,41 +151,27 @@ class TransactionRepository {
   }) async {
     try {
       // Valide le compte
-      final account = await _db.accountDao.getAccountById(accountId);
+      final account = await _accountService.getAccountById(accountId);
       if (account == null) {
         return const Left(InvalidAccountError());
       }
 
       // Valide la catégorie
-      final category = await _db.categoryDao.getCategoryById(categoryId);
+      final category = await _categoryService.getCategoryById(categoryId);
       if (category == null) {
         return const Left(InvalidCategoryError());
       }
 
-      final id = _uuid.v4();
-      final now = DateTime.now();
-
-      final companion = TransactionsCompanion.insert(
-        id: id,
+      final transaction = await _transactionService.createTransaction(
         accountId: accountId,
         categoryId: categoryId,
         amount: amount,
         date: date,
-        note: Value(note),
-        isRecurring: Value(isRecurring),
-        syncStatus: const Value(SyncStatus.pending),
-        createdAt: Value(now),
-        updatedAt: Value(now),
+        note: note,
+        isRecurring: isRecurring,
       );
 
-      await _db.transactionDao.createTransaction(companion);
-
-      final created = await _db.transactionDao.getTransactionById(id);
-      if (created == null) {
-        return const Left(TransactionCreationError('Échec de la création'));
-      }
-
-      return Right(created);
+      return Right(transaction);
     } catch (e) {
       return Left(TransactionCreationError('Erreur: $e'));
     }
@@ -201,23 +189,7 @@ class TransactionRepository {
     })> items,
   ) async {
     try {
-      final now = DateTime.now();
-      final companions = items.map((item) {
-        return TransactionsCompanion.insert(
-          id: _uuid.v4(),
-          accountId: item.accountId,
-          categoryId: item.categoryId,
-          amount: item.amount,
-          date: item.date,
-          note: Value(item.note),
-          isRecurring: Value(item.isRecurring),
-          syncStatus: const Value(SyncStatus.pending),
-          createdAt: Value(now),
-          updatedAt: Value(now),
-        );
-      }).toList();
-
-      await _db.transactionDao.createTransactions(companions);
+      await _transactionService.createTransactions(items);
       return const Right(unit);
     } catch (e) {
       return Left(TransactionCreationError('Erreur: $e'));
@@ -235,14 +207,14 @@ class TransactionRepository {
     bool? isRecurring,
   }) async {
     try {
-      final existing = await _db.transactionDao.getTransactionById(id);
+      final existing = await _transactionService.getTransactionById(id);
       if (existing == null) {
         return const Left(TransactionNotFoundError());
       }
 
       // Valide le compte si modifié
       if (accountId != null) {
-        final account = await _db.accountDao.getAccountById(accountId);
+        final account = await _accountService.getAccountById(accountId);
         if (account == null) {
           return const Left(InvalidAccountError());
         }
@@ -250,31 +222,23 @@ class TransactionRepository {
 
       // Valide la catégorie si modifiée
       if (categoryId != null) {
-        final category = await _db.categoryDao.getCategoryById(categoryId);
+        final category = await _categoryService.getCategoryById(categoryId);
         if (category == null) {
           return const Left(InvalidCategoryError());
         }
       }
 
-      final companion = TransactionsCompanion(
-        id: Value(id),
-        accountId: accountId != null ? Value(accountId) : const Value.absent(),
-        categoryId: categoryId != null ? Value(categoryId) : const Value.absent(),
-        amount: amount != null ? Value(amount) : const Value.absent(),
-        date: date != null ? Value(date) : const Value.absent(),
-        note: note != null ? Value(note) : const Value.absent(),
-        isRecurring: isRecurring != null ? Value(isRecurring) : const Value.absent(),
-        syncStatus: const Value(SyncStatus.pending), // Reset sync status on update
-        updatedAt: Value(DateTime.now()),
+      final updated = await _transactionService.updateTransaction(
+        id: id,
+        accountId: accountId,
+        categoryId: categoryId,
+        amount: amount,
+        date: date,
+        note: note,
+        isRecurring: isRecurring,
       );
 
-      final success = await _db.transactionDao.updateTransaction(companion);
-      if (!success) {
-        return const Left(TransactionUpdateError('Échec de la mise à jour'));
-      }
-
-      final updated = await _db.transactionDao.getTransactionById(id);
-      return Right(updated!);
+      return Right(updated);
     } catch (e) {
       return Left(TransactionUpdateError('Erreur: $e'));
     }
@@ -283,54 +247,21 @@ class TransactionRepository {
   /// Supprime une transaction
   Future<Either<TransactionError, Unit>> deleteTransaction(String id) async {
     try {
-      final existing = await _db.transactionDao.getTransactionById(id);
+      final existing = await _transactionService.getTransactionById(id);
       if (existing == null) {
         return const Left(TransactionNotFoundError());
       }
 
-      await _db.transactionDao.deleteTransaction(id);
+      await _transactionService.deleteTransaction(id);
       return const Right(unit);
     } catch (e) {
       return Left(TransactionDeletionError('Erreur: $e'));
     }
   }
 
-  /// Récupère les transactions en attente de synchronisation
-  Future<Either<TransactionError, List<Transaction>>>
-      getPendingTransactions() async {
-    try {
-      final transactions = await _db.transactionDao.getPendingTransactions();
-      return Right(transactions);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
-  /// Marque une transaction comme synchronisée
-  Future<Either<TransactionError, Unit>> markAsSynced(String id) async {
-    try {
-      await _db.transactionDao.markAsSynced(id);
-      return const Right(unit);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
-  /// Marque plusieurs transactions comme synchronisées
-  Future<Either<TransactionError, Unit>> markMultipleAsSynced(
-    List<String> ids,
-  ) async {
-    try {
-      await _db.transactionDao.markMultipleAsSynced(ids);
-      return const Right(unit);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
   /// Compte le nombre total de transactions
   Future<int> countTransactions() {
-    return _db.transactionDao.countTransactions();
+    return _transactionService.countTransactions();
   }
 
   // ==================== STATISTIQUES ====================
@@ -341,8 +272,7 @@ class TransactionRepository {
     DateTime endDate,
   ) async {
     try {
-      final stats =
-          await _db.statisticsDao.getTotalByCategory(startDate, endDate);
+      final stats = await _statisticsService.getTotalByCategory(startDate, endDate);
       return Right(stats);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -354,7 +284,7 @@ class TransactionRepository {
     DateTime startDate,
     DateTime endDate,
   ) {
-    return _db.statisticsDao.watchTotalByCategory(startDate, endDate);
+    return _statisticsService.watchTotalByCategory(startDate, endDate);
   }
 
   /// Récupère le total par catégorie et type
@@ -365,8 +295,8 @@ class TransactionRepository {
     CategoryType type,
   ) async {
     try {
-      final stats = await _db.statisticsDao
-          .getTotalByCategoryAndType(startDate, endDate, type);
+      final stats = await _statisticsService.getTotalByCategoryAndType(
+        startDate, endDate, type);
       return Right(stats);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -377,7 +307,7 @@ class TransactionRepository {
   Future<Either<TransactionError, List<MonthlyStatistics>>>
       getMonthlyStatistics(int year) async {
     try {
-      final stats = await _db.statisticsDao.getMonthlyStatistics(year);
+      final stats = await _statisticsService.getMonthlyStatistics(year);
       return Right(stats);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -386,14 +316,14 @@ class TransactionRepository {
 
   /// Stream des statistiques mensuelles
   Stream<List<MonthlyStatistics>> watchMonthlyStatistics(int year) {
-    return _db.statisticsDao.watchMonthlyStatistics(year);
+    return _statisticsService.watchMonthlyStatistics(year);
   }
 
   /// Récupère le résumé financier global
   Future<Either<TransactionError, FinancialSummary>>
       getFinancialSummary() async {
     try {
-      final summary = await _db.statisticsDao.getFinancialSummary();
+      final summary = await _statisticsService.getFinancialSummary();
       return Right(summary);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -402,7 +332,7 @@ class TransactionRepository {
 
   /// Stream du résumé financier
   Stream<FinancialSummary> watchFinancialSummary() {
-    return _db.statisticsDao.watchFinancialSummary();
+    return _statisticsService.watchFinancialSummary();
   }
 
   /// Récupère les dépenses d'une catégorie ce mois
@@ -411,7 +341,7 @@ class TransactionRepository {
   ) async {
     try {
       final spending =
-          await _db.statisticsDao.getCategorySpendingThisMonth(categoryId);
+          await _statisticsService.getCategorySpendingThisMonth(categoryId);
       return Right(spending);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -420,7 +350,7 @@ class TransactionRepository {
 
   /// Stream des dépenses d'une catégorie ce mois
   Stream<double> watchCategorySpendingThisMonth(String categoryId) {
-    return _db.statisticsDao.watchCategorySpendingThisMonth(categoryId);
+    return _statisticsService.watchCategorySpendingThisMonth(categoryId);
   }
 
   // ==================== RECHERCHE ====================
@@ -431,7 +361,7 @@ class TransactionRepository {
     int limit = 5,
   }) async {
     try {
-      final results = await _db.transactionDao.searchByNote(query, limit: limit);
+      final results = await _transactionService.searchByNote(query, limit: limit);
       return Right(results);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -446,7 +376,7 @@ class TransactionRepository {
     int limit = 5,
   }) async {
     try {
-      final results = await _db.transactionDao
+      final results = await _transactionService
           .searchByNoteAndType(query, categoryType, limit: limit);
       return Right(results);
     } catch (e) {
@@ -459,7 +389,7 @@ class TransactionRepository {
       getRecentDistinctNotes({int limit = 10}) async {
     try {
       final results =
-          await _db.transactionDao.getRecentDistinctNotes(limit: limit);
+          await _transactionService.getRecentDistinctNotes(limit: limit);
       return Right(results);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));
@@ -471,7 +401,7 @@ class TransactionRepository {
       getRecentDistinctNotesByType(CategoryType categoryType,
           {int limit = 10}) async {
     try {
-      final results = await _db.transactionDao
+      final results = await _transactionService
           .getRecentDistinctNotesByType(categoryType, limit: limit);
       return Right(results);
     } catch (e) {
@@ -486,7 +416,7 @@ class TransactionRepository {
     required int offset,
   }) async {
     try {
-      final results = await _db.transactionDao.getTransactionsPaginated(
+      final results = await _transactionService.getTransactionsPaginated(
         limit: limit,
         offset: offset,
       );
@@ -504,7 +434,7 @@ class TransactionRepository {
     required int offset,
   }) async {
     try {
-      final results = await _db.transactionDao.getTransactionsByAccountPaginated(
+      final results = await _transactionService.getTransactionsByAccountPaginated(
         accountId,
         limit: limit,
         offset: offset,

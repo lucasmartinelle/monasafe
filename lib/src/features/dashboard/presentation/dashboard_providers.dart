@@ -1,9 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
-import 'package:simpleflow/src/data/local/daos/statistics_dao.dart';
-import 'package:simpleflow/src/data/local/daos/transaction_dao.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/data/providers/database_providers.dart';
 
 part 'dashboard_providers.g.dart';
@@ -24,6 +22,9 @@ class SelectedAccountId extends _$SelectedAccountId {
 /// Filters by selected account if one is selected.
 @riverpod
 Stream<List<CategoryStatistics>> currentMonthExpensesStream(Ref ref) {
+  // Watch le trigger pour se rafraîchir après chaque transaction
+  ref.watch(transactionsRefreshTriggerProvider);
+
   final repository = ref.watch(transactionRepositoryProvider);
   final selectedAccountId = ref.watch(selectedAccountIdProvider);
 
@@ -57,6 +58,9 @@ Stream<List<CategoryStatistics>> currentMonthExpensesStream(Ref ref) {
 /// Stream of recent transactions filtered by selected account.
 @riverpod
 Stream<List<TransactionWithDetails>> filteredRecentTransactionsStream(Ref ref) {
+  // Watch le trigger pour se rafraîchir après chaque transaction
+  ref.watch(transactionsRefreshTriggerProvider);
+
   final repository = ref.watch(transactionRepositoryProvider);
   final selectedAccountId = ref.watch(selectedAccountIdProvider);
 
@@ -188,6 +192,9 @@ class PaginatedTransactions extends _$PaginatedTransactions {
   PaginatedTransactionsState build() {
     // Watch account changes to reset and reload
     ref.watch(selectedAccountIdProvider);
+
+    // Watch le trigger pour se rafraîchir après chaque transaction
+    ref.watch(transactionsRefreshTriggerProvider);
 
     // Reset when account changes
     _isInitialized = false;

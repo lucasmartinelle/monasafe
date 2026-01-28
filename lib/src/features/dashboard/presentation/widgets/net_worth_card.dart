@@ -5,8 +5,7 @@ import 'package:simpleflow/src/common_widgets/glass_card.dart';
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
 import 'package:simpleflow/src/core/utils/currency_formatter.dart';
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
-import 'package:simpleflow/src/data/local/database.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/data/providers/database_providers.dart';
 
 /// Card displaying the total net worth with account type badges.

@@ -1,15 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:simpleflow/src/core/config/supabase_config.dart';
 import 'package:simpleflow/src/core/theme/theme.dart';
 import 'package:simpleflow/src/data/providers/database_providers.dart';
+import 'package:simpleflow/src/data/services/services.dart';
 import 'package:simpleflow/src/features/app_shell/app_shell.dart';
 import 'package:simpleflow/src/features/onboarding/onboarding.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('fr_FR');
+
+  // Charger les variables d'environnement en premier
+  await dotenv.load();
+
+  await Future.wait([
+    initializeDateFormatting('fr_FR'),
+    Supabase.initialize(
+      url: SupabaseConfig.url,
+      anonKey: SupabaseConfig.anonKey,
+    ),
+  ]);
+
+  // Injecter les données par défaut si nécessaire (utilise la secret key)
+  await SeedService().runAllSeeds();
+
   runApp(
     const ProviderScope(
       child: SimpleFlowApp(),

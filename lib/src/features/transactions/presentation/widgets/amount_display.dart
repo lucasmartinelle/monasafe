@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
 
 /// Displays the current amount being entered with animation.

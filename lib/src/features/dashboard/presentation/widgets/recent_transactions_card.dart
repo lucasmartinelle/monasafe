@@ -5,7 +5,7 @@ import 'package:simpleflow/src/common_widgets/async_state_handler.dart';
 import 'package:simpleflow/src/common_widgets/glass_card.dart';
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/data/local/daos/transaction_dao.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/dashboard_providers.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/widgets/transaction_tile.dart';
 import 'package:simpleflow/src/features/transactions/presentation/screens/edit_transaction_screen.dart';

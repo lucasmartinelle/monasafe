@@ -1,6 +1,6 @@
 # SimpleFlow
 
-Application de gestion de finances personnelles avec architecture **Local-First**.
+Application de gestion de finances personnelles avec **Supabase** comme backend.
 
 ## Architecture
 
@@ -35,29 +35,33 @@ lib/
     │   └── selectable_option_container.dart    # Container animé avec état de sélection
     ├── data/
     │   ├── data.dart                    # Barrel export
-    │   ├── local/
-    │   │   ├── database.dart            # Configuration Drift
-    │   │   ├── converters/
-    │   │   │   └── type_converters.dart # Enums (AccountType, CategoryType, SyncStatus)
-    │   │   ├── tables/
-    │   │   │   ├── accounts_table.dart
-    │   │   │   ├── categories_table.dart
-    │   │   │   ├── transactions_table.dart
-    │   │   │   └── user_settings_table.dart
-    │   │   └── daos/
-    │   │       ├── account_dao.dart
-    │   │       ├── category_dao.dart
-    │   │       ├── transaction_dao.dart
-    │   │       ├── user_settings_dao.dart
-    │   │       └── statistics_dao.dart
-    │   ├── remote/                      # (Supabase - à implémenter)
+    │   ├── models/
+    │   │   ├── models.dart              # Barrel export
+    │   │   ├── account.dart
+    │   │   ├── category.dart
+    │   │   ├── enums.dart               # AccountType, CategoryType, SyncStatus
+    │   │   ├── statistics.dart          # DTOs statistiques
+    │   │   ├── transaction.dart
+    │   │   ├── transaction_with_details.dart
+    │   │   ├── user_budget.dart         # Budget par utilisateur/catégorie
+    │   │   └── user_setting.dart
+    │   ├── services/
+    │   │   ├── services.dart            # Barrel export
+    │   │   ├── account_service.dart     # CRUD comptes Supabase
+    │   │   ├── auth_service.dart        # Authentification Supabase
+    │   │   ├── budget_service.dart      # CRUD budgets utilisateur
+    │   │   ├── category_service.dart    # CRUD catégories Supabase
+    │   │   ├── seed_service.dart        # Données initiales
+    │   │   ├── settings_service.dart    # Paramètres utilisateur
+    │   │   ├── statistics_service.dart  # Agrégations et RPC
+    │   │   └── transaction_service.dart # CRUD transactions
     │   ├── repositories/
     │   │   ├── account_repository.dart
     │   │   ├── category_repository.dart
     │   │   ├── settings_repository.dart
     │   │   └── transaction_repository.dart
     │   └── providers/
-    │       └── database_providers.dart
+    │       └── database_providers.dart  # Providers Supabase + Services
     └── features/
         ├── app_shell/
         │   └── presentation/
@@ -98,9 +102,18 @@ lib/
         │           ├── transaction_form.dart      # Formulaire complet
         │           └── transaction_type_tabs.dart # Onglets Income/Expense
         ├── stats/
+        │   ├── stats.dart                   # Barrel export
         │   └── presentation/
-        │       └── screens/
-        │           └── stats_screen.dart    # Écran statistiques
+        │       ├── stats_state.dart         # PeriodType enum + BudgetProgress model
+        │       ├── stats_providers.dart     # Providers Riverpod
+        │       ├── screens/
+        │       │   └── stats_screen.dart    # Écran statistiques
+        │       └── widgets/
+        │           ├── period_selector.dart       # Sélecteur de période
+        │           ├── cashflow_chart.dart        # LineChart revenus/dépenses
+        │           ├── budget_list.dart           # Liste des budgets
+        │           ├── budget_progress_tile.dart  # Tuile budget individuel
+        │           └── create_budget_modal.dart   # Modal création budget
         ├── wallet/
         │   └── presentation/
         │       └── screens/
@@ -118,10 +131,7 @@ lib/
 | **State Management** | `flutter_riverpod` | 2.6.1 | Gestion d'état réactive |
 | | `riverpod_annotation` | 2.6.1 | Annotations pour génération de code |
 | **Navigation** | `go_router` | 14.8.1 | Navigation déclarative |
-| **Base de Données** | `drift` | 2.23.1 | ORM SQLite type-safe |
-| | `sqlite3_flutter_libs` | 0.5.28 | Binaires SQLite natifs |
-| | `path_provider` | 2.1.5 | Accès au filesystem |
-| **Backend** | `supabase_flutter` | 2.9.0 | BaaS pour sync & auth |
+| **Backend** | `supabase_flutter` | 2.9.0 | BaaS PostgreSQL, Auth, Realtime |
 | **UI** | `fl_chart` | 0.70.2 | Graphiques |
 | | `intl` | 0.20.2 | Formatage dates/devises |
 | | `cupertino_icons` | 1.0.8 | Icônes Cupertino |
@@ -129,6 +139,7 @@ lib/
 | **Utils** | `uuid` | 4.5.1 | Génération UUID |
 | | `fpdart` | 1.1.0 | Programmation fonctionnelle (Either, Option) |
 | | `logger` | 2.5.0 | Logging |
+| | `flutter_dotenv` | 5.2.1 | Variables d'environnement |
 
 ### Dev Dependencies
 
@@ -136,10 +147,8 @@ lib/
 |---------|---------|-------------|
 | `build_runner` | 2.4.14 | Génération de code |
 | `riverpod_generator` | 2.6.4 | Génère les providers Riverpod |
-| `drift_dev` | 2.23.1 | Génère le code Drift |
 | `flutter_launcher_icons` | 0.14.3 | Génération des icônes d'app |
 | `very_good_analysis` | 6.0.0 | Règles de linting strictes |
-| `sqlite3` | 2.4.6 | SQLite pour les tests |
 
 ### Typographie
 
@@ -394,12 +403,70 @@ if (result == true) {
 final result = await EditTransactionScreen.show(context, transactionId: 'uuid');
 ```
 
+### Analytics & Budgets
+
+Écran de statistiques avec graphiques et gestion des budgets par utilisateur.
+
+**Composants :**
+
+| Widget | Description |
+|--------|-------------|
+| **PeriodSelector** | Sélecteur de période (Ce mois, Mois dernier, Année) |
+| **CashflowChart** | LineChart avec 2 lignes (revenus vs dépenses) |
+| **BudgetList** | Liste des budgets avec progression |
+| **BudgetProgressTile** | Tuile individuelle avec barre de progression |
+| **CreateBudgetModal** | Modal pour créer un nouveau budget |
+
+**Graphique Cashflow :**
+- Ligne verte : revenus mensuels
+- Ligne rouge : dépenses mensuelles
+- Tooltips interactifs au tap sur un point
+- Légende en bas du graphique
+- **Rafraîchissement automatique** après création/modification de transaction
+
+**Budgets :**
+- Stockés dans la table `user_budgets` (un budget par catégorie par utilisateur)
+- Barre de progression colorée dynamiquement :
+  - Vert (`AppColors.success`) : < 75% utilisé
+  - Orange (`AppColors.warning`) : 75-99% utilisé
+  - Rouge (`AppColors.error`) : >= 100% utilisé
+- Affichage du montant restant ou du dépassement
+- **Rafraîchissement automatique** après création/modification de transaction
+
+```dart
+// Ouvrir le modal de création de budget
+final result = await CreateBudgetModal.show(context);
+
+// Les budgets sont stockés dans la table user_budgets
+// Récupérer les budgets avec catégories
+final budgets = await budgetService.getBudgetsWithCategories();
+
+// Créer ou mettre à jour un budget (upsert)
+await budgetService.upsertBudget(
+  categoryId: 'category-uuid',
+  budgetLimit: 500.0,
+);
+```
+
 ## Installation
 
 ### Prérequis
 
 - Flutter SDK >= 3.10.7
 - Dart SDK >= 3.10.7
+- Compte Supabase (projet configuré)
+
+### Configuration Supabase
+
+1. Créer un projet sur [supabase.com](https://supabase.com)
+2. Copier `.env.example` vers `.env` et remplir les variables :
+
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+```
+
+3. Exécuter les migrations SQL dans le SQL Editor de Supabase (voir section Base de Données)
 
 ### Étapes
 
@@ -411,10 +478,14 @@ cd simpleflow
 # 2. Installer les dépendances
 flutter pub get
 
-# 3. Générer le code (Drift + Riverpod)
+# 3. Configurer les variables d'environnement
+cp .env.example .env
+# Éditer .env avec vos credentials Supabase
+
+# 4. Générer le code (Riverpod)
 dart run build_runner build --delete-conflicting-outputs
 
-# 4. Lancer l'application
+# 5. Lancer l'application
 flutter run
 ```
 
@@ -424,61 +495,80 @@ flutter run
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
-## Base de Données
+## Base de Données (Supabase PostgreSQL)
 
 ### Schéma
 
-#### Table `Accounts`
+#### Table `accounts`
 
 | Colonne | Type | Description |
 |---------|------|-------------|
-| `id` | TEXT (PK) | UUID v4 |
+| `id` | UUID (PK) | Généré automatiquement |
+| `user_id` | UUID (FK) | Référence auth.users |
 | `name` | TEXT | Nom du compte |
-| `type` | INT | 0=Checking, 1=Savings, 2=Cash |
-| `balance` | REAL | Solde initial |
+| `type` | TEXT | `checking`, `savings`, `cash` |
+| `balance` | DECIMAL(12,2) | Solde initial |
 | `currency` | TEXT(3) | Code ISO 4217 (EUR, USD...) |
-| `color` | INT | Couleur hexadécimale |
-| `last_synced_at` | DATETIME | Dernière sync (nullable) |
-| `created_at` | DATETIME | Date de création |
-| `updated_at` | DATETIME | Date de modification |
+| `color` | INT | Couleur ARGB |
+| `last_synced_at` | TIMESTAMPTZ | Dernière sync (nullable) |
+| `created_at` | TIMESTAMPTZ | Date de création |
+| `updated_at` | TIMESTAMPTZ | Date de modification |
 
-#### Table `Categories`
+#### Table `categories`
 
 | Colonne | Type | Description |
 |---------|------|-------------|
-| `id` | TEXT (PK) | UUID v4 |
+| `id` | UUID (PK) | Généré automatiquement |
+| `user_id` | UUID (FK) | NULL = catégorie par défaut |
 | `name` | TEXT | Nom de la catégorie |
 | `icon_key` | TEXT | Référence icône |
-| `color` | INT | Couleur hexadécimale |
-| `type` | INT | 0=Income, 1=Expense |
-| `budget_limit` | REAL | Limite mensuelle (Premium, nullable) |
-| `created_at` | DATETIME | Date de création |
-| `updated_at` | DATETIME | Date de modification |
+| `color` | INT | Couleur ARGB |
+| `type` | TEXT | `income`, `expense` |
+| `is_default` | BOOL | Catégorie par défaut (non supprimable) |
+| `created_at` | TIMESTAMPTZ | Date de création |
+| `updated_at` | TIMESTAMPTZ | Date de modification |
 
-#### Table `Transactions`
+#### Table `transactions`
 
 | Colonne | Type | Description |
 |---------|------|-------------|
-| `id` | TEXT (PK) | UUID v4 |
-| `account_id` | TEXT (FK) | Référence compte |
-| `category_id` | TEXT (FK) | Référence catégorie |
-| `amount` | REAL | Montant (toujours positif) |
-| `date` | DATETIME | Date de la transaction |
+| `id` | UUID (PK) | Généré automatiquement |
+| `user_id` | UUID (FK) | Référence auth.users |
+| `account_id` | UUID (FK) | Référence accounts |
+| `category_id` | UUID (FK) | Référence categories |
+| `amount` | DECIMAL(12,2) | Montant (toujours positif) |
+| `date` | TIMESTAMPTZ | Date de la transaction |
 | `note` | TEXT | Note optionnelle |
 | `is_recurring` | BOOL | Transaction récurrente |
-| `sync_status` | INT | 0=Pending, 1=Synced |
-| `created_at` | DATETIME | Date de création |
-| `updated_at` | DATETIME | Date de modification |
+| `sync_status` | TEXT | `pending`, `synced` |
+| `created_at` | TIMESTAMPTZ | Date de création |
+| `updated_at` | TIMESTAMPTZ | Date de modification |
 
-#### Table `UserSettings`
+#### Table `user_budgets`
+
+Table pour les budgets par utilisateur et catégorie.
+
+| Colonne | Type | Description |
+|---------|------|-------------|
+| `id` | UUID (PK) | Généré automatiquement |
+| `user_id` | UUID (FK) | Référence auth.users |
+| `category_id` | UUID (FK) | Référence categories |
+| `budget_limit` | DECIMAL(12,2) | Limite mensuelle |
+| `created_at` | TIMESTAMPTZ | Date de création |
+| `updated_at` | TIMESTAMPTZ | Date de modification |
+
+**Contrainte :** `UNIQUE(user_id, category_id)` - un seul budget par catégorie par utilisateur.
+
+#### Table `user_settings`
 
 Table clé-valeur pour stocker les paramètres utilisateur.
 
 | Colonne | Type | Description |
 |---------|------|-------------|
+| `user_id` | UUID (PK) | Référence auth.users |
 | `key` | TEXT (PK) | Clé unique du paramètre |
-| `value` | TEXT | Valeur (stockée en JSON string) |
-| `updated_at` | DATETIME | Date de modification |
+| `value` | TEXT | Valeur (stockée en string) |
+| `updated_at` | TIMESTAMPTZ | Date de modification |
 
 **Clés prédéfinies :**
 
@@ -489,17 +579,37 @@ Table clé-valeur pour stocker les paramètres utilisateur.
 | `is_anonymous` | bool | Mode local only (sans sync cloud) |
 | `primary_account_id` | String | ID du compte principal |
 
-### Index et Optimisations
+### Row Level Security (RLS)
+
+Toutes les tables ont RLS activé. Chaque utilisateur ne peut voir/modifier que ses propres données :
+
+```sql
+-- Exemple pour user_budgets
+CREATE POLICY "Users can view own budgets" ON user_budgets
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create own budgets" ON user_budgets
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own budgets" ON user_budgets
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own budgets" ON user_budgets
+  FOR DELETE USING (auth.uid() = user_id);
+```
+
+### Index
 
 | Index | Table | Colonnes | Justification |
 |-------|-------|----------|---------------|
-| `idx_accounts_name` | Accounts | `name` | Recherche rapide par nom |
-| `idx_categories_type` | Categories | `type` | Filtrage Income/Expense O(log n) |
-| `idx_transactions_account_id` | Transactions | `account_id` | JOIN avec Accounts O(log n) |
-| `idx_transactions_category_id` | Transactions | `category_id` | JOIN avec Categories O(log n) |
-| `idx_transactions_date` | Transactions | `date` | Filtrage par période |
-| `idx_transactions_account_date` | Transactions | `account_id, date` | **Index composite** pour requêtes combinées |
-| `idx_transactions_sync_status` | Transactions | `sync_status` | Identification rapide des "Pending" |
+| `idx_accounts_user_id` | accounts | `user_id` | Filtrage par utilisateur |
+| `idx_categories_user_id` | categories | `user_id` | Filtrage par utilisateur |
+| `idx_transactions_user_id` | transactions | `user_id` | Filtrage par utilisateur |
+| `idx_transactions_account_id` | transactions | `account_id` | JOIN avec accounts |
+| `idx_transactions_category_id` | transactions | `category_id` | JOIN avec categories |
+| `idx_transactions_date` | transactions | `date` | Filtrage par période |
+| `idx_user_budgets_user_id` | user_budgets | `user_id` | Filtrage par utilisateur |
+| `idx_user_budgets_category_id` | user_budgets | `category_id` | JOIN avec categories |
 
 ## Usage
 
@@ -564,58 +674,87 @@ L'application inclut 12 catégories par défaut :
 
 ### Régénérer le code
 
-Après modification des tables Drift ou des providers Riverpod :
+Après modification des providers Riverpod :
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### Ajouter une migration
+### Ajouter une migration Supabase
 
-1. Incrémenter `schemaVersion` dans `database.dart`
-2. Ajouter la migration dans `onUpgrade`:
+Les migrations se font directement dans le SQL Editor de Supabase :
 
-```dart
-@override
-MigrationStrategy get migration {
-  return MigrationStrategy(
-    onUpgrade: (Migrator m, int from, int to) async {
-      if (from < 2) {
-        // Migration v1 -> v2
-        await m.addColumn(transactions, transactions.newColumn);
-      }
-    },
-  );
-}
+1. Aller dans le SQL Editor du dashboard Supabase
+2. Écrire et exécuter les requêtes SQL
+3. Mettre à jour les modèles Dart correspondants dans `lib/src/data/models/`
+
+**Exemple - Ajouter la table user_budgets :**
+
+```sql
+CREATE TABLE user_budgets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  budget_limit DECIMAL(12, 2) NOT NULL CHECK (budget_limit > 0),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, category_id)
+);
+
+-- Index
+CREATE INDEX idx_user_budgets_user_id ON user_budgets(user_id);
+CREATE INDEX idx_user_budgets_category_id ON user_budgets(category_id);
+
+-- RLS
+ALTER TABLE user_budgets ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own budgets" ON user_budgets
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create own budgets" ON user_budgets
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own budgets" ON user_budgets
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own budgets" ON user_budgets
+  FOR DELETE USING (auth.uid() = user_id);
 ```
 
 ## Debug
 
-### Inspecter la base de données SQLite
+### Inspecter la base de données Supabase
 
-App Inspection d'Android Studio peut ne pas fonctionner avec Drift. Utilisez `adb` et `sqlite3` pour inspecter la BDD directement.
+Utilisez le **Table Editor** ou le **SQL Editor** dans le dashboard Supabase pour inspecter les données.
 
-**Lister les appareils connectés :**
-```bash
-adb devices
+**Via SQL Editor :**
+```sql
+-- Voir tous les budgets d'un utilisateur
+SELECT ub.*, c.name as category_name
+FROM user_budgets ub
+JOIN categories c ON c.id = ub.category_id
+WHERE ub.user_id = 'your-user-uuid';
+
+-- Voir les dépenses par catégorie
+SELECT c.name, SUM(t.amount) as total
+FROM transactions t
+JOIN categories c ON c.id = t.category_id
+WHERE t.user_id = 'your-user-uuid'
+  AND c.type = 'expense'
+GROUP BY c.name;
 ```
 
-**Requête unique :**
+**Via Supabase CLI (optionnel) :**
 ```bash
-adb -s <device_id> shell run-as com.lurieldev.simpleflow.simpleflow cat databases/simpleflow.db > /tmp/simpleflow.db && sqlite3 /tmp/simpleflow.db ".tables"
-```
+# Installer Supabase CLI
+npm install -g supabase
 
-**Watch en temps réel (rafraîchissement toutes les 2 secondes) :**
-```bash
-watch -n 2 'adb -s <device_id> shell run-as com.lurieldev.simpleflow.simpleflow cat databases/simpleflow.db > /tmp/simpleflow.db && sqlite3 /tmp/simpleflow.db ".mode column" ".headers on" "SELECT * FROM accounts;" "SELECT * FROM categories;" "SELECT * FROM transactions;"'
-```
+# Se connecter
+supabase login
 
-**Shell SQLite interactif :**
-```bash
-adb -s <device_id> shell run-as com.lurieldev.simpleflow.simpleflow cat databases/simpleflow.db > /tmp/simpleflow.db && sqlite3 /tmp/simpleflow.db
+# Lister les tables
+supabase db dump --schema public
 ```
-
-Puis utilisez les commandes SQLite : `.tables`, `.schema`, `SELECT * FROM accounts;`, etc.
 
 ## Licence
 

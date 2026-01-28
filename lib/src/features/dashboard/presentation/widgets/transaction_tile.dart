@@ -7,8 +7,7 @@ import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
 import 'package:simpleflow/src/core/utils/currency_formatter.dart';
 import 'package:simpleflow/src/core/utils/icon_mapper.dart';
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
-import 'package:simpleflow/src/data/local/daos/transaction_dao.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 
 /// A single transaction tile displaying icon, title, date, and amount.
 class TransactionTile extends StatelessWidget {

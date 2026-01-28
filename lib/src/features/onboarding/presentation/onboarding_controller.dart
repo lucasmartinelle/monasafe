@@ -1,13 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/data/providers/database_providers.dart';
 
 part 'onboarding_controller.g.dart';
 
 /// État de l'onboarding
 class OnboardingState {
-
   const OnboardingState({
     this.currentStep = 0,
     this.currency = 'EUR',
@@ -16,6 +15,7 @@ class OnboardingState {
     this.isLoading = false,
     this.error,
   });
+
   final int currentStep;
   final String currency;
   final double initialBalance;
@@ -84,8 +84,15 @@ class OnboardingController extends _$OnboardingController {
     state = state.copyWith(isLoading: true);
 
     try {
-      // TODO: Implémenter Supabase Auth
-      // Pour l'instant, on simule juste la création du compte
+      final authService = ref.read(authServiceProvider);
+
+      // Connexion avec Google
+      await authService.signInWithGoogle();
+
+      // Attendre que l'authentification soit complète
+      // Note: La redirection OAuth gère le reste du flow
+      // L'utilisateur sera redirigé et le state sera mis à jour
+
       await _createAccountAndComplete(isAnonymous: false);
       return true;
     } catch (e) {
@@ -94,11 +101,16 @@ class OnboardingController extends _$OnboardingController {
     }
   }
 
-  /// Complète l'onboarding en mode local only
+  /// Complète l'onboarding en mode local only (avec compte Supabase anonyme)
   Future<bool> completeLocalOnly() async {
     state = state.copyWith(isLoading: true);
 
     try {
+      final authService = ref.read(authServiceProvider);
+
+      // Crée un compte anonyme Supabase
+      await authService.signInAnonymously();
+
       await _createAccountAndComplete(isAnonymous: true);
       return true;
     } catch (e) {

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 
 /// Base state for transaction forms (add/edit).
 @immutable

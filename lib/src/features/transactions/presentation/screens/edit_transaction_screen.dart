@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/data/local/daos/transaction_dao.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
 import 'package:simpleflow/src/features/transactions/presentation/widgets/transaction_form.dart';
 

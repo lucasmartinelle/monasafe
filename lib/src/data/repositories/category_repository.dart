@@ -1,8 +1,7 @@
-import 'package:drift/drift.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
-import 'package:simpleflow/src/data/local/database.dart';
-import 'package:uuid/uuid.dart';
+
+import 'package:simpleflow/src/data/models/models.dart';
+import 'package:simpleflow/src/data/services/services.dart';
 
 /// Erreurs possibles lors des opérations sur les catégories
 sealed class CategoryError {
@@ -37,31 +36,14 @@ class CategoryFetchError extends CategoryError {
 
 /// Repository pour la gestion des catégories
 class CategoryRepository {
+  CategoryRepository(this._categoryService);
 
-  CategoryRepository(this._db);
-  final AppDatabase _db;
-  final Uuid _uuid = const Uuid();
-
-  /// Liste des IDs des catégories par défaut (non supprimables)
-  static const defaultCategoryIds = [
-    'cat_food',
-    'cat_transport',
-    'cat_shopping',
-    'cat_entertainment',
-    'cat_health',
-    'cat_bills',
-    'cat_other_expense',
-    'cat_salary',
-    'cat_freelance',
-    'cat_investment',
-    'cat_gift',
-    'cat_other_income',
-  ];
+  final CategoryService _categoryService;
 
   /// Récupère toutes les catégories
   Future<Either<CategoryError, List<Category>>> getAllCategories() async {
     try {
-      final categories = await _db.categoryDao.getAllCategories();
+      final categories = await _categoryService.getAllCategories();
       return Right(categories);
     } catch (e) {
       return Left(CategoryFetchError('Erreur lors de la récupération des catégories: $e'));
@@ -70,13 +52,13 @@ class CategoryRepository {
 
   /// Stream de toutes les catégories
   Stream<List<Category>> watchAllCategories() {
-    return _db.categoryDao.watchAllCategories();
+    return _categoryService.watchAllCategories();
   }
 
   /// Récupère les catégories de dépenses
   Future<Either<CategoryError, List<Category>>> getExpenseCategories() async {
     try {
-      final categories = await _db.categoryDao.getExpenseCategories();
+      final categories = await _categoryService.getExpenseCategories();
       return Right(categories);
     } catch (e) {
       return Left(CategoryFetchError('Erreur: $e'));
@@ -85,13 +67,13 @@ class CategoryRepository {
 
   /// Stream des catégories de dépenses
   Stream<List<Category>> watchExpenseCategories() {
-    return _db.categoryDao.watchExpenseCategories();
+    return _categoryService.watchExpenseCategories();
   }
 
   /// Récupère les catégories de revenus
   Future<Either<CategoryError, List<Category>>> getIncomeCategories() async {
     try {
-      final categories = await _db.categoryDao.getIncomeCategories();
+      final categories = await _categoryService.getIncomeCategories();
       return Right(categories);
     } catch (e) {
       return Left(CategoryFetchError('Erreur: $e'));
@@ -100,13 +82,13 @@ class CategoryRepository {
 
   /// Stream des catégories de revenus
   Stream<List<Category>> watchIncomeCategories() {
-    return _db.categoryDao.watchIncomeCategories();
+    return _categoryService.watchIncomeCategories();
   }
 
   /// Récupère une catégorie par son ID
   Future<Either<CategoryError, Category>> getCategoryById(String id) async {
     try {
-      final category = await _db.categoryDao.getCategoryById(id);
+      final category = await _categoryService.getCategoryById(id);
       if (category == null) {
         return const Left(CategoryNotFoundError());
       }
@@ -125,28 +107,14 @@ class CategoryRepository {
     double? budgetLimit,
   }) async {
     try {
-      final id = _uuid.v4();
-      final now = DateTime.now();
-
-      final companion = CategoriesCompanion.insert(
-        id: id,
+      final category = await _categoryService.createCategory(
         name: name,
         iconKey: iconKey,
         color: color,
         type: type,
-        budgetLimit: Value(budgetLimit),
-        createdAt: Value(now),
-        updatedAt: Value(now),
+        budgetLimit: budgetLimit,
       );
-
-      await _db.categoryDao.createCategory(companion);
-
-      final created = await _db.categoryDao.getCategoryById(id);
-      if (created == null) {
-        return const Left(CategoryCreationError('Échec de la création'));
-      }
-
-      return Right(created);
+      return Right(category);
     } catch (e) {
       return Left(CategoryCreationError('Erreur: $e'));
     }
@@ -161,27 +129,19 @@ class CategoryRepository {
     double? budgetLimit,
   }) async {
     try {
-      final existing = await _db.categoryDao.getCategoryById(id);
+      final existing = await _categoryService.getCategoryById(id);
       if (existing == null) {
         return const Left(CategoryNotFoundError());
       }
 
-      final companion = CategoriesCompanion(
-        id: Value(id),
-        name: name != null ? Value(name) : const Value.absent(),
-        iconKey: iconKey != null ? Value(iconKey) : const Value.absent(),
-        color: color != null ? Value(color) : const Value.absent(),
-        budgetLimit: budgetLimit != null ? Value(budgetLimit) : const Value.absent(),
-        updatedAt: Value(DateTime.now()),
+      final updated = await _categoryService.updateCategory(
+        id: id,
+        name: name,
+        iconKey: iconKey,
+        color: color,
+        budgetLimit: budgetLimit,
       );
-
-      final success = await _db.categoryDao.updateCategory(companion);
-      if (!success) {
-        return const Left(CategoryUpdateError('Échec de la mise à jour'));
-      }
-
-      final updated = await _db.categoryDao.getCategoryById(id);
-      return Right(updated!);
+      return Right(updated);
     } catch (e) {
       return Left(CategoryUpdateError('Erreur: $e'));
     }
@@ -190,17 +150,17 @@ class CategoryRepository {
   /// Supprime une catégorie personnalisée
   Future<Either<CategoryError, Unit>> deleteCategory(String id) async {
     try {
-      // Vérifie si c'est une catégorie par défaut
-      if (defaultCategoryIds.contains(id)) {
-        return const Left(CategoryIsDefaultError());
-      }
-
-      final existing = await _db.categoryDao.getCategoryById(id);
+      final existing = await _categoryService.getCategoryById(id);
       if (existing == null) {
         return const Left(CategoryNotFoundError());
       }
 
-      await _db.categoryDao.deleteCategory(id);
+      // Vérifie si c'est une catégorie par défaut
+      if (existing.isDefault) {
+        return const Left(CategoryIsDefaultError());
+      }
+
+      await _categoryService.deleteCategory(id);
       return const Right(unit);
     } catch (e) {
       return Left(CategoryDeletionError('Erreur: $e'));
@@ -213,7 +173,7 @@ class CategoryRepository {
     double? limit,
   ) async {
     try {
-      await _db.categoryDao.updateBudgetLimit(id, limit);
+      await _categoryService.updateBudgetLimit(id, limit);
       return const Right(unit);
     } catch (e) {
       return Left(CategoryUpdateError('Erreur: $e'));
@@ -223,7 +183,7 @@ class CategoryRepository {
   /// Récupère les catégories avec une limite de budget
   Future<Either<CategoryError, List<Category>>> getCategoriesWithBudget() async {
     try {
-      final categories = await _db.categoryDao.getCategoriesWithBudget();
+      final categories = await _categoryService.getCategoriesWithBudget();
       return Right(categories);
     } catch (e) {
       return Left(CategoryFetchError('Erreur: $e'));
@@ -231,7 +191,8 @@ class CategoryRepository {
   }
 
   /// Vérifie si une catégorie est une catégorie par défaut
-  bool isDefaultCategory(String id) {
-    return defaultCategoryIds.contains(id);
+  Future<bool> isDefaultCategory(String id) async {
+    final category = await _categoryService.getCategoryById(id);
+    return category?.isDefault ?? false;
   }
 }

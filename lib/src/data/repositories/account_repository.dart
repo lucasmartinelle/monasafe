@@ -1,8 +1,7 @@
-import 'package:drift/drift.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
-import 'package:simpleflow/src/data/local/database.dart';
-import 'package:uuid/uuid.dart';
+
+import 'package:simpleflow/src/data/models/models.dart';
+import 'package:simpleflow/src/data/services/services.dart';
 
 /// Erreurs possibles lors des opérations sur les comptes
 sealed class AccountError {
@@ -43,18 +42,18 @@ class AccountBalanceError extends AccountError {
 ///
 /// Fournit une abstraction propre pour l'UI avec :
 /// - Gestion d'erreurs via Either (fpdart)
-/// - Génération automatique des UUID
 /// - Validation des données
 class AccountRepository {
+  AccountRepository(this._accountService, this._transactionService, this._statisticsService);
 
-  AccountRepository(this._db);
-  final AppDatabase _db;
-  final Uuid _uuid = const Uuid();
+  final AccountService _accountService;
+  final TransactionService _transactionService;
+  final StatisticsService _statisticsService;
 
   /// Récupère tous les comptes
   Future<Either<AccountError, List<Account>>> getAllAccounts() async {
     try {
-      final accounts = await _db.accountDao.getAllAccounts();
+      final accounts = await _accountService.getAllAccounts();
       return Right(accounts);
     } catch (e) {
       return Left(AccountFetchError('Erreur lors de la récupération des comptes: $e'));
@@ -63,13 +62,13 @@ class AccountRepository {
 
   /// Stream de tous les comptes (réactif)
   Stream<List<Account>> watchAllAccounts() {
-    return _db.accountDao.watchAllAccounts();
+    return _accountService.watchAllAccounts();
   }
 
   /// Récupère un compte par son ID
   Future<Either<AccountError, Account>> getAccountById(String id) async {
     try {
-      final account = await _db.accountDao.getAccountById(id);
+      final account = await _accountService.getAccountById(id);
       if (account == null) {
         return const Left(AccountNotFoundError());
       }
@@ -81,7 +80,7 @@ class AccountRepository {
 
   /// Stream d'un compte spécifique
   Stream<Account?> watchAccountById(String id) {
-    return _db.accountDao.watchAccountById(id);
+    return _accountService.watchAccountById(id);
   }
 
   /// Crée un nouveau compte
@@ -93,28 +92,14 @@ class AccountRepository {
     required int color,
   }) async {
     try {
-      final id = _uuid.v4();
-      final now = DateTime.now();
-
-      final companion = AccountsCompanion.insert(
-        id: id,
+      final account = await _accountService.createAccount(
         name: name,
         type: type,
-        balance: Value(initialBalance),
+        initialBalance: initialBalance,
         currency: currency,
         color: color,
-        createdAt: Value(now),
-        updatedAt: Value(now),
       );
-
-      await _db.accountDao.createAccount(companion);
-
-      final created = await _db.accountDao.getAccountById(id);
-      if (created == null) {
-        return const Left(AccountCreationError('Échec de la création du compte'));
-      }
-
-      return Right(created);
+      return Right(account);
     } catch (e) {
       return Left(AccountCreationError('Erreur lors de la création du compte: $e'));
     }
@@ -130,28 +115,20 @@ class AccountRepository {
     int? color,
   }) async {
     try {
-      final existing = await _db.accountDao.getAccountById(id);
+      final existing = await _accountService.getAccountById(id);
       if (existing == null) {
         return const Left(AccountNotFoundError());
       }
 
-      final companion = AccountsCompanion(
-        id: Value(id),
-        name: name != null ? Value(name) : const Value.absent(),
-        type: type != null ? Value(type) : const Value.absent(),
-        balance: balance != null ? Value(balance) : const Value.absent(),
-        currency: currency != null ? Value(currency) : const Value.absent(),
-        color: color != null ? Value(color) : const Value.absent(),
-        updatedAt: Value(DateTime.now()),
+      final updated = await _accountService.updateAccount(
+        id: id,
+        name: name,
+        type: type,
+        balance: balance,
+        currency: currency,
+        color: color,
       );
-
-      final success = await _db.accountDao.updateAccount(companion);
-      if (!success) {
-        return const Left(AccountUpdateError('Échec de la mise à jour du compte'));
-      }
-
-      final updated = await _db.accountDao.getAccountById(id);
-      return Right(updated!);
+      return Right(updated);
     } catch (e) {
       return Left(AccountUpdateError('Erreur lors de la mise à jour du compte: $e'));
     }
@@ -161,19 +138,18 @@ class AccountRepository {
   Future<Either<AccountError, Unit>> deleteAccount(String id) async {
     try {
       // Vérifie si le compte existe
-      final existing = await _db.accountDao.getAccountById(id);
+      final existing = await _accountService.getAccountById(id);
       if (existing == null) {
         return const Left(AccountNotFoundError());
       }
 
       // Vérifie si le compte a des transactions
-      final transactionCount =
-          await _db.transactionDao.countTransactionsByAccount(id);
+      final transactionCount = await _transactionService.countTransactionsByAccount(id);
       if (transactionCount > 0) {
         return const Left(AccountHasTransactionsError());
       }
 
-      await _db.accountDao.deleteAccount(id);
+      await _accountService.deleteAccount(id);
       return const Right(unit);
     } catch (e) {
       return Left(AccountDeletionError('Erreur lors de la suppression du compte: $e'));
@@ -183,7 +159,7 @@ class AccountRepository {
   /// Récupère le solde calculé d'un compte (solde initial + transactions)
   Future<Either<AccountError, double>> getCalculatedBalance(String id) async {
     try {
-      final balance = await _db.statisticsDao.calculateAccountBalance(id);
+      final balance = await _statisticsService.calculateAccountBalance(id);
       return Right(balance);
     } catch (e) {
       return Left(AccountBalanceError('Erreur lors du calcul du solde: $e'));
@@ -192,11 +168,11 @@ class AccountRepository {
 
   /// Stream du solde calculé d'un compte
   Stream<double> watchCalculatedBalance(String id) {
-    return _db.statisticsDao.watchAccountBalance(id);
+    return _statisticsService.watchAccountBalance(id);
   }
 
   /// Compte le nombre total de comptes
   Future<int> countAccounts() {
-    return _db.accountDao.countAccounts();
+    return _accountService.countAccounts();
   }
 }

@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:simpleflow/src/data/local/converters/type_converters.dart';
-import 'package:simpleflow/src/data/local/daos/transaction_dao.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/data/providers/database_providers.dart';
 import 'package:simpleflow/src/features/transactions/presentation/transaction_form_state.dart';
 
@@ -137,6 +136,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
         },
         (_) {
           state = state.copyWith(isSubmitting: false);
+          _triggerRefresh();
           return true;
         },
       );
@@ -174,6 +174,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
         },
         (_) {
           state = state.copyWith(isSubmitting: false);
+          _triggerRefresh();
           return true;
         },
       );
@@ -203,6 +204,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
         },
         (_) {
           state = state.copyWith(isDeleting: false);
+          _triggerRefresh();
           return true;
         },
       );
@@ -210,6 +212,11 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
       state = state.copyWith(isDeleting: false, error: 'Erreur: $e');
       return false;
     }
+  }
+
+  /// Déclenche le rafraîchissement de tous les providers liés aux transactions
+  void _triggerRefresh() {
+    ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
   }
 
   /// Re-emit: create a new transaction with the current form data

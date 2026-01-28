@@ -7,7 +7,7 @@ import 'package:simpleflow/src/common_widgets/glass_card.dart';
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
 import 'package:simpleflow/src/core/utils/currency_formatter.dart';
-import 'package:simpleflow/src/data/local/daos/statistics_dao.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/dashboard_providers.dart';
 
 /// Card displaying monthly expenses breakdown as a PieChart with legend.

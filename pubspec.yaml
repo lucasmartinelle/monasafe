@@ -17,13 +17,14 @@ dependencies:
   # Navigation
   go_router: ^14.8.1
 
-  # Data Local
-  drift: ^2.23.1
-  sqlite3_flutter_libs: ^0.5.28
-  path_provider: ^2.1.5
-
   # Data Remote
   supabase_flutter: ^2.9.0
+
+  # Environment
+  flutter_dotenv: ^5.2.1
+
+  # Utils (kept for potential future offline support)
+  path_provider: ^2.1.5
 
   # UI
   fl_chart: ^0.70.2
@@ -45,13 +46,9 @@ dev_dependencies:
   #flutter_lints: ^6.0.0
   very_good_analysis: ^6.0.0
 
-  # Testing
-  sqlite3: ^2.4.6
-
   # Code Generation
   build_runner: ^2.4.14
   riverpod_generator: ^2.6.4
-  drift_dev: ^2.23.1
 
   # App Icons
   flutter_launcher_icons: ^0.14.3
@@ -60,6 +57,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/fonts/
     - assets/icons/
 

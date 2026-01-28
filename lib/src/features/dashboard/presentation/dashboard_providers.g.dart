@@ -7,7 +7,7 @@ part of 'dashboard_providers.dart';
 // **************************************************************************
 
 String _$currentMonthExpensesStreamHash() =>
-    r'6fb491b87997b114f63127f0e728500d34133bcd';
+    r'cbf66686946a31e8d57a3883bedb3e84d04d5031';
 
 /// Stream of current month expenses grouped by category for the PieChart.
 /// Filters by selected account if one is selected.
@@ -30,7 +30,7 @@ final currentMonthExpensesStreamProvider =
 typedef CurrentMonthExpensesStreamRef =
     AutoDisposeStreamProviderRef<List<CategoryStatistics>>;
 String _$filteredRecentTransactionsStreamHash() =>
-    r'2ef264f98316447b11117224d95afd85886427bc';
+    r'1d47fe3e9360d2da699e1c02c1363af7ff115885';
 
 /// Stream of recent transactions filtered by selected account.
 ///
@@ -71,7 +71,7 @@ final selectedAccountIdProvider =
 
 typedef _$SelectedAccountId = AutoDisposeNotifier<String?>;
 String _$paginatedTransactionsHash() =>
-    r'266459a061f30ad649da098aa447e9469483ca57';
+    r'd2e77cfc6157f9006ccc1b40ce76ba6643bc4911';
 
 /// Notifier for paginated transactions with infinite scroll support.
 ///
