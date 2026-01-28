@@ -14,11 +14,6 @@ enum AppDestination {
     selectedIcon: Icons.bar_chart,
     label: 'Stats',
   ),
-  wallet(
-    icon: Icons.account_balance_wallet_outlined,
-    selectedIcon: Icons.account_balance_wallet,
-    label: 'Comptes',
-  ),
   settings(
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings,
@@ -79,18 +74,11 @@ class AppNavigationBar extends StatelessWidget {
             unselectedColor: unselectedColor,
           ),
           // Space for FAB
-          const SizedBox(width: 48),
-          _buildNavItem(
-            context,
-            destination: AppDestination.wallet,
-            index: 2,
-            selectedColor: selectedColor,
-            unselectedColor: unselectedColor,
-          ),
+          const SizedBox(width: 128),
           _buildNavItem(
             context,
             destination: AppDestination.settings,
-            index: 3,
+            index: 2,
             selectedColor: selectedColor,
             unselectedColor: unselectedColor,
           ),

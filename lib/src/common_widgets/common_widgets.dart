@@ -13,5 +13,6 @@ export 'category_icon.dart';
 export 'glass_card.dart';
 export 'icon_container.dart';
 export 'icon_label_tile.dart';
+export 'account_type_badge.dart';
 export 'selectable_badge.dart';
 export 'selectable_option_container.dart';

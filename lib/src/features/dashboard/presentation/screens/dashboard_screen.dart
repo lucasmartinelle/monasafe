@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/features/accounts/accounts.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/widgets/account_selector.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/widgets/expense_breakdown_card.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/widgets/net_worth_card.dart';
@@ -66,6 +67,14 @@ class DashboardScreen extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: NetWorthCard(),
+              ),
+            ),
+
+            // Account List Card
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: AccountListCard(),
               ),
             ),
 

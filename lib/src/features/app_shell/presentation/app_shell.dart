@@ -7,7 +7,6 @@ import 'package:simpleflow/src/features/dashboard/presentation/screens/dashboard
 import 'package:simpleflow/src/features/settings/presentation/screens/settings_screen.dart';
 import 'package:simpleflow/src/features/stats/presentation/screens/stats_screen.dart';
 import 'package:simpleflow/src/features/transactions/presentation/screens/add_transaction_screen.dart';
-import 'package:simpleflow/src/features/wallet/presentation/screens/wallet_screen.dart';
 
 /// Main app shell with bottom navigation and FAB.
 ///
@@ -25,7 +24,6 @@ class _AppShellState extends ConsumerState<AppShell> {
   final List<Widget> _screens = const [
     DashboardScreen(),
     StatsScreen(),
-    WalletScreen(),
     SettingsScreen(),
   ];
 
