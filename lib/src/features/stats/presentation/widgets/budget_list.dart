@@ -18,7 +18,7 @@ class BudgetList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final budgetsAsync = ref.watch(budgetProgressListProvider);
+    final budgetsAsync = ref.watch(budgetProgressStreamProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
 

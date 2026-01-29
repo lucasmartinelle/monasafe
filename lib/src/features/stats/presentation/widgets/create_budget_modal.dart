@@ -89,7 +89,7 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
       );
 
       // Refresh budget list
-      ref.invalidate(budgetProgressListProvider);
+      ref.invalidate(budgetProgressStreamProvider);
 
       if (mounted) {
         Navigator.of(context).pop(true);

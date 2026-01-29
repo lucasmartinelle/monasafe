@@ -10,7 +10,8 @@
       "Bash(dart pub get:*)",
       "Bash(dart run build_runner build:*)",
       "Bash(echo:*)",
-      "Bash(flutter pub run build_runner:*)"
+      "Bash(flutter pub run build_runner:*)",
+      "Bash(tree:*)"
     ]
   }
 }
