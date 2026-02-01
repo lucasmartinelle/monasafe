@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 
 /// Ligne avec icône, label, sous-titre optionnel et widget trailing.
 ///
@@ -76,9 +77,6 @@ class IconLabelTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
     final defaultIconColor = iconColor ?? AppColors.primary;
 
     var iconContent = iconWidget ??
@@ -114,14 +112,14 @@ class IconLabelTile extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: AppTextStyles.labelMedium(color: textColor),
+                  style: AppTextStyles.labelMedium(color: context.textPrimary),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (subtitle != null)
                   Text(
                     subtitle!,
-                    style: AppTextStyles.caption(color: subtitleColor),
+                    style: AppTextStyles.caption(color: context.textSecondary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

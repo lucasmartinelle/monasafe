@@ -1,6 +1,5 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:simpleflow/src/data/models/models.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service Supabase pour la gestion des catégories
 class CategoryService {
@@ -31,22 +30,8 @@ class CategoryService {
         .order('name')
         .map((data) => data
             .where((json) => json['user_id'] == _userId || json['user_id'] == null)
-            .map((json) => Category.fromJson(json))
+            .map(Category.fromJson)
             .toList());
-  }
-
-  /// Récupère les catégories de dépenses
-  Future<List<Category>> getExpenseCategories() async {
-    final response = await _client
-        .from('categories')
-        .select()
-        .or('user_id.eq.$_userId,user_id.is.null')
-        .eq('type', CategoryType.expense.name)
-        .order('name');
-
-    return (response as List)
-        .map((json) => Category.fromJson(json as Map<String, dynamic>))
-        .toList();
   }
 
   /// Stream des catégories de dépenses
@@ -58,22 +43,8 @@ class CategoryService {
         .order('name')
         .map((data) => data
             .where((json) => json['user_id'] == _userId || json['user_id'] == null)
-            .map((json) => Category.fromJson(json))
+            .map(Category.fromJson)
             .toList());
-  }
-
-  /// Récupère les catégories de revenus
-  Future<List<Category>> getIncomeCategories() async {
-    final response = await _client
-        .from('categories')
-        .select()
-        .or('user_id.eq.$_userId,user_id.is.null')
-        .eq('type', CategoryType.income.name)
-        .order('name');
-
-    return (response as List)
-        .map((json) => Category.fromJson(json as Map<String, dynamic>))
-        .toList();
   }
 
   /// Stream des catégories de revenus
@@ -85,7 +56,7 @@ class CategoryService {
         .order('name')
         .map((data) => data
             .where((json) => json['user_id'] == _userId || json['user_id'] == null)
-            .map((json) => Category.fromJson(json))
+            .map(Category.fromJson)
             .toList());
   }
 
@@ -167,41 +138,5 @@ class CategoryService {
         .eq('id', id)
         .eq('user_id', _userId)
         .eq('is_default', false);
-  }
-
-  /// Met à jour la limite de budget d'une catégorie
-  /// Note: Pour les catégories par défaut (user_id IS NULL), cela modifie
-  /// la catégorie partagée. Pour une gestion per-user des budgets sur les
-  /// catégories par défaut, il faudrait une table séparée user_budgets.
-  Future<void> updateBudgetLimit(String id, double? limit) async {
-    await _client
-        .from('categories')
-        .update({
-          'budget_limit': limit,
-          'updated_at': DateTime.now().toIso8601String(),
-        })
-        .eq('id', id)
-        .or('user_id.eq.$_userId,user_id.is.null');
-  }
-
-  /// Récupère les catégories avec une limite de budget
-  Future<List<Category>> getCategoriesWithBudget() async {
-    final response = await _client
-        .from('categories')
-        .select()
-        .or('user_id.eq.$_userId,user_id.is.null')
-        .not('budget_limit', 'is', null)
-        .order('name');
-
-    return (response as List)
-        .map((json) => Category.fromJson(json as Map<String, dynamic>))
-        .toList();
-  }
-
-  /// Stream des catégories avec limite de budget
-  Stream<List<Category>> watchCategoriesWithBudget() {
-    return watchAllCategories().map(
-      (categories) => categories.where((c) => c.budgetLimit != null).toList(),
-    );
   }
 }

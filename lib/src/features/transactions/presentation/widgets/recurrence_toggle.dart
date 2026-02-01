@@ -29,7 +29,7 @@ class RecurrenceToggle extends ConsumerWidget {
         ref.watch(transactionFormNotifierProvider.select((s) => s.isRecurring));
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final subtitleColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-    final isActive = recurring == true;
+    final isActive = recurring ?? false;
 
     return IconLabelTile(
       icon: Icons.repeat,

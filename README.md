@@ -1,6 +1,6 @@
 # SimpleFlow
 
-Application de gestion de finances personnelles avec **Supabase** comme backend.
+Application de gestion de finances personnelles avec **Supabase** comme backend. Mode local ou synchronisation Google, **Vault** optionnel (chiffrement E2EE et verrouillage par biométrie / PIN).
 
 ## Architecture
 
@@ -9,30 +9,40 @@ lib/
 ├── main.dart
 └── src/
     ├── core/
+    │   ├── config/
+    │   │   ├── config.dart
+    │   │   └── supabase_config.dart
     │   ├── constants/
     │   │   └── app_constants.dart
+    │   ├── services/
+    │   │   ├── encryption_service.dart   # Chiffrement pour le Vault
+    │   │   └── services.dart
     │   ├── theme/
     │   │   ├── app_colors.dart
     │   │   ├── app_text_styles.dart
     │   │   ├── app_theme.dart
-    │   │   └── theme.dart
+    │   │   ├── theme.dart
+    │   │   └── theme_helper.dart
     │   └── utils/
     │       ├── currency_formatter.dart
+    │       ├── focus_node_mixin.dart
     │       ├── icon_mapper.dart
     │       ├── logger_service.dart
     │       └── utils.dart
     ├── common_widgets/
-    │   ├── app_button.dart                     # Bouton avec variantes
-    │   ├── app_text_field.dart                 # Champ texte simple
-    │   ├── app_text_input.dart                 # Champ texte style Glass
-    │   ├── async_state_handler.dart            # Affichage de l'état
-    │   ├── category_icon.dart                  # Icône catégorie circulaire
-    │   ├── common_widgets.dart                 # Barrel export
-    │   ├── glass_card.dart                     # Carte glassmorphism
-    │   ├── icon_container.dart                 # Conteneur d'icône
-    │   ├── icon_label_tile.dart                # Label avec paramètres (icone, sous-titre, ...)
-    │   ├── selectable_badge.dart               # Badge/Chip avec fond sélectionnable
-    │   └── selectable_option_container.dart    # Container animé avec état de sélection
+    │   ├── account_type_badge.dart           # Badge type de compte
+    │   ├── app_button.dart                   # Bouton avec variantes
+    │   ├── app_text_field.dart               # Champ texte simple
+    │   ├── app_text_input.dart               # Champ texte style Glass
+    │   ├── async_state_handler.dart          # Affichage de l'état
+    │   ├── category_icon.dart                # Icône catégorie circulaire
+    │   ├── common_widgets.dart               # Barrel export
+    │   ├── glass_card.dart                   # Carte glassmorphism
+    │   ├── glass_effect.dart                 # Effet glass réutilisable
+    │   ├── icon_container.dart              # Conteneur d'icône
+    │   ├── icon_label_tile.dart              # Label avec paramètres (icone, sous-titre, ...)
+    │   ├── selectable_badge.dart             # Badge/Chip avec fond sélectionnable
+    │   └── selectable_option_container.dart  # Container animé avec état de sélection
     ├── data/
     │   ├── data.dart                    # Barrel export
     │   ├── models/
@@ -54,7 +64,8 @@ lib/
     │   │   ├── seed_service.dart        # Données initiales
     │   │   ├── settings_service.dart    # Paramètres utilisateur
     │   │   ├── statistics_service.dart  # Agrégations et RPC
-    │   │   └── transaction_service.dart # CRUD transactions
+    │   │   ├── transaction_service.dart # CRUD transactions
+    │   │   └── vault_middleware.dart    # Interception des accès si Vault verrouillé
     │   ├── repositories/
     │   │   ├── account_repository.dart
     │   │   ├── category_repository.dart
@@ -69,16 +80,18 @@ lib/
         │       └── app_navigation_bar.dart  # Barre de navigation bottom
         ├── dashboard/
         │   └── presentation/
-        │       ├── dashboard_providers.dart # Providers pour les données
+        │       ├── dashboard_providers.dart
         │       ├── screens/
         │       │   └── dashboard_screen.dart
         │       └── widgets/
-        │           ├── account_selector.dart      # Sélecteur de compte horizontal
-        │           ├── expense_breakdown_card.dart # Répartition des dépenses
-        │           ├── net_worth_card.dart        # Carte solde total
-        │           ├── recent_transactions_card.dart # Transactions récentes
-        │           └── transaction_tile.dart      # Tuile transaction
+        │           ├── account_selector.dart
+        │           ├── expense_breakdown_card.dart
+        │           ├── net_worth_card.dart
+        │           ├── recent_transactions_card.dart
+        │           └── transaction_tile.dart
         ├── onboarding/
+        │   ├── data/
+        │   │   └── pending_onboarding_service.dart  # Données en attente OAuth
         │   └── presentation/
         │       ├── onboarding_controller.dart
         │       ├── onboarding_flow.dart
@@ -86,42 +99,62 @@ lib/
         │           ├── welcome_screen.dart
         │           ├── setup_account_screen.dart
         │           └── auth_choice_screen.dart
+        ├── accounts/
+        │   └── presentation/
+        │       ├── account_form_provider.dart
+        │       ├── account_form_state.dart
+        │       ├── screens/
+        │       │   └── add_account_screen.dart
+        │       └── widgets/
+        │           └── account_list_card.dart
         ├── transactions/
         │   └── presentation/
-        │       ├── transaction_form_provider.dart # État du formulaire
-        │       ├── transaction_form_state.dart    # Modèle d'état
+        │       ├── transaction_form_provider.dart
+        │       ├── transaction_form_state.dart
         │       ├── screens/
-        │       │   ├── add_transaction_screen.dart  # Modal ajout
-        │       │   └── edit_transaction_screen.dart # Modal édition
+        │       │   ├── add_transaction_screen.dart
+        │       │   └── edit_transaction_screen.dart
         │       └── widgets/
-        │           ├── amount_display.dart        # Affichage montant
-        │           ├── category_grid.dart         # Grille catégories
-        │           ├── numeric_keypad.dart        # Clavier numérique
-        │           ├── recurrence_toggle.dart     # Toggle récurrence
-        │           ├── smart_note_field.dart      # Champ note intelligent
-        │           ├── transaction_form.dart      # Formulaire complet
-        │           └── transaction_type_tabs.dart # Onglets Income/Expense
+        │           ├── amount_display.dart
+        │           ├── category_grid.dart
+        │           ├── numeric_keypad.dart
+        │           ├── recurrence_toggle.dart
+        │           ├── smart_note_field.dart
+        │           ├── transaction_form.dart
+        │           └── transaction_type_tabs.dart
         ├── stats/
-        │   ├── stats.dart                   # Barrel export
         │   └── presentation/
-        │       ├── stats_state.dart         # PeriodType enum + BudgetProgress model
-        │       ├── stats_providers.dart     # Providers Riverpod
+        │       ├── stats_state.dart
+        │       ├── stats_providers.dart
         │       ├── screens/
-        │       │   └── stats_screen.dart    # Écran statistiques
+        │       │   └── stats_screen.dart
         │       └── widgets/
-        │           ├── period_selector.dart       # Sélecteur de période
-        │           ├── cashflow_chart.dart        # LineChart revenus/dépenses
-        │           ├── budget_list.dart           # Liste des budgets
-        │           ├── budget_progress_tile.dart  # Tuile budget individuel
-        │           └── create_budget_modal.dart   # Modal création budget
-        ├── wallet/
+        │           ├── period_selector.dart
+        │           ├── cashflow_chart.dart
+        │           ├── budget_list.dart
+        │           ├── budget_progress_tile.dart
+        │           └── create_budget_modal.dart
+        ├── vault/
         │   └── presentation/
+        │       ├── vault_providers.dart
         │       └── screens/
-        │           └── wallet_screen.dart   # Écran portefeuille/comptes
+        │           ├── lock_screen.dart        # Écran de déverrouillage
+        │           └── vault_setup_screen.dart # Configuration du Vault
         └── settings/
             └── presentation/
-                └── screens/
-                    └── settings_screen.dart # Écran paramètres
+                ├── screens/
+                │   ├── settings_screen.dart
+                │   ├── account_screen.dart     # Compte (profil, Google, comptes bancaires)
+                │   ├── categories_screen.dart
+                │   ├── security_screen.dart    # Vault et E2EE
+                │   ├── data_screen.dart
+                │   └── about_screen.dart
+                └── widgets/
+                    ├── settings_section_tile.dart
+                    ├── category_form_modal.dart
+                    ├── category_list_tile.dart
+                    ├── color_picker.dart
+                    └── icon_picker.dart
 ```
 
 ## Stack Technique
@@ -136,10 +169,14 @@ lib/
 | | `intl` | 0.20.2 | Formatage dates/devises |
 | | `cupertino_icons` | 1.0.8 | Icônes Cupertino |
 | | `filesize` | 2.0.1 | Formatage taille fichiers |
+| **Sécurité (Vault)** | `cryptography` | 2.7.0 | Chiffrement E2EE |
+| | `flutter_secure_storage` | 9.2.2 | Stockage sécurisé clés |
+| | `local_auth` | 2.3.0 | Biométrie / PIN |
 | **Utils** | `uuid` | 4.5.1 | Génération UUID |
 | | `fpdart` | 1.1.0 | Programmation fonctionnelle (Either, Option) |
 | | `logger` | 2.5.0 | Logging |
 | | `flutter_dotenv` | 5.2.1 | Variables d'environnement |
+| | `url_launcher` | 6.3.1 | Ouverture liens (CGU, confidentialité) |
 
 ### Dev Dependencies
 
@@ -159,7 +196,7 @@ L'application utilise deux familles de polices :
 | **Inter** | 400, 500, 600, 700 | Corps de texte, labels, boutons |
 | **Poppins** | 400, 500, 600, 700 | Titres, montants |
 
-Les fichiers de polices sont dans `assets/fonts/`.
+Les polices sont dans `assets/fonts/` ; les icônes dans `assets/icons/`.
 
 ## Composants UI Atomiques
 
@@ -272,39 +309,43 @@ CategoryIconPicker(
 
 ### Thème
 
-Les composants utilisent les couleurs définies dans `AppColors` :
+Les composants utilisent les couleurs définies dans `AppColors` (mode clair et sombre) :
 
-| Couleur | Hex | Usage |
-|---------|-----|-------|
-| `primary` | `#1B5E5A` | Teal foncé - Boutons principaux, sidebar |
-| `process` | `#E87B4D` | Orange/Corail - CTA, actions |
-| `backgroundLight` | `#E8E8E8` | Fond de l'application |
-| `cardLight` | `#FFFFFF` | Fond des cartes |
+| Couleur | Usage |
+|---------|-------|
+| `primary` | Teal foncé — boutons principaux, éléments de navigation |
+| `process` | Orange/Corail — CTA, FAB |
+| `backgroundLight` / `backgroundDark` | Fond de l'application |
+| `cardLight` / `cardDark` | Fond des cartes |
+| `success`, `warning`, `error` | Statuts (ex. barres de budget) |
 
 ## Navigation
 
-L'application utilise une navigation conditionnelle basée sur l'état de l'onboarding :
+L'application utilise une navigation conditionnelle basée sur l'état de l'onboarding, puis sur l'état du Vault (si activé) :
 
 ```
 ┌─────────────────────────────────────────┐
 │              _AppRoot                    │
 │  (onboardingCompletedStreamProvider)     │
 ├─────────────────────────────────────────┤
-│                                          │
 │   completed = false    completed = true  │
 │         ↓                    ↓           │
-│   OnboardingFlow         AppShell        │
-│         │                    │           │
-│   ┌─────┴─────┐        ┌─────┴─────┐     │
-│   │ Welcome   │        │ Dashboard │     │
-│   │ Setup     │        │ Stats     │     │
-│   │ AuthChoice│        │ Wallet    │     │
-│   └───────────┘        │ Settings  │     │
-│                        └───────────┘     │
+│   OnboardingFlow         _VaultAwareShell │
+│   (Welcome, Setup,           │           │
+│    AuthChoice)               ├─ Vault activé et verrouillé → LockScreen
+│                              └─ Sinon → AppShell
+│                                            │
+│   AppShell : IndexedStack                  │
+│   ┌─────────────────────────────────┐     │
+│   │ 0: Dashboard (Accueil)          │     │
+│   │ 1: Stats                        │     │
+│   │ 2: Réglages (Settings)          │     │
+│   │ FAB central : ajout transaction  │     │
+│   └─────────────────────────────────┘     │
 └─────────────────────────────────────────┘
 ```
 
-L'`AppShell` utilise un `IndexedStack` pour préserver l'état des écrans lors de la navigation entre les onglets.
+Après connexion OAuth (Google), les données d'onboarding en attente sont complétées automatiquement. L'`AppShell` utilise un `IndexedStack` pour préserver l'état des écrans entre les onglets.
 
 ## Features
 
@@ -346,18 +387,29 @@ Structure principale de navigation avec `IndexedStack` pour préserver l'état d
 | Composant | Description |
 |-----------|-------------|
 | **AppShell** | Container principal avec IndexedStack et FAB central |
-| **AppNavigationBar** | Barre de navigation bottom avec 4 destinations |
+| **AppNavigationBar** | Barre de navigation bottom avec 3 destinations |
 
 **Onglets de navigation :**
 
 | Index | Icône | Écran | Description |
 |-------|-------|-------|-------------|
-| 0 | `home` | Dashboard | Aperçu financier |
-| 1 | `bar_chart` | Stats | Statistiques et graphiques |
-| 2 | `account_balance_wallet` | Wallet | Gestion des comptes |
-| 3 | `settings` | Settings | Paramètres de l'application |
+| 0 | `dashboard` | Accueil | Dashboard (aperçu financier) |
+| 1 | `bar_chart` | Stats | Statistiques et budgets |
+| 2 | `settings` | Réglages | Paramètres (Compte, Catégories, Sécurité, À propos) |
 
-**FAB central :** Bouton flottant orange pour ajouter rapidement une transaction.
+**FAB central :** Bouton flottant orange pour ajouter une transaction.
+
+### Vault (coffre-fort)
+
+Coffre-fort optionnel : chiffrement de bout en bout (E2EE) et verrouillage par biométrie ou PIN.
+
+| Écran / Composant | Description |
+|-------------------|-------------|
+| **LockScreen** | Écran de déverrouillage (biométrie / PIN) ; affiché quand le Vault est activé et que l'app repasse au premier plan après mise en arrière-plan |
+| **VaultSetupScreen** | Configuration du Vault (activation, PIN, biométrie) |
+| **SecurityScreen** | Depuis Réglages : accès à la configuration du Vault et E2EE |
+
+Quand le Vault est activé et verrouillé, les données sensibles ne sont pas accessibles ; le `vault_middleware` intercepte les accès si nécessaire.
 
 ### Dashboard
 
@@ -402,6 +454,18 @@ if (result == true) {
 // Ouvrir le modal d'édition
 final result = await EditTransactionScreen.show(context, transactionId: 'uuid');
 ```
+
+### Réglages (Settings)
+
+Écran **Réglages** avec sections :
+
+| Section | Écran | Description |
+|---------|-------|-------------|
+| Compte | AccountScreen | Profil (local / Google), liaison Google |
+| Catégories | CategoriesScreen | Gestion des catégories (CRUD, CategoryFormModal, ColorPicker, IconPicker) |
+| Sécurité | SecurityScreen | Configuration du Vault et E2EE |
+| Données | DataScreen | (Bientôt disponible) |
+| À propos | AboutScreen | Informations sur l'app (liens CGU, confidentialité via `url_launcher`) |
 
 ### Analytics & Budgets
 
@@ -462,8 +526,12 @@ await budgetService.upsertBudget(
 2. Copier `.env.example` vers `.env` et remplir les variables :
 
 ```bash
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+SUPABASE_ANON_KEY=your_publishable_key_here
+# Optionnel : seeding en dev (bypass RLS) — ne jamais exposer en production
+SUPABASE_SECRET_KEY=your_secret_key_here
+TERMS_URL=https://your_terms_url
+PRIVACY_URL=https://your_privacy_url
 ```
 
 3. Exécuter les migrations SQL dans le SQL Editor de Supabase (voir section Base de Données)
@@ -755,7 +823,3 @@ supabase login
 # Lister les tables
 supabase db dump --schema public
 ```
-
-## Licence
-
-Propriétaire - Tous droits réservés

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simpleflow/src/common_widgets/common_widgets.dart';
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/features/onboarding/presentation/onboarding_controller.dart';
 
@@ -51,15 +52,6 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(onboardingControllerProvider);
     final controller = ref.read(onboardingControllerProvider.notifier);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final textPrimary =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final textSecondary =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-    final textHint = isDark ? AppColors.textHintDark : AppColors.textHintLight;
-    final dividerColor =
-        isDark ? AppColors.dividerDark : AppColors.dividerLight;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -81,14 +73,14 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
                   const SizedBox(height: 24),
                   // Titre
                   Text(
-                    'What is your current\nbalance today?',
-                    style: AppTextStyles.h2(color: textPrimary),
+                    'Quel est votre solde\nactuel ?',
+                    style: AppTextStyles.h2(color: context.textPrimary),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Enter your starting balance to begin tracking',
-                    style: AppTextStyles.bodySmall(color: textSecondary),
+                    'Entrez votre solde initial pour commencer le suivi',
+                    style: AppTextStyles.bodySmall(color: context.textSecondary),
                     textAlign: TextAlign.center,
                   ),
                   const Spacer(),
@@ -105,7 +97,7 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
                           children: [
                             Text(
                               _currencySymbol,
-                              style: AppTextStyles.h2(color: textHint),
+                              style: AppTextStyles.h2(color: context.textHint),
                             ),
                             const SizedBox(width: 8),
                             IntrinsicWidth(
@@ -120,10 +112,10 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
                                   ),
                                 ],
                                 textAlign: TextAlign.center,
-                                style: AppTextStyles.h1(color: textPrimary),
+                                style: AppTextStyles.h1(color: context.textPrimary),
                                 decoration: InputDecoration(
                                   hintText: '0.00',
-                                  hintStyle: AppTextStyles.h1(color: textHint),
+                                  hintStyle: AppTextStyles.h1(color: context.textHint),
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.zero,
                                   isDense: true,
@@ -137,7 +129,7 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
                           ],
                         ),
                         const SizedBox(height: 24),
-                        Divider(color: dividerColor),
+                        Divider(color: context.dividerColor),
                         const SizedBox(height: 16),
                         // Toggle Checking / Savings
                         Row(
@@ -145,8 +137,8 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
                             Expanded(
                               child: _AccountTypeOption(
                                 icon: Icons.account_balance_wallet,
-                                label: 'Checking',
-                                subtitle: 'Daily expenses',
+                                label: 'Courant',
+                                subtitle: 'Dépenses quotidiennes',
                                 isSelected: state.accountType == AccountType.checking,
                                 onTap: () =>
                                     controller.setAccountType(AccountType.checking),
@@ -156,8 +148,8 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
                             Expanded(
                               child: _AccountTypeOption(
                                 icon: Icons.savings,
-                                label: 'Savings',
-                                subtitle: 'Long-term goals',
+                                label: 'Épargne',
+                                subtitle: 'Objectifs long terme',
                                 isSelected: state.accountType == AccountType.savings,
                                 onTap: () =>
                                     controller.setAccountType(AccountType.savings),
@@ -174,14 +166,14 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
                   Row(
                     children: [
                       AppButton(
-                        label: 'Back',
+                        label: 'Retour',
                         variant: AppButtonVariant.ghost,
                         icon: Icons.arrow_back,
                         onPressed: controller.previousStep,
                       ),
                       const Spacer(),
                       AppButton(
-                        label: 'Continue',
+                        label: 'Continuer',
                         icon: Icons.arrow_forward,
                         iconPosition: IconPosition.right,
                         onPressed: controller.nextStep,
@@ -216,12 +208,6 @@ class _AccountTypeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final textSecondary =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
     return SelectableOptionContainer(
       isSelected: isSelected,
       onTap: onTap,
@@ -230,20 +216,20 @@ class _AccountTypeOption extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: isSelected ? AppColors.primary : textSecondary,
+            color: isSelected ? AppColors.primary : context.textSecondary,
             size: 28,
           ),
           const SizedBox(height: 8),
           Text(
             label,
             style: AppTextStyles.labelMedium(
-              color: isSelected ? AppColors.primary : textPrimary,
+              color: isSelected ? AppColors.primary : context.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             subtitle,
-            style: AppTextStyles.caption(color: textSecondary),
+            style: AppTextStyles.caption(color: context.textSecondary),
           ),
         ],
       ),

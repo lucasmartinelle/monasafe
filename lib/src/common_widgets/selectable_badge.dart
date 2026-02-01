@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 
 /// Badge/Chip sélectionnable avec bordure et fond coloré.
 ///
@@ -67,11 +68,8 @@ class SelectableBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final badgeColor = color ?? AppColors.primary;
-    final textColor = isSelected
-        ? badgeColor
-        : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight);
+    final textColor = isSelected ? badgeColor : context.textSecondary;
     final bgOpacity = isSelected ? selectedBackgroundOpacity : unselectedBackgroundOpacity;
     final bgColor = badgeColor.withValues(alpha: bgOpacity);
 

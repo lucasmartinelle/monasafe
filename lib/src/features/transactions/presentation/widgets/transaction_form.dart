@@ -439,9 +439,6 @@ class _AmountSection extends ConsumerWidget {
 
     final prefix = state.type == CategoryType.expense ? '-' : '+';
 
-    final textColor =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(

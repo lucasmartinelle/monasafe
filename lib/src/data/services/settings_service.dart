@@ -1,7 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:simpleflow/src/data/models/models.dart';
-
 /// Service Supabase pour la gestion des paramètres utilisateur
 class SettingsService {
   SettingsService(this._client);

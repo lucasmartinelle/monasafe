@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 
 /// Conteneur animé avec état de sélection.
 ///
@@ -132,10 +133,8 @@ class SelectableTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeColor = selectedColor ?? AppColors.primary;
-    final inactiveColor = unselectedColor ??
-        (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight);
+    final inactiveColor = unselectedColor ?? context.textSecondary;
     final color = isSelected ? activeColor : inactiveColor;
 
     return SelectableOptionContainer(

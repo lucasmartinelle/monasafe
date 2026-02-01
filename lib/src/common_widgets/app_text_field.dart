@@ -3,20 +3,13 @@ import 'package:flutter/services.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
+import 'package:simpleflow/src/core/utils/focus_node_mixin.dart';
 
 /// Champ de saisie texte simple et standardisé.
 ///
 /// Version plus légère que AppTextInput, sans effet glass.
 /// Utilisé pour les formulaires standards.
-///
-/// ```dart
-/// AppTextField(
-///   hint: 'Ajouter une note...',
-///   prefixIcon: Icons.note_alt_outlined,
-///   controller: noteController,
-///   onChanged: (value) => setState(() => note = value),
-/// )
-/// ```
 class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
@@ -50,124 +43,61 @@ class AppTextField extends StatefulWidget {
     this.filled = true,
   });
 
-  /// Contrôleur pour le champ de texte
   final TextEditingController? controller;
-
-  /// Texte d'indication
   final String? hint;
-
-  /// Label au-dessus du champ
   final String? label;
-
-  /// Icône préfixe
   final IconData? prefixIcon;
-
-  /// Widget préfixe personnalisé
   final Widget? prefixWidget;
-
-  /// Icône suffixe
   final IconData? suffixIcon;
-
-  /// Widget suffixe personnalisé
   final Widget? suffixWidget;
-
-  /// Callback sur tap du suffixe
   final VoidCallback? onSuffixTap;
-
-  /// Champ activé
   final bool enabled;
-
-  /// Lecture seule
   final bool readOnly;
-
-  /// Focus automatique
   final bool autofocus;
-
-  /// Masquer le texte
   final bool obscureText;
-
-  /// Type de clavier
   final TextInputType? keyboardType;
-
-  /// Action clavier
   final TextInputAction? textInputAction;
-
-  /// Formateurs
   final List<TextInputFormatter>? inputFormatters;
-
-  /// Lignes max
   final int maxLines;
-
-  /// Lignes min
   final int? minLines;
-
-  /// Longueur max
   final int? maxLength;
-
-  /// Callback changement
   final ValueChanged<String>? onChanged;
-
-  /// Callback soumission
   final ValueChanged<String>? onSubmitted;
-
-  /// Callback tap
   final VoidCallback? onTap;
-
-  /// Callback changement focus
   final ValueChanged<bool>? onFocusChanged;
-
-  /// Nœud de focus
   final FocusNode? focusNode;
-
-  /// Alignement texte
   final TextAlign textAlign;
-
-  /// Capitalisation
   final TextCapitalization textCapitalization;
-
-  /// Rayon des bords
   final double borderRadius;
-
-  /// Padding du contenu
   final EdgeInsetsGeometry? contentPadding;
-
-  /// Fond rempli
   final bool filled;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
 }
 
-class _AppTextFieldState extends State<AppTextField> {
-  late FocusNode _focusNode;
-
+class _AppTextFieldState extends State<AppTextField> with FocusNodeMixin {
   @override
   void initState() {
     super.initState();
-    _focusNode = widget.focusNode ?? FocusNode();
-    _focusNode.addListener(_onFocusChange);
+    initFocusNode(widget.focusNode);
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
-    if (widget.focusNode == null) {
-      _focusNode.dispose();
-    }
+    disposeFocusNode(widget.focusNode);
     super.dispose();
   }
 
-  void _onFocusChange() {
-    widget.onFocusChanged?.call(_focusNode.hasFocus);
+  @override
+  void onFocusChange(bool hasFocus) {
+    widget.onFocusChanged?.call(hasFocus);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
-    final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final hintColor = isDark ? AppColors.textHintDark : AppColors.textHintLight;
-    final borderColor = isDark ? AppColors.dividerDark : AppColors.dividerLight;
+    final hintColor = context.textHint;
+    final borderColor = context.dividerColor;
 
     var prefix = widget.prefixWidget;
     if (prefix == null && widget.prefixIcon != null) {
@@ -184,7 +114,7 @@ class _AppTextFieldState extends State<AppTextField> {
 
     final textField = TextField(
       controller: widget.controller,
-      focusNode: _focusNode,
+      focusNode: focusNode,
       enabled: widget.enabled,
       readOnly: widget.readOnly,
       autofocus: widget.autofocus,
@@ -200,14 +130,14 @@ class _AppTextFieldState extends State<AppTextField> {
       onTap: widget.onTap,
       textAlign: widget.textAlign,
       textCapitalization: widget.textCapitalization,
-      style: AppTextStyles.bodyMedium(color: textColor),
+      style: AppTextStyles.bodyMedium(color: context.textPrimary),
       decoration: InputDecoration(
         hintText: widget.hint,
         hintStyle: AppTextStyles.bodyMedium(color: hintColor),
         prefixIcon: prefix,
         suffixIcon: suffix,
         filled: widget.filled,
-        fillColor: backgroundColor,
+        fillColor: context.surfaceColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius),
           borderSide: BorderSide.none,
@@ -237,11 +167,7 @@ class _AppTextFieldState extends State<AppTextField> {
         children: [
           Text(
             widget.label!,
-            style: AppTextStyles.labelMedium(
-              color: isDark
-                  ? AppColors.textSecondaryDark
-                  : AppColors.textSecondaryLight,
-            ),
+            style: AppTextStyles.labelMedium(color: context.textSecondary),
           ),
           const SizedBox(height: 8),
           textField,
@@ -254,14 +180,6 @@ class _AppTextFieldState extends State<AppTextField> {
 }
 
 /// Champ de saisie pour montant avec symbole de devise.
-///
-/// ```dart
-/// CurrencyTextField(
-///   controller: amountController,
-///   currency: 'EUR',
-///   onChanged: (value) => setState(() => amount = value),
-/// )
-/// ```
 class CurrencyTextField extends StatelessWidget {
   const CurrencyTextField({
     super.key,
@@ -274,25 +192,12 @@ class CurrencyTextField extends StatelessWidget {
     this.textAlign = TextAlign.end,
   });
 
-  /// Contrôleur
   final TextEditingController? controller;
-
-  /// Code devise
   final String currency;
-
-  /// Texte d'indication
   final String? hint;
-
-  /// Callback changement
   final ValueChanged<String>? onChanged;
-
-  /// Callback soumission
   final ValueChanged<String>? onSubmitted;
-
-  /// Focus automatique
   final bool autofocus;
-
-  /// Alignement du texte
   final TextAlign textAlign;
 
   String get _currencySymbol {
@@ -308,8 +213,6 @@ class CurrencyTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return AppTextField(
       controller: controller,
       hint: hint ?? '0,00',
@@ -325,11 +228,7 @@ class CurrencyTextField extends StatelessWidget {
         padding: const EdgeInsets.only(right: 16),
         child: Text(
           _currencySymbol,
-          style: AppTextStyles.h4(
-            color: isDark
-                ? AppColors.textSecondaryDark
-                : AppColors.textSecondaryLight,
-          ),
+          style: AppTextStyles.h4(color: context.textSecondary),
         ),
       ),
     );

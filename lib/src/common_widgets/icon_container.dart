@@ -31,18 +31,29 @@ enum IconContainerShape {
 
 /// Conteneur d'icône avec fond coloré.
 ///
-/// Utilisé pour afficher une icône dans un conteneur arrondi avec un fond coloré.
+/// Peut afficher soit une icône via [icon], soit un widget personnalisé via [child].
+/// Au moins l'un des deux doit être fourni.
 ///
 /// ```dart
+/// // Avec une icône
 /// IconContainer(
 ///   icon: Icons.wallet,
 ///   color: AppColors.primary,
 ///   size: IconContainerSize.large,
 /// )
+///
+/// // Avec un widget personnalisé
+/// IconContainer(
+///   color: Colors.blue,
+///   size: IconContainerSize.large,
+///   child: Text('A', style: TextStyle(fontWeight: FontWeight.bold)),
+/// )
 /// ```
 class IconContainer extends StatelessWidget {
   const IconContainer({
-    required this.icon, super.key,
+    super.key,
+    this.icon,
+    this.child,
     this.color,
     this.backgroundColor,
     this.size = IconContainerSize.medium,
@@ -52,10 +63,13 @@ class IconContainer extends StatelessWidget {
     this.customSize,
     this.customIconSize,
     this.customBorderRadius,
-  });
+  }) : assert(icon != null || child != null, 'Either icon or child must be provided');
 
-  /// Icône à afficher
-  final IconData icon;
+  /// Icône à afficher (prioritaire sur child)
+  final IconData? icon;
+
+  /// Widget enfant personnalisé (utilisé si icon est null)
+  final Widget? child;
 
   /// Couleur de l'icône (défaut: AppColors.primary)
   final Color? color;
@@ -105,11 +119,9 @@ class IconContainer extends StatelessWidget {
             : BoxShape.rectangle,
       ),
       child: Center(
-        child: Icon(
-          icon,
-          size: iconSize,
-          color: iconColor,
-        ),
+        child: icon != null
+            ? Icon(icon, size: iconSize, color: iconColor)
+            : child,
       ),
     );
 
@@ -138,105 +150,6 @@ class IconContainer extends StatelessWidget {
       IconContainerSize.medium => 20,
       IconContainerSize.large => 24,
       IconContainerSize.extraLarge => 32,
-    };
-  }
-
-  double _getBorderRadius(double containerSize) {
-    return switch (shape) {
-      IconContainerShape.circle => containerSize / 2,
-      IconContainerShape.rounded => 12,
-      IconContainerShape.square => 8,
-    };
-  }
-}
-
-/// Variante avec un widget enfant personnalisé au lieu d'une icône.
-///
-/// ```dart
-/// IconContainerCustom(
-///   color: Colors.blue,
-///   size: IconContainerSize.large,
-///   child: Text('A', style: TextStyle(fontWeight: FontWeight.bold)),
-/// )
-/// ```
-class IconContainerCustom extends StatelessWidget {
-  const IconContainerCustom({
-    required this.child, super.key,
-    this.color,
-    this.backgroundColor,
-    this.size = IconContainerSize.medium,
-    this.shape = IconContainerShape.rounded,
-    this.backgroundOpacity = 0.15,
-    this.onTap,
-    this.customSize,
-    this.customBorderRadius,
-  });
-
-  /// Widget enfant
-  final Widget child;
-
-  /// Couleur principale
-  final Color? color;
-
-  /// Couleur de fond personnalisée
-  final Color? backgroundColor;
-
-  /// Taille du conteneur
-  final IconContainerSize size;
-
-  /// Forme du conteneur
-  final IconContainerShape shape;
-
-  /// Opacité du fond
-  final double backgroundOpacity;
-
-  /// Callback appelé lors du tap
-  final VoidCallback? onTap;
-
-  /// Taille personnalisée
-  final double? customSize;
-
-  /// Border radius personnalisé
-  final double? customBorderRadius;
-
-  @override
-  Widget build(BuildContext context) {
-    final mainColor = color ?? AppColors.primary;
-    final bgColor = backgroundColor ?? mainColor.withValues(alpha: backgroundOpacity);
-    final containerSize = customSize ?? _getContainerSize();
-    final borderRadius = customBorderRadius ?? _getBorderRadius(containerSize);
-
-    final content = Container(
-      width: containerSize,
-      height: containerSize,
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: shape == IconContainerShape.circle
-            ? null
-            : BorderRadius.circular(borderRadius),
-        shape: shape == IconContainerShape.circle
-            ? BoxShape.circle
-            : BoxShape.rectangle,
-      ),
-      child: Center(child: child),
-    );
-
-    if (onTap != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: content,
-      );
-    }
-
-    return content;
-  }
-
-  double _getContainerSize() {
-    return switch (size) {
-      IconContainerSize.small => 32,
-      IconContainerSize.medium => 40,
-      IconContainerSize.large => 48,
-      IconContainerSize.extraLarge => 64,
     };
   }
 

@@ -9,8 +9,7 @@ import 'package:simpleflow/src/data/models/models.dart';
 /// Tuile affichant une catégorie avec actions.
 class CategoryListTile extends StatelessWidget {
   const CategoryListTile({
-    super.key,
-    required this.category,
+    required this.category, super.key,
     this.onTap,
     this.onEdit,
     this.onDelete,
@@ -41,7 +40,6 @@ class CategoryListTile extends StatelessWidget {
               CategoryIcon.fromHex(
                 icon: IconMapper.getIcon(category.iconKey),
                 colorHex: category.color,
-                size: CategoryIconSize.medium,
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -75,7 +73,7 @@ class CategoryListTile extends StatelessWidget {
                   ),
                 if (onDelete != null)
                   IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.delete_outline,
                       color: AppColors.error,
                       size: 20,

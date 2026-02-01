@@ -45,5 +45,19 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Deep link pour le callback OAuth Supabase -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>io.supabase.simpleflow</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>io.supabase.simpleflow</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

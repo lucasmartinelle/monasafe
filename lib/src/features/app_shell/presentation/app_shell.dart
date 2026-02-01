@@ -37,7 +37,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     final result = await AddTransactionScreen.show(context);
 
     // Refresh transaction list if a transaction was added
-    if (result == true && mounted) {
+    if ((result ?? false) && mounted) {
       ref.read(paginatedTransactionsProvider.notifier).refresh();
     }
   }

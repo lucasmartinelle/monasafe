@@ -8,10 +8,7 @@ import 'package:simpleflow/src/core/utils/icon_mapper.dart';
 /// Sélecteur d'icône pour les catégories.
 class IconPicker extends StatelessWidget {
   const IconPicker({
-    super.key,
-    required this.selectedIconKey,
-    required this.onIconSelected,
-    required this.selectedColor,
+    required this.selectedIconKey, required this.onIconSelected, required this.selectedColor, super.key,
   });
 
   final String selectedIconKey;

@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:simpleflow/src/core/config/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
-
-import 'package:simpleflow/src/core/config/supabase_config.dart';
 
 /// Service pour injecter les données par défaut dans Supabase
 class SeedService {

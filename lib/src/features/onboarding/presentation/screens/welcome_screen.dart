@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simpleflow/src/common_widgets/common_widgets.dart';
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 import 'package:simpleflow/src/features/onboarding/presentation/onboarding_controller.dart';
 
 /// Écran 1 : Welcome
@@ -15,12 +16,6 @@ class WelcomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(onboardingControllerProvider);
     final controller = ref.read(onboardingControllerProvider.notifier);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final textPrimary =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final textSecondary =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -40,14 +35,14 @@ class WelcomeScreen extends ConsumerWidget {
           const SizedBox(height: 32),
           // Titre
           Text(
-            'Welcome to SimpleFlow.',
-            style: AppTextStyles.h2(color: textPrimary),
+            'Bienvenue sur SimpleFlow.',
+            style: AppTextStyles.h2(color: context.textPrimary),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           Text(
-            'Your money, Your data. Simple, secure, and entirely yours.',
-            style: AppTextStyles.bodyMedium(color: textSecondary),
+            'Votre argent, vos données. Simple, sécurisé et entièrement vôtre.',
+            style: AppTextStyles.bodyMedium(color: context.textSecondary),
             textAlign: TextAlign.center,
           ),
           const Spacer(),
@@ -57,8 +52,8 @@ class WelcomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Choose your currency',
-                  style: AppTextStyles.labelMedium(color: textSecondary),
+                  'Choisissez votre devise',
+                  style: AppTextStyles.labelMedium(color: context.textSecondary),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -98,7 +93,7 @@ class WelcomeScreen extends ConsumerWidget {
           const Spacer(),
           // Bouton Continue
           AppButton(
-            label: 'Continue',
+            label: 'Continuer',
             fullWidth: true,
             icon: Icons.arrow_forward,
             iconPosition: IconPosition.right,
@@ -126,10 +121,6 @@ class _CurrencyOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textSecondary =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
     return Expanded(
       child: SelectableOptionContainer(
         isSelected: isSelected,
@@ -140,14 +131,14 @@ class _CurrencyOption extends StatelessWidget {
             Text(
               symbol,
               style: AppTextStyles.h3(
-                color: isSelected ? AppColors.primary : textSecondary,
+                color: isSelected ? AppColors.primary : context.textSecondary,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               currency,
               style: AppTextStyles.caption(
-                color: isSelected ? AppColors.primary : textSecondary,
+                color: isSelected ? AppColors.primary : context.textSecondary,
               ),
             ),
           ],

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 
 /// Carte avec effet "Glass" (glassmorphism).
 ///
@@ -69,8 +70,6 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     final card = ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
@@ -79,10 +78,10 @@ class GlassCard extends StatelessWidget {
           width: width,
           height: height,
           decoration: BoxDecoration(
-            color: _getBackgroundColor(isDark),
+            color: _getBackgroundColor(context.isDark),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: _getBorderColor(isDark),
+              color: _getBorderColor(context.isDark),
             ),
             boxShadow: [
               BoxShadow(
@@ -210,15 +209,13 @@ class _GlassDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       height: 1,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             Colors.transparent,
-            (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
+            (context.isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
             Colors.transparent,
           ],
         ),

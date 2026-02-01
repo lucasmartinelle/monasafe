@@ -83,9 +83,10 @@ final categoryServiceProvider = Provider<CategoryService>.internal(
 // ignore: unused_element
 typedef CategoryServiceRef = ProviderRef<CategoryService>;
 String _$transactionServiceHash() =>
-    r'cf7c8bd9520b40dadaeeb2f3c18a1610d1b3a084';
+    r'31575a1097b8c59274f17213dc81cbf714e26095';
 
 /// Provider pour le service des transactions
+/// Injecte automatiquement le VaultMiddleware si le vault est déverrouillé
 ///
 /// Copied from [transactionService].
 @ProviderFor(transactionService)
@@ -159,6 +160,27 @@ final budgetServiceProvider = Provider<BudgetService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef BudgetServiceRef = ProviderRef<BudgetService>;
+String _$pendingOnboardingServiceHash() =>
+    r'c118180131a4b440b0facc631727d7b5f2b7c959';
+
+/// Provider pour le service des données d'onboarding en attente (OAuth)
+///
+/// Copied from [pendingOnboardingService].
+@ProviderFor(pendingOnboardingService)
+final pendingOnboardingServiceProvider =
+    Provider<PendingOnboardingService>.internal(
+      pendingOnboardingService,
+      name: r'pendingOnboardingServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$pendingOnboardingServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PendingOnboardingServiceRef = ProviderRef<PendingOnboardingService>;
 String _$accountRepositoryHash() => r'1c9849d93b8862cba52d2c333ec3d38bb2650022';
 
 /// Provider pour le repository des comptes
@@ -257,13 +279,14 @@ final authStateStreamProvider = AutoDisposeStreamProvider<AuthState>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthStateStreamRef = AutoDisposeStreamProviderRef<AuthState>;
-String _$isAuthenticatedHash() => r'2569058bb99f5164d9b3cf4648bd7e1a0c588304';
+String _$isAuthenticatedHash() => r'e88b4aca2cf8953acf242cda8a3342306a8072c3';
 
-/// Provider pour vérifier si l'utilisateur est authentifié
+/// Provider pour vérifier si l'utilisateur est authentifié.
+/// Écoute le stream d'auth pour être réactif aux changements.
 ///
 /// Copied from [isAuthenticated].
 @ProviderFor(isAuthenticated)
-final isAuthenticatedProvider = AutoDisposeProvider<bool>.internal(
+final isAuthenticatedProvider = AutoDisposeStreamProvider<bool>.internal(
   isAuthenticated,
   name: r'isAuthenticatedProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -275,11 +298,12 @@ final isAuthenticatedProvider = AutoDisposeProvider<bool>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef IsAuthenticatedRef = AutoDisposeProviderRef<bool>;
+typedef IsAuthenticatedRef = AutoDisposeStreamProviderRef<bool>;
 String _$onboardingCompletedStreamHash() =>
-    r'a228e1f7c8d143cc04727c7b34834db5255705d2';
+    r'1d712b157d7d463eb5e75a47da9f693239183f09';
 
-/// Stream de l'état de l'onboarding
+/// Stream de l'état de l'onboarding.
+/// Retourne false si non authentifié, sinon écoute le setting onboarding_completed.
 ///
 /// Copied from [onboardingCompletedStream].
 @ProviderFor(onboardingCompletedStream)
@@ -404,9 +428,10 @@ final recentTransactionsStreamProvider =
 typedef RecentTransactionsStreamRef =
     AutoDisposeStreamProviderRef<List<TransactionWithDetails>>;
 String _$financialSummaryStreamHash() =>
-    r'6d72861ef6fb7d0b3c84f9e7098078073a4c6cef';
+    r'38123dae9318400748fe079affe6c9bd7ef5a2c3';
 
 /// Stream du résumé financier
+/// Utilise les calculs côté client pour supporter les colonnes TEXT.
 ///
 /// Copied from [financialSummaryStream].
 @ProviderFor(financialSummaryStream)
@@ -426,7 +451,7 @@ final financialSummaryStreamProvider =
 typedef FinancialSummaryStreamRef =
     AutoDisposeStreamProviderRef<FinancialSummary>;
 String _$accountCalculatedBalanceStreamHash() =>
-    r'a4f2d886c734022d65fdbb518528dc3e5293cac2';
+    r'57d93ff0e2ab41d588ab83e0b007191d71cbf276';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -450,6 +475,7 @@ class _SystemHash {
 }
 
 /// Stream du solde calculé d'un compte (solde initial + transactions)
+/// Utilise le filtrage côté serveur pour de meilleures performances.
 ///
 /// Copied from [accountCalculatedBalanceStream].
 @ProviderFor(accountCalculatedBalanceStream)
@@ -457,15 +483,18 @@ const accountCalculatedBalanceStreamProvider =
     AccountCalculatedBalanceStreamFamily();
 
 /// Stream du solde calculé d'un compte (solde initial + transactions)
+/// Utilise le filtrage côté serveur pour de meilleures performances.
 ///
 /// Copied from [accountCalculatedBalanceStream].
 class AccountCalculatedBalanceStreamFamily extends Family<AsyncValue<double>> {
   /// Stream du solde calculé d'un compte (solde initial + transactions)
+  /// Utilise le filtrage côté serveur pour de meilleures performances.
   ///
   /// Copied from [accountCalculatedBalanceStream].
   const AccountCalculatedBalanceStreamFamily();
 
   /// Stream du solde calculé d'un compte (solde initial + transactions)
+  /// Utilise le filtrage côté serveur pour de meilleures performances.
   ///
   /// Copied from [accountCalculatedBalanceStream].
   AccountCalculatedBalanceStreamProvider call(String accountId) {
@@ -495,11 +524,13 @@ class AccountCalculatedBalanceStreamFamily extends Family<AsyncValue<double>> {
 }
 
 /// Stream du solde calculé d'un compte (solde initial + transactions)
+/// Utilise le filtrage côté serveur pour de meilleures performances.
 ///
 /// Copied from [accountCalculatedBalanceStream].
 class AccountCalculatedBalanceStreamProvider
     extends AutoDisposeStreamProvider<double> {
   /// Stream du solde calculé d'un compte (solde initial + transactions)
+  /// Utilise le filtrage côté serveur pour de meilleures performances.
   ///
   /// Copied from [accountCalculatedBalanceStream].
   AccountCalculatedBalanceStreamProvider(String accountId)
@@ -587,6 +618,26 @@ class _AccountCalculatedBalanceStreamProviderElement
       (origin as AccountCalculatedBalanceStreamProvider).accountId;
 }
 
+String _$hasGoogleIdentityHash() => r'2e01cba58a9a840d8aee0b0cbe7cfd81fa69e40e';
+
+/// Provider pour vérifier si l'utilisateur a un compte Google lié.
+/// Fait un appel API pour récupérer les identities à jour.
+///
+/// Copied from [hasGoogleIdentity].
+@ProviderFor(hasGoogleIdentity)
+final hasGoogleIdentityProvider = AutoDisposeFutureProvider<bool>.internal(
+  hasGoogleIdentity,
+  name: r'hasGoogleIdentityProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$hasGoogleIdentityHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef HasGoogleIdentityRef = AutoDisposeFutureProviderRef<bool>;
 String _$transactionsRefreshTriggerHash() =>
     r'd5a7d0279dc8c400186cb9a9e57aeb9635f99645';
 

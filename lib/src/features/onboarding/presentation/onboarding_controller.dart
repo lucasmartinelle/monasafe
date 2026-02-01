@@ -80,24 +80,84 @@ class OnboardingController extends _$OnboardingController {
   }
 
   /// Complète l'onboarding avec Google Auth
+  ///
+  /// Note: Cette méthode sauvegarde les données d'onboarding puis lance OAuth.
+  /// L'onboarding sera complété après le callback OAuth dans [completePendingOnboarding].
   Future<bool> completeWithGoogle() async {
     state = state.copyWith(isLoading: true);
 
     try {
       final authService = ref.read(authServiceProvider);
+      final pendingService = ref.read(pendingOnboardingServiceProvider);
 
-      // Connexion avec Google
+      // Sauvegarder les données d'onboarding AVANT de lancer OAuth
+      // Car l'app peut être tuée/relancée pendant l'OAuth
+      await pendingService.savePendingData(
+        PendingOnboardingData(
+          currency: state.currency,
+          initialBalance: state.initialBalance,
+          accountType: state.accountType,
+        ),
+      );
+
+      // IMPORTANT: Déconnecter l'utilisateur actuel (anonyme ou autre)
+      // avant de lancer OAuth pour éviter de réutiliser une ancienne session
+      if (authService.isAuthenticated) {
+        await authService.signOut();
+      }
+
+      // Lancer OAuth (ouvre le navigateur, ne bloque pas jusqu'à l'auth)
       await authService.signInWithGoogle();
 
-      // Attendre que l'authentification soit complète
-      // Note: La redirection OAuth gère le reste du flow
-      // L'utilisateur sera redirigé et le state sera mis à jour
-
-      await _createAccountAndComplete(isAnonymous: false);
+      // Note: L'onboarding sera complété après le callback OAuth
+      // via completePendingOnboarding() appelé depuis main.dart
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       return false;
+    }
+  }
+
+  /// Complète l'onboarding après le callback OAuth.
+  /// Appelé depuis main.dart quand un user Google est détecté avec des données pending.
+  ///
+  /// Si l'utilisateur a déjà des comptes (reconnexion), on skip la création
+  /// et on marque juste l'onboarding comme complété.
+  Future<void> completePendingOnboarding(PendingOnboardingData data) async {
+    state = state.copyWith(
+      isLoading: true,
+      currency: data.currency,
+      initialBalance: data.initialBalance,
+      accountType: data.accountType,
+    );
+
+    try {
+      final accountRepo = ref.read(accountRepositoryProvider);
+      final settingsRepo = ref.read(settingsRepositoryProvider);
+
+      // Vérifier si l'utilisateur a déjà des comptes (reconnexion)
+      final accountsResult = await accountRepo.getAllAccounts();
+      final hasExistingAccounts = accountsResult.fold(
+        (_) => false, // En cas d'erreur, considérer comme nouvel utilisateur
+        (accounts) => accounts.isNotEmpty,
+      );
+
+      if (hasExistingAccounts) {
+        // Utilisateur existant : skip la création, juste marquer complété
+        // (la devise et autres settings sont déjà en place)
+        await settingsRepo.setOnboardingCompleted();
+        state = state.copyWith(isLoading: false);
+      } else {
+        // Nouvel utilisateur : créer le compte normalement
+        await _createAccountAndComplete(isAnonymous: false);
+      }
+
+      // Supprimer les données pending après complétion
+      final pendingService = ref.read(pendingOnboardingServiceProvider);
+      await pendingService.clearPendingData();
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
     }
   }
 

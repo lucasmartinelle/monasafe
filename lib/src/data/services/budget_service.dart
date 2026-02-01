@@ -1,6 +1,5 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:simpleflow/src/data/models/models.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service Supabase pour la gestion des budgets utilisateur
 class BudgetService {
@@ -10,67 +9,14 @@ class BudgetService {
 
   String get _userId => _client.auth.currentUser!.id;
 
-  /// Récupère tous les budgets de l'utilisateur
-  Future<List<UserBudget>> getAllBudgets() async {
-    final response = await _client
-        .from('user_budgets')
-        .select()
-        .eq('user_id', _userId)
-        .order('created_at', ascending: false);
-
-    return (response as List)
-        .map((json) => UserBudget.fromJson(json as Map<String, dynamic>))
-        .toList();
-  }
-
   /// Stream de tous les budgets de l'utilisateur
   Stream<List<UserBudget>> watchAllBudgets() {
     return _client
         .from('user_budgets')
         .stream(primaryKey: ['id'])
         .eq('user_id', _userId)
-        .order('created_at', ascending: false)
-        .map((data) => data.map((json) => UserBudget.fromJson(json)).toList());
-  }
-
-  /// Récupère un budget par son ID
-  Future<UserBudget?> getBudgetById(String id) async {
-    final response = await _client
-        .from('user_budgets')
-        .select()
-        .eq('id', id)
-        .eq('user_id', _userId)
-        .maybeSingle();
-
-    if (response == null) return null;
-    return UserBudget.fromJson(response);
-  }
-
-  /// Récupère le budget pour une catégorie spécifique
-  Future<UserBudget?> getBudgetByCategoryId(String categoryId) async {
-    final response = await _client
-        .from('user_budgets')
-        .select()
-        .eq('user_id', _userId)
-        .eq('category_id', categoryId)
-        .maybeSingle();
-
-    if (response == null) return null;
-    return UserBudget.fromJson(response);
-  }
-
-  /// Stream du budget pour une catégorie spécifique
-  Stream<UserBudget?> watchBudgetByCategoryId(String categoryId) {
-    return _client
-        .from('user_budgets')
-        .stream(primaryKey: ['id'])
-        .eq('user_id', _userId)
-        .map((data) {
-      final filtered =
-          data.where((json) => json['category_id'] == categoryId).toList();
-      if (filtered.isEmpty) return null;
-      return UserBudget.fromJson(filtered.first);
-    });
+        .order('created_at')
+        .map((data) => data.map(UserBudget.fromJson).toList());
   }
 
   /// Crée ou met à jour un budget (upsert)
@@ -110,56 +56,6 @@ class BudgetService {
         .single();
 
     return UserBudget.fromJson(response);
-  }
-
-  /// Met à jour un budget existant
-  Future<UserBudget> updateBudget({
-    required String id,
-    required double budgetLimit,
-  }) async {
-    final response = await _client
-        .from('user_budgets')
-        .update({'budget_limit': budgetLimit})
-        .eq('id', id)
-        .eq('user_id', _userId)
-        .select()
-        .single();
-
-    return UserBudget.fromJson(response);
-  }
-
-  /// Met à jour un budget par category_id
-  Future<UserBudget> updateBudgetByCategoryId({
-    required String categoryId,
-    required double budgetLimit,
-  }) async {
-    final response = await _client
-        .from('user_budgets')
-        .update({'budget_limit': budgetLimit})
-        .eq('user_id', _userId)
-        .eq('category_id', categoryId)
-        .select()
-        .single();
-
-    return UserBudget.fromJson(response);
-  }
-
-  /// Supprime un budget par son ID
-  Future<void> deleteBudget(String id) async {
-    await _client
-        .from('user_budgets')
-        .delete()
-        .eq('id', id)
-        .eq('user_id', _userId);
-  }
-
-  /// Supprime un budget par category_id
-  Future<void> deleteBudgetByCategoryId(String categoryId) async {
-    await _client
-        .from('user_budgets')
-        .delete()
-        .eq('user_id', _userId)
-        .eq('category_id', categoryId);
   }
 
   /// Récupère tous les budgets avec les informations de catégorie (jointure)

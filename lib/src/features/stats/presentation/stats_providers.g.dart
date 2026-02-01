@@ -7,10 +7,11 @@ part of 'stats_providers.dart';
 // **************************************************************************
 
 String _$cashflowDataStreamHash() =>
-    r'e4f494c02c226b21ba6cf5ba6a34a61ac8fc3cc2';
+    r'34b59c39b5610da676e059cc0943338716f5c270';
 
 /// Stream of cashflow data adapted to the selected period.
 /// Returns monthly data for year view, daily data for month views.
+/// Uses client-side calculations (amount is TEXT in DB).
 ///
 /// Copied from [cashflowDataStream].
 @ProviderFor(cashflowDataStream)
@@ -29,11 +30,11 @@ final cashflowDataStreamProvider =
 // ignore: unused_element
 typedef CashflowDataStreamRef = AutoDisposeStreamProviderRef<CashflowData>;
 String _$budgetProgressListHash() =>
-    r'ee92c776bb0680000b35aca7c005a62e7243536f';
+    r'09fd37c130ff98228781a90ee14f9636beed19d7';
 
 /// Future provider for budget progress list.
 /// Combines user budgets with their spending for the selected period.
-/// Note: budgetLimit is monthly, so we multiply by 12 for yearly view.
+/// Uses client-side calculations (amount is TEXT in DB).
 ///
 /// Copied from [budgetProgressList].
 @ProviderFor(budgetProgressList)
@@ -53,10 +54,10 @@ final budgetProgressListProvider =
 typedef BudgetProgressListRef =
     AutoDisposeFutureProviderRef<List<BudgetProgress>>;
 String _$budgetProgressStreamHash() =>
-    r'4c3ad886d4a25418f757503d47666425456c6cd7';
+    r'a7e47a8c6b9667b8f3b0320935f7b63fc090032f';
 
 /// Stream version of budget progress for real-time updates.
-/// Note: budgetLimit is monthly, so we multiply by 12 for yearly view.
+/// Uses client-side calculations (amount is TEXT in DB).
 ///
 /// Copied from [budgetProgressStream].
 @ProviderFor(budgetProgressStream)

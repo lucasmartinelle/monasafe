@@ -13,9 +13,8 @@ import 'package:simpleflow/src/features/settings/presentation/widgets/icon_picke
 /// Modal pour créer ou éditer une catégorie.
 class CategoryFormModal extends ConsumerStatefulWidget {
   const CategoryFormModal({
-    super.key,
+    required this.categoryType, super.key,
     this.category,
-    required this.categoryType,
   });
 
   final Category? category;
@@ -23,8 +22,7 @@ class CategoryFormModal extends ConsumerStatefulWidget {
 
   static Future<bool?> show(
     BuildContext context, {
-    Category? category,
-    required CategoryType categoryType,
+    required CategoryType categoryType, Category? category,
   }) {
     return showModalBottomSheet<bool>(
       context: context,
@@ -169,7 +167,6 @@ class _CategoryFormModalState extends ConsumerState<CategoryFormModal> {
                 label: state.isEditing ? 'Enregistrer' : 'Créer',
                 onPressed: state.isValid && !state.isSubmitting ? _submit : null,
                 isLoading: state.isSubmitting,
-                variant: AppButtonVariant.primary,
                 size: AppButtonSize.large,
               ),
 

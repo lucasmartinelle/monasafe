@@ -156,21 +156,6 @@ class AccountRepository {
     }
   }
 
-  /// Récupère le solde calculé d'un compte (solde initial + transactions)
-  Future<Either<AccountError, double>> getCalculatedBalance(String id) async {
-    try {
-      final balance = await _statisticsService.calculateAccountBalance(id);
-      return Right(balance);
-    } catch (e) {
-      return Left(AccountBalanceError('Erreur lors du calcul du solde: $e'));
-    }
-  }
-
-  /// Stream du solde calculé d'un compte
-  Stream<double> watchCalculatedBalance(String id) {
-    return _statisticsService.watchAccountBalance(id);
-  }
-
   /// Compte le nombre total de comptes
   Future<int> countAccounts() {
     return _accountService.countAccounts();

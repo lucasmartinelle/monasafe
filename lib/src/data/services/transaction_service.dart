@@ -1,12 +1,17 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:simpleflow/src/data/models/models.dart';
+import 'package:simpleflow/src/core/middleware/vault_middleware.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service Supabase pour la gestion des transactions
 class TransactionService {
-  TransactionService(this._client);
+  TransactionService(this._client, {VaultMiddleware? vaultMiddleware})
+      : _vaultMiddleware = vaultMiddleware;
 
   final SupabaseClient _client;
+  final VaultMiddleware? _vaultMiddleware;
+
+  /// Vérifie si le chiffrement est actif
+  bool get isEncryptionEnabled => _vaultMiddleware != null;
 
   String get _userId => _client.auth.currentUser!.id;
 
@@ -16,18 +21,53 @@ class TransactionService {
     categories!inner(*)
   ''';
 
-  /// Récupère toutes les transactions avec leurs détails
-  Future<List<TransactionWithDetails>> getAllTransactionsWithDetails() async {
-    final response = await _client
-        .from('transactions')
-        .select(_selectWithDetails)
-        .eq('user_id', _userId)
-        .order('date', ascending: false);
+  // ==================== HELPERS CHIFFREMENT ====================
 
-    return (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
+  /// Déchiffre une transaction si nécessaire
+  Future<Transaction> _decryptTransaction(Transaction tx) async {
+    if (!tx.isEncrypted || _vaultMiddleware == null) return tx;
+
+    try {
+      final decrypted = await _vaultMiddleware.decryptTransactionData(
+        tx.rawAmount,
+        tx.rawNote,
+      );
+
+      return tx.withDecrypted(
+        amount: decrypted.amount,
+        note: decrypted.note,
+      );
+    } catch (_) {
+      // Si le déchiffrement échoue, retourner la transaction telle quelle
+      // L'UI affichera un indicateur de données chiffrées
+      return tx;
+    }
   }
+
+  /// Déchiffre une liste de TransactionWithDetails
+  Future<List<TransactionWithDetails>> _decryptTransactionsList(
+    List<Map<String, dynamic>> jsonList,
+  ) async {
+    final results = <TransactionWithDetails>[];
+    for (final json in jsonList) {
+      final txWithDetails = TransactionWithDetails.fromJson(json);
+
+      if (!txWithDetails.transaction.isEncrypted || _vaultMiddleware == null) {
+        results.add(txWithDetails);
+        continue;
+      }
+
+      final decryptedTx = await _decryptTransaction(txWithDetails.transaction);
+      results.add(TransactionWithDetails(
+        transaction: decryptedTx,
+        account: txWithDetails.account,
+        category: txWithDetails.category,
+      ));
+    }
+    return results;
+  }
+
+  // ==================== RÉCUPÉRATION ====================
 
   /// Stream de toutes les transactions avec détails
   Stream<List<TransactionWithDetails>> watchAllTransactionsWithDetails() {
@@ -35,21 +75,44 @@ class TransactionService {
         .from('transactions')
         .stream(primaryKey: ['id'])
         .eq('user_id', _userId)
-        .order('date', ascending: false)
+        .order('date')
         .asyncMap((transactions) async {
           if (transactions.isEmpty) return <TransactionWithDetails>[];
 
-          // Récupérer les données complètes avec les relations
           final response = await _client
               .from('transactions')
               .select(_selectWithDetails)
               .eq('user_id', _userId)
               .order('date', ascending: false);
 
-          return (response as List)
-              .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-              .toList();
+          return _decryptTransactionsList(response);
         });
+  }
+
+  /// Récupère toutes les transactions d'un compte
+  Future<List<TransactionWithDetails>> getTransactionsByAccount(
+    String accountId,
+  ) async {
+    final response = await _client
+        .from('transactions')
+        .select(_selectWithDetails)
+        .eq('user_id', _userId)
+        .eq('account_id', accountId)
+        .order('date', ascending: false);
+
+    return _decryptTransactionsList(response);
+  }
+
+  /// Stream des transactions d'un compte
+  Stream<List<TransactionWithDetails>> watchTransactionsByAccount(
+    String accountId,
+  ) {
+    return _client
+        .from('transactions')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', _userId)
+        .order('date')
+        .asyncMap((_) => getTransactionsByAccount(accountId));
   }
 
   /// Récupère les transactions d'un compte sur une période
@@ -67,9 +130,7 @@ class TransactionService {
         .lte('date', endDate.toIso8601String())
         .order('date', ascending: false);
 
-    return (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return _decryptTransactionsList(response);
   }
 
   /// Stream des transactions d'un compte sur une période
@@ -82,7 +143,7 @@ class TransactionService {
         .from('transactions')
         .stream(primaryKey: ['id'])
         .eq('user_id', _userId)
-        .order('date', ascending: false)
+        .order('date')
         .asyncMap((_) => getTransactionsByAccountAndPeriod(accountId, startDate, endDate));
   }
 
@@ -99,9 +160,7 @@ class TransactionService {
         .lte('date', endDate.toIso8601String())
         .order('date', ascending: false);
 
-    return (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return _decryptTransactionsList(response);
   }
 
   /// Stream des transactions sur une période
@@ -113,7 +172,7 @@ class TransactionService {
         .from('transactions')
         .stream(primaryKey: ['id'])
         .eq('user_id', _userId)
-        .order('date', ascending: false)
+        .order('date')
         .asyncMap((_) => getTransactionsByPeriod(startDate, endDate));
   }
 
@@ -127,8 +186,11 @@ class TransactionService {
         .maybeSingle();
 
     if (response == null) return null;
-    return Transaction.fromJson(response);
+    final tx = Transaction.fromJson(response);
+    return _decryptTransaction(tx);
   }
+
+  // ==================== CRÉATION ====================
 
   /// Crée une nouvelle transaction
   Future<Transaction> createTransaction({
@@ -140,18 +202,28 @@ class TransactionService {
     bool isRecurring = false,
   }) async {
     final now = DateTime.now().toIso8601String();
-    final data = {
+    final data = <String, dynamic>{
       'user_id': _userId,
       'account_id': accountId,
       'category_id': categoryId,
-      'amount': amount,
       'date': date.toIso8601String(),
-      'note': note,
       'is_recurring': isRecurring,
       'sync_status': SyncStatus.synced.name,
       'created_at': now,
       'updated_at': now,
     };
+
+    // Chiffrer si le vault est actif
+    if (_vaultMiddleware != null) {
+      final encrypted = await _vaultMiddleware.encryptTransactionData(amount, note);
+      data['amount'] = encrypted.encryptedAmount; // Base64 chiffré
+      data['note'] = encrypted.encryptedNote; // Base64 chiffré ou null
+      data['is_encrypted'] = true;
+    } else {
+      data['amount'] = amount.toString(); // Nombre en string
+      data['note'] = note;
+      data['is_encrypted'] = false;
+    }
 
     final response = await _client
         .from('transactions')
@@ -159,36 +231,11 @@ class TransactionService {
         .select()
         .single();
 
-    return Transaction.fromJson(response);
+    final tx = Transaction.fromJson(response);
+    return _decryptTransaction(tx);
   }
 
-  /// Crée plusieurs transactions en batch
-  Future<void> createTransactions(
-    List<({
-      String accountId,
-      String categoryId,
-      double amount,
-      DateTime date,
-      String? note,
-      bool isRecurring,
-    })> items,
-  ) async {
-    final now = DateTime.now().toIso8601String();
-    final data = items.map((item) => {
-      'user_id': _userId,
-      'account_id': item.accountId,
-      'category_id': item.categoryId,
-      'amount': item.amount,
-      'date': item.date.toIso8601String(),
-      'note': item.note,
-      'is_recurring': item.isRecurring,
-      'sync_status': SyncStatus.synced.name,
-      'created_at': now,
-      'updated_at': now,
-    }).toList();
-
-    await _client.from('transactions').insert(data);
-  }
+  // ==================== MISE À JOUR ====================
 
   /// Met à jour une transaction existante
   Future<Transaction> updateTransaction({
@@ -200,16 +247,62 @@ class TransactionService {
     String? note,
     bool? isRecurring,
   }) async {
+    // Récupérer la transaction existante pour vérifier son état de chiffrement
+    final existing = await _client
+        .from('transactions')
+        .select()
+        .eq('id', id)
+        .eq('user_id', _userId)
+        .single();
+
+    final wasEncrypted = existing['is_encrypted'] as bool? ?? false;
+
     final data = <String, dynamic>{
       'updated_at': DateTime.now().toIso8601String(),
     };
 
     if (accountId != null) data['account_id'] = accountId;
     if (categoryId != null) data['category_id'] = categoryId;
-    if (amount != null) data['amount'] = amount;
     if (date != null) data['date'] = date.toIso8601String();
-    if (note != null) data['note'] = note;
     if (isRecurring != null) data['is_recurring'] = isRecurring;
+
+    // Gérer le chiffrement pour amount et note
+    if (amount != null || note != null) {
+      // Si le vault est actif, chiffrer les nouvelles valeurs
+      if (_vaultMiddleware != null) {
+        // Récupérer les valeurs actuelles si pas fournies
+        var finalAmount = amount ?? 0;
+        var finalNote = note;
+
+        if (amount == null && wasEncrypted) {
+          // Déchiffrer l'ancien montant
+          finalAmount = await _vaultMiddleware.decryptAmount(
+            existing['amount'] as String,
+          );
+        } else if (amount == null) {
+          finalAmount = double.tryParse(existing['amount'].toString()) ?? 0;
+        }
+
+        if (note == null && wasEncrypted && existing['note'] != null) {
+          finalNote = await _vaultMiddleware.decryptNote(existing['note'] as String);
+        } else if (note == null) {
+          finalNote = existing['note'] as String?;
+        }
+
+        final encrypted = await _vaultMiddleware.encryptTransactionData(
+          finalAmount,
+          finalNote,
+        );
+        data['amount'] = encrypted.encryptedAmount;
+        data['note'] = encrypted.encryptedNote;
+        data['is_encrypted'] = true;
+      } else {
+        // Vault non actif, stocker en clair
+        if (amount != null) data['amount'] = amount.toString();
+        if (note != null) data['note'] = note;
+        data['is_encrypted'] = false;
+      }
+    }
 
     final response = await _client
         .from('transactions')
@@ -219,7 +312,8 @@ class TransactionService {
         .select()
         .single();
 
-    return Transaction.fromJson(response);
+    final tx = Transaction.fromJson(response);
+    return _decryptTransaction(tx);
   }
 
   /// Supprime une transaction
@@ -231,6 +325,87 @@ class TransactionService {
         .eq('user_id', _userId);
   }
 
+  // ==================== CHIFFREMENT/DÉCHIFFREMENT EN MASSE ====================
+
+  /// Chiffre toutes les transactions non chiffrées.
+  /// Utilisé lors de l'activation du vault.
+  Future<void> encryptAllTransactions() async {
+    if (_vaultMiddleware == null) return;
+
+    final unencrypted = await _client
+        .from('transactions')
+        .select()
+        .eq('user_id', _userId)
+        .eq('is_encrypted', false);
+
+    for (final row in unencrypted) {
+      final id = row['id'] as String;
+      final rawAmount = row['amount']?.toString() ?? '0';
+      final rawNote = row['note'] as String?;
+
+      try {
+        // Parser le montant
+        final amount = double.tryParse(rawAmount) ?? 0.0;
+
+        // Chiffrer
+        final encrypted = await _vaultMiddleware.encryptTransactionData(amount, rawNote);
+
+        // Mettre à jour avec valeurs chiffrées
+        await _client
+            .from('transactions')
+            .update({
+              'amount': encrypted.encryptedAmount,
+              'note': encrypted.encryptedNote,
+              'is_encrypted': true,
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('id', id);
+      } catch (e) {
+        // Ignorer les transactions qui ne peuvent pas être chiffrées
+      }
+    }
+  }
+
+  /// Déchiffre toutes les transactions chiffrées et les met à jour en clair.
+  /// Utilisé lors de la désactivation du vault.
+  Future<void> decryptAllTransactions() async {
+    if (_vaultMiddleware == null) return;
+
+    final encrypted = await _client
+        .from('transactions')
+        .select()
+        .eq('user_id', _userId)
+        .eq('is_encrypted', true);
+
+    for (final row in encrypted) {
+      final id = row['id'] as String;
+      final rawAmount = row['amount'] as String;
+      final rawNote = row['note'] as String?;
+
+      try {
+        // Déchiffrer
+        final amount = await _vaultMiddleware.decryptAmount(rawAmount);
+        final note = await _vaultMiddleware.decryptNote(rawNote);
+
+        // Mettre à jour avec valeurs en clair
+        await _client
+            .from('transactions')
+            .update({
+              'amount': amount.toString(),
+              'note': note,
+              'is_encrypted': false,
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('id', id);
+      } catch (e) {
+        // Ignorer les transactions qui ne peuvent pas être déchiffrées
+        // (clé différente, données corrompues, etc.)
+      }
+    }
+  }
+
+  // ==================== REQUÊTES DIVERSES ====================
+
   /// Récupère les N dernières transactions
   Future<List<TransactionWithDetails>> getRecentTransactions(int limit) async {
     final response = await _client
@@ -240,9 +415,7 @@ class TransactionService {
         .order('date', ascending: false)
         .limit(limit);
 
-    return (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return _decryptTransactionsList(response);
   }
 
   /// Stream des N dernières transactions
@@ -251,7 +424,7 @@ class TransactionService {
         .from('transactions')
         .stream(primaryKey: ['id'])
         .eq('user_id', _userId)
-        .order('date', ascending: false)
+        .order('date')
         .limit(limit)
         .asyncMap((_) => getRecentTransactions(limit));
   }
@@ -279,40 +452,6 @@ class TransactionService {
     return response.count;
   }
 
-  /// Recherche les transactions par note
-  Future<List<TransactionWithDetails>> searchByNote(
-    String query, {
-    int limit = 5,
-  }) async {
-    if (query.isEmpty) return [];
-
-    final response = await _client
-        .from('transactions')
-        .select(_selectWithDetails)
-        .eq('user_id', _userId)
-        .ilike('note', '%$query%')
-        .order('date', ascending: false)
-        .limit(limit * 2);
-
-    final results = (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
-
-    // Filtrer les doublons par note
-    final seen = <String>{};
-    final unique = <TransactionWithDetails>[];
-    for (final tx in results) {
-      final note = tx.transaction.note ?? '';
-      if (note.isNotEmpty && !seen.contains(note.toLowerCase())) {
-        seen.add(note.toLowerCase());
-        unique.add(tx);
-        if (unique.length >= limit) break;
-      }
-    }
-
-    return unique;
-  }
-
   /// Recherche les transactions par note et type de catégorie
   Future<List<TransactionWithDetails>> searchByNoteAndType(
     String query,
@@ -325,44 +464,13 @@ class TransactionService {
         .from('transactions')
         .select(_selectWithDetails)
         .eq('user_id', _userId)
+        .eq('is_encrypted', false)
         .ilike('note', '%$query%')
         .eq('categories.type', categoryType.name)
         .order('date', ascending: false)
         .limit(limit * 2);
 
-    final results = (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
-
-    final seen = <String>{};
-    final unique = <TransactionWithDetails>[];
-    for (final tx in results) {
-      final note = tx.transaction.note ?? '';
-      if (note.isNotEmpty && !seen.contains(note.toLowerCase())) {
-        seen.add(note.toLowerCase());
-        unique.add(tx);
-        if (unique.length >= limit) break;
-      }
-    }
-
-    return unique;
-  }
-
-  /// Récupère les notes distinctes récentes pour les suggestions
-  Future<List<TransactionWithDetails>> getRecentDistinctNotes({
-    int limit = 10,
-  }) async {
-    final response = await _client
-        .from('transactions')
-        .select(_selectWithDetails)
-        .eq('user_id', _userId)
-        .not('note', 'is', null)
-        .order('date', ascending: false)
-        .limit(limit * 3);
-
-    final results = (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
+    final results = await _decryptTransactionsList(response);
 
     final seen = <String>{};
     final unique = <TransactionWithDetails>[];
@@ -387,14 +495,13 @@ class TransactionService {
         .from('transactions')
         .select(_selectWithDetails)
         .eq('user_id', _userId)
+        .eq('is_encrypted', false)
         .not('note', 'is', null)
         .eq('categories.type', categoryType.name)
         .order('date', ascending: false)
         .limit(limit * 3);
 
-    final results = (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
+    final results = await _decryptTransactionsList(response);
 
     final seen = <String>{};
     final unique = <TransactionWithDetails>[];
@@ -422,9 +529,7 @@ class TransactionService {
         .order('date', ascending: false)
         .range(offset, offset + limit - 1);
 
-    return (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return _decryptTransactionsList(response);
   }
 
   /// Récupère les transactions d'un compte avec pagination
@@ -441,8 +546,6 @@ class TransactionService {
         .order('date', ascending: false)
         .range(offset, offset + limit - 1);
 
-    return (response as List)
-        .map((json) => TransactionWithDetails.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return _decryptTransactionsList(response);
   }
 }

@@ -61,4 +61,37 @@ class AuthService {
   Future<void> signOut() async {
     await _client.auth.signOut();
   }
+
+  /// Lie un compte Google à un compte anonyme existant.
+  ///
+  /// Note: Supabase gère le linking via OAuth. Après le retour de Google,
+  /// le compte anonyme sera converti en compte Google.
+  Future<void> linkWithGoogle() async {
+    if (!isAnonymous) {
+      throw Exception('Seuls les comptes anonymes peuvent être liés');
+    }
+
+    await _client.auth.linkIdentity(
+      OAuthProvider.google,
+      redirectTo: 'io.supabase.simpleflow://login-callback/',
+    );
+  }
+
+  /// Récupère le user complet depuis l'API et vérifie s'il a un provider Google.
+  /// Cette méthode fait un appel réseau et retourne les données à jour.
+  Future<bool> fetchHasGoogleProvider() async {
+    try {
+      final response = await _client.auth.getUser();
+      final user = response.user;
+
+      if (user == null) return false;
+
+      return user.identities?.any(
+            (identity) => identity.provider == 'google',
+          ) ??
+          false;
+    } catch (_) {
+      return false;
+    }
+  }
 }

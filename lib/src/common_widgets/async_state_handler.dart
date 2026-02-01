@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 
 /// Widget pour afficher un état vide avec icône et message.
 ///
@@ -50,9 +51,6 @@ class EmptyStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
     return Padding(
       padding: padding,
       child: Center(
@@ -64,20 +62,20 @@ class EmptyStateWidget extends StatelessWidget {
                   Icon(
                     icon,
                     size: iconSize,
-                    color: subtitleColor.withValues(alpha: iconOpacity),
+                    color: context.textSecondary.withValues(alpha: iconOpacity),
                   ),
               const SizedBox(height: 12),
             ],
             Text(
               message,
-              style: AppTextStyles.bodyMedium(color: subtitleColor),
+              style: AppTextStyles.bodyMedium(color: context.textSecondary),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 4),
               Text(
                 subtitle!,
-                style: AppTextStyles.caption(color: subtitleColor),
+                style: AppTextStyles.caption(color: context.textSecondary),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -126,9 +124,6 @@ class LoadingStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
     return Padding(
       padding: padding,
       child: Center(
@@ -147,7 +142,7 @@ class LoadingStateWidget extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 message!,
-                style: AppTextStyles.caption(color: subtitleColor),
+                style: AppTextStyles.caption(color: context.textSecondary),
               ),
             ],
           ],
@@ -192,9 +187,6 @@ class ErrorStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
     return Padding(
       padding: padding,
       child: Center(
@@ -209,7 +201,7 @@ class ErrorStateWidget extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               message,
-              style: AppTextStyles.bodyMedium(color: subtitleColor),
+              style: AppTextStyles.bodyMedium(color: context.textSecondary),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[

@@ -7,10 +7,11 @@ part of 'dashboard_providers.dart';
 // **************************************************************************
 
 String _$currentMonthExpensesStreamHash() =>
-    r'cbf66686946a31e8d57a3883bedb3e84d04d5031';
+    r'b0e9399648fc23a01f258807609b91203533cb34';
 
 /// Stream of current month expenses grouped by category for the PieChart.
 /// Filters by selected account if one is selected.
+/// Uses client-side calculations (amount is TEXT in DB).
 ///
 /// Copied from [currentMonthExpensesStream].
 @ProviderFor(currentMonthExpensesStream)

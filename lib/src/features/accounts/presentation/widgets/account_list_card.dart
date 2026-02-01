@@ -149,7 +149,6 @@ class AccountListCard extends ConsumerWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: AppColors.primary.withValues(alpha: 0.2),
-            strokeAlign: BorderSide.strokeAlignInside,
           ),
         ),
         child: Column(

@@ -20,39 +20,45 @@ class SelectedAccountId extends _$SelectedAccountId {
 
 /// Stream of current month expenses grouped by category for the PieChart.
 /// Filters by selected account if one is selected.
+/// Uses client-side calculations (amount is TEXT in DB).
 @riverpod
 Stream<List<CategoryStatistics>> currentMonthExpensesStream(Ref ref) {
   // Watch le trigger pour se rafraîchir après chaque transaction
   ref.watch(transactionsRefreshTriggerProvider);
 
-  final repository = ref.watch(transactionRepositoryProvider);
   final selectedAccountId = ref.watch(selectedAccountIdProvider);
+  final statisticsService = ref.watch(statisticsServiceProvider);
+  final transactionService = ref.watch(transactionServiceProvider);
 
-  final now = DateTime.now();
-  final startOfMonth = DateTime(now.year, now.month);
-  final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+  // Utiliser watchAllTransactionsWithDetails et filtrer côté client
+  return transactionService.watchAllTransactionsWithDetails().map((allTransactions) {
+    // Calculer les dates du mois à chaque émission (pas au build du provider)
+    final now = DateTime.now();
+    final startOfMonth = DateTime.utc(now.year, now.month);
+    final endOfMonth = DateTime.utc(now.year, now.month + 1).subtract(const Duration(milliseconds: 1));
 
-  if (selectedAccountId == null) {
-    // All accounts - use existing optimized query
-    return repository.watchTotalByCategory(startOfMonth, endOfMonth).map(
-      (stats) {
-        final expenses = stats
-            .where((s) => s.type == CategoryType.expense)
-            .toList()
-          ..sort((a, b) => b.total.compareTo(a.total));
-        return expenses;
-      },
-    );
-  } else {
-    // Specific account - filter transactions and calculate client-side
-    return repository
-        .watchTransactionsByAccountAndPeriod(
-          selectedAccountId,
-          startOfMonth,
-          endOfMonth,
-        )
-        .map(_calculateCategoryStats);
-  }
+    // Filtrer par période
+    var transactions = allTransactions.where((tx) {
+      final date = tx.transaction.date.toUtc();
+      return !date.isBefore(startOfMonth) && !date.isAfter(endOfMonth);
+    }).toList();
+
+    // Filtrer par compte si sélectionné
+    if (selectedAccountId != null) {
+      transactions = transactions
+          .where((tx) => tx.transaction.accountId == selectedAccountId)
+          .toList();
+    }
+
+    // Calculer les stats par catégorie
+    final stats = statisticsService.calculateCategoryStatsFromTransactions(transactions);
+
+    // Ne garder que les dépenses
+    return stats
+        .where((s) => s.type == CategoryType.expense)
+        .toList()
+      ..sort((a, b) => b.total.compareTo(a.total));
+  });
 }
 
 /// Stream of recent transactions filtered by selected account.
@@ -81,72 +87,6 @@ Stream<List<TransactionWithDetails>> filteredRecentTransactionsStream(Ref ref) {
       return transactions.take(10).toList();
     });
   }
-}
-
-/// Calculate category statistics from a list of transactions.
-List<CategoryStatistics> _calculateCategoryStats(
-  List<TransactionWithDetails> transactions,
-) {
-  final categoryTotals = <String, _CategoryAccumulator>{};
-
-  for (final tx in transactions) {
-    final category = tx.category;
-    // Only count expenses
-    if (category.type != CategoryType.expense) continue;
-
-    final existing = categoryTotals[category.id];
-    if (existing != null) {
-      existing.total += tx.transaction.amount;
-      existing.count += 1;
-    } else {
-      categoryTotals[category.id] = _CategoryAccumulator(
-        categoryId: category.id,
-        categoryName: category.name,
-        iconKey: category.iconKey,
-        color: category.color,
-        type: category.type,
-        total: tx.transaction.amount,
-        count: 1,
-      );
-    }
-  }
-
-  final stats = categoryTotals.values
-      .map(
-        (acc) => CategoryStatistics(
-          categoryId: acc.categoryId,
-          categoryName: acc.categoryName,
-          iconKey: acc.iconKey,
-          color: acc.color,
-          type: acc.type,
-          total: acc.total,
-          transactionCount: acc.count,
-        ),
-      )
-      .toList()
-    ..sort((a, b) => b.total.compareTo(a.total));
-
-  return stats;
-}
-
-class _CategoryAccumulator {
-
-  _CategoryAccumulator({
-    required this.categoryId,
-    required this.categoryName,
-    required this.iconKey,
-    required this.color,
-    required this.type,
-    required this.total,
-    required this.count,
-  });
-  final String categoryId;
-  final String categoryName;
-  final String iconKey;
-  final int color;
-  final CategoryType type;
-  double total;
-  int count;
 }
 
 /// State for paginated transactions

@@ -1,13 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:simpleflow/src/core/middleware/vault_middleware.dart';
 import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/data/repositories/account_repository.dart';
 import 'package:simpleflow/src/data/repositories/category_repository.dart';
 import 'package:simpleflow/src/data/repositories/settings_repository.dart';
 import 'package:simpleflow/src/data/repositories/transaction_repository.dart';
 import 'package:simpleflow/src/data/services/services.dart';
+import 'package:simpleflow/src/features/vault/presentation/vault_providers.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'database_providers.g.dart';
 
@@ -40,9 +41,18 @@ CategoryService categoryService(Ref ref) {
 }
 
 /// Provider pour le service des transactions
+/// Injecte automatiquement le VaultMiddleware si le vault est déverrouillé
 @Riverpod(keepAlive: true)
 TransactionService transactionService(Ref ref) {
-  return TransactionService(ref.watch(supabaseClientProvider));
+  final dek = ref.watch(currentDekProvider);
+  final vaultMiddleware = dek != null
+      ? VaultMiddleware(ref.watch(encryptionServiceProvider), dek)
+      : null;
+
+  return TransactionService(
+    ref.watch(supabaseClientProvider),
+    vaultMiddleware: vaultMiddleware,
+  );
 }
 
 /// Provider pour le service des statistiques
@@ -61,6 +71,12 @@ SettingsService settingsService(Ref ref) {
 @Riverpod(keepAlive: true)
 BudgetService budgetService(Ref ref) {
   return BudgetService(ref.watch(supabaseClientProvider));
+}
+
+/// Provider pour le service des données d'onboarding en attente (OAuth)
+@Riverpod(keepAlive: true)
+PendingOnboardingService pendingOnboardingService(Ref ref) {
+  return PendingOnboardingService();
 }
 
 // ==================== REPOSITORIES ====================
@@ -87,8 +103,7 @@ TransactionRepository transactionRepository(Ref ref) {
   return TransactionRepository(
     ref.watch(transactionServiceProvider),
     ref.watch(accountServiceProvider),
-    ref.watch(categoryServiceProvider),
-    ref.watch(statisticsServiceProvider),
+    ref.watch(categoryServiceProvider)
   );
 }
 
@@ -107,25 +122,33 @@ Stream<AuthState> authStateStream(Ref ref) {
   return authService.authStateChanges;
 }
 
-/// Provider pour vérifier si l'utilisateur est authentifié
+/// Provider pour vérifier si l'utilisateur est authentifié.
+/// Écoute le stream d'auth pour être réactif aux changements.
 @riverpod
-bool isAuthenticated(Ref ref) {
+Stream<bool> isAuthenticated(Ref ref) {
   final authService = ref.watch(authServiceProvider);
-  return authService.isAuthenticated;
+  return authService.authStateChanges.map(
+    (state) => state.session?.user != null,
+  );
 }
 
-/// Stream de l'état de l'onboarding
+/// Stream de l'état de l'onboarding.
+/// Retourne false si non authentifié, sinon écoute le setting onboarding_completed.
 @riverpod
 Stream<bool> onboardingCompletedStream(Ref ref) {
   final authService = ref.watch(authServiceProvider);
 
-  // Si pas authentifié, retourner false
-  if (!authService.isAuthenticated) {
-    return Stream.value(false);
-  }
+  // Écouter le stream d'auth pour réagir aux déconnexions
+  return authService.authStateChanges.asyncExpand((authState) {
+    // Si pas authentifié, retourner false
+    if (authState.session?.user == null) {
+      return Stream.value(false);
+    }
 
-  final repository = ref.watch(settingsRepositoryProvider);
-  return repository.watchOnboardingCompleted();
+    // Sinon, écouter le setting onboarding_completed
+    final repository = ref.read(settingsRepositoryProvider);
+    return repository.watchOnboardingCompleted();
+  });
 }
 
 // ==================== REFRESH TRIGGER ====================
@@ -207,6 +230,7 @@ Stream<List<TransactionWithDetails>> recentTransactionsStream(Ref ref) {
 }
 
 /// Stream du résumé financier
+/// Utilise les calculs côté client pour supporter les colonnes TEXT.
 @riverpod
 Stream<FinancialSummary> financialSummaryStream(Ref ref) {
   final authService = ref.watch(authServiceProvider);
@@ -217,11 +241,24 @@ Stream<FinancialSummary> financialSummaryStream(Ref ref) {
   // Watch le trigger pour se rafraîchir après chaque transaction
   ref.watch(transactionsRefreshTriggerProvider);
 
-  final repository = ref.watch(transactionRepositoryProvider);
-  return repository.watchFinancialSummary();
+  // Toujours utiliser les calculs côté client (amount est TEXT en BDD)
+  final transactionService = ref.watch(transactionServiceProvider);
+  final accountService = ref.watch(accountServiceProvider);
+  final statisticsService = ref.watch(statisticsServiceProvider);
+
+  return transactionService.watchAllTransactionsWithDetails().asyncMap(
+    (transactions) async {
+      final accounts = await accountService.getAllAccounts();
+      return statisticsService.calculateFinancialSummaryFromTransactions(
+        transactions,
+        accounts,
+      );
+    },
+  );
 }
 
 /// Stream du solde calculé d'un compte (solde initial + transactions)
+/// Utilise le filtrage côté serveur pour de meilleures performances.
 @riverpod
 Stream<double> accountCalculatedBalanceStream(Ref ref, String accountId) {
   final authService = ref.watch(authServiceProvider);
@@ -229,6 +266,42 @@ Stream<double> accountCalculatedBalanceStream(Ref ref, String accountId) {
     return Stream.value(0);
   }
 
-  final repository = ref.watch(accountRepositoryProvider);
-  return repository.watchCalculatedBalance(accountId);
+  // Watch le trigger pour se rafraîchir après chaque transaction
+  ref.watch(transactionsRefreshTriggerProvider);
+
+  final transactionService = ref.watch(transactionServiceProvider);
+  final accountService = ref.watch(accountServiceProvider);
+
+  // Utilise watchTransactionsByAccount pour filtrer côté serveur
+  return transactionService.watchTransactionsByAccount(accountId).asyncMap(
+    (transactions) async {
+      final account = await accountService.getAccountById(accountId);
+      if (account == null) return 0.0;
+
+      double income = 0;
+      double expense = 0;
+
+      for (final tx in transactions) {
+        final amount = tx.transaction.amount;
+        if (tx.category.type == CategoryType.income) {
+          income += amount;
+        } else {
+          expense += amount;
+        }
+      }
+
+      return account.balance + income - expense;
+    },
+  );
+}
+
+/// Provider pour vérifier si l'utilisateur a un compte Google lié.
+/// Fait un appel API pour récupérer les identities à jour.
+@riverpod
+Future<bool> hasGoogleIdentity(Ref ref) async {
+  final authService = ref.watch(authServiceProvider);
+  if (!authService.isAuthenticated) {
+    return false;
+  }
+  return authService.fetchHasGoogleProvider();
 }

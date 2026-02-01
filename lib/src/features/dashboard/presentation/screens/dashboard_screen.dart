@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 import 'package:simpleflow/src/features/accounts/accounts.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/widgets/account_selector.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/widgets/expense_breakdown_card.dart';
@@ -14,12 +14,8 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
-    final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: context.backgroundColor,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -27,35 +23,19 @@ class DashboardScreen extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _getGreeting(),
-                          style: AppTextStyles.bodyMedium(
-                            color: isDark
-                                ? AppColors.textSecondaryDark
-                                : AppColors.textSecondaryLight,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'SimpleFlow',
-                          style: AppTextStyles.h2(color: textColor),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        // TODO: Open notifications
-                      },
-                      icon: Icon(
-                        Icons.notifications_outlined,
-                        color: textColor,
+                    Text(
+                      _getGreeting(),
+                      style: AppTextStyles.bodyMedium(
+                        color: context.textSecondary,
                       ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'SimpleFlow',
+                      style: AppTextStyles.h2(color: context.textPrimary),
                     ),
                   ],
                 ),

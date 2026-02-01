@@ -48,7 +48,6 @@ class BudgetProgressTile extends StatelessWidget {
             CategoryIcon(
               icon: IconMapper.getIcon(category.iconKey),
               color: Color(category.color),
-              size: CategoryIconSize.medium,
             ),
             const SizedBox(width: 12),
 

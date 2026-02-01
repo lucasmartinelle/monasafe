@@ -92,7 +92,7 @@ class _AccountChipWithBalance extends ConsumerWidget {
     return _AccountChip(
       label: account.name,
       subtitle: balanceAsync.when(
-        data: (balance) => CurrencyFormatter.format(balance),
+        data: CurrencyFormatter.format,
         loading: () => CurrencyFormatter.format(account.balance),
         error: (_, __) => CurrencyFormatter.format(account.balance),
       ),

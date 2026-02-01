@@ -171,7 +171,6 @@ class CashflowChart extends ConsumerWidget {
               minY: 0,
               maxY: safeMaxY,
               gridData: FlGridData(
-                show: true,
                 drawVerticalLine: false,
                 horizontalInterval: safeMaxY / 4,
                 getDrawingHorizontalLine: (value) {
@@ -213,10 +212,10 @@ class CashflowChart extends ConsumerWidget {
                   ),
                 ),
                 rightTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
+                  
                 ),
                 topTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
+                  
                 ),
               ),
               borderData: FlBorderData(show: false),
@@ -230,7 +229,6 @@ class CashflowChart extends ConsumerWidget {
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(
-                    show: true,
                     getDotPainter: (spot, percent, barData, index) {
                       return FlDotCirclePainter(
                         radius: 4,
@@ -254,7 +252,6 @@ class CashflowChart extends ConsumerWidget {
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(
-                    show: true,
                     getDotPainter: (spot, percent, barData, index) {
                       return FlDotCirclePainter(
                         radius: 4,
@@ -288,7 +285,6 @@ class CashflowChart extends ConsumerWidget {
                     }).toList();
                   },
                 ),
-                handleBuiltInTouches: true,
               ),
             ),
           ),

@@ -4,15 +4,8 @@ import 'package:simpleflow/src/data/models/enums.dart';
 class Category {
   const Category({
     required this.id,
-    this.userId,
-    required this.name,
-    required this.iconKey,
-    required this.color,
-    required this.type,
+    required this.name, required this.iconKey, required this.color, required this.type, required this.isDefault, required this.createdAt, required this.updatedAt, this.userId,
     this.budgetLimit,
-    required this.isDefault,
-    required this.createdAt,
-    required this.updatedAt,
   });
 
   /// Crée une Category depuis une Map JSON (Supabase)

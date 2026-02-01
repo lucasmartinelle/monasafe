@@ -1,6 +1,5 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:simpleflow/src/data/models/models.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service Supabase pour la gestion des comptes
 class AccountService {
@@ -31,7 +30,7 @@ class AccountService {
         .eq('user_id', _userId)
         .order('name')
         .map((data) =>
-            data.map((json) => Account.fromJson(json)).toList());
+            data.map(Account.fromJson).toList());
   }
 
   /// Récupère un compte par son ID

@@ -11,7 +11,10 @@
       "Bash(dart run build_runner build:*)",
       "Bash(echo:*)",
       "Bash(flutter pub run build_runner:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(dart analyze:*)"
     ]
   }
 }

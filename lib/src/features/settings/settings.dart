@@ -1,4 +1,3 @@
-library;
 
 export 'presentation/category_form_provider.dart';
 export 'presentation/category_form_state.dart';

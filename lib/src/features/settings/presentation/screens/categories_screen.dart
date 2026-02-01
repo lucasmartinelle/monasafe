@@ -45,7 +45,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
       ),
     );
 
-    if (confirmed == true && mounted) {
+    if ((confirmed ?? false) && mounted) {
       final repository = ref.read(categoryRepositoryProvider);
       await repository.deleteCategory(category.id);
       ref.invalidate(categoriesStreamProvider);

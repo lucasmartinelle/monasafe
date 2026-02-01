@@ -45,30 +45,32 @@ class TransactionStatisticsError extends TransactionError {
   const TransactionStatisticsError(super.message);
 }
 
-/// Repository pour la gestion des transactions
+/// Repository orchestrateur pour la gestion des transactions.
+///
+/// Ce repository coordonne plusieurs services pour fournir une API unifiée
+/// de gestion des transactions avec validation et statistiques intégrées.
+///
+/// **Pattern: Orchestrateur**
+///
+/// Dépend de 4 services avec des responsabilités distinctes :
+/// - [TransactionService] : CRUD des transactions (source de données principale)
+/// - [AccountService] : Validation des comptes lors de la création/modification
+/// - [CategoryService] : Validation des catégories lors de la création/modification
+///
+/// Cette coordination est nécessaire car :
+/// 1. La création d'une transaction nécessite de valider compte ET catégorie
+/// 2. Les statistiques dépendent des transactions mais sont calculées différemment
+/// 3. L'API retourne des erreurs typées (Either) pour une gestion d'erreur explicite
 class TransactionRepository {
   TransactionRepository(
     this._transactionService,
     this._accountService,
-    this._categoryService,
-    this._statisticsService,
+    this._categoryService
   );
 
   final TransactionService _transactionService;
   final AccountService _accountService;
   final CategoryService _categoryService;
-  final StatisticsService _statisticsService;
-
-  /// Récupère toutes les transactions avec leurs détails
-  Future<Either<TransactionError, List<TransactionWithDetails>>>
-      getAllTransactions() async {
-    try {
-      final transactions = await _transactionService.getAllTransactionsWithDetails();
-      return Right(transactions);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
 
   /// Stream de toutes les transactions
   Stream<List<TransactionWithDetails>> watchAllTransactions() {
@@ -177,25 +179,6 @@ class TransactionRepository {
     }
   }
 
-  /// Crée plusieurs transactions en batch
-  Future<Either<TransactionError, Unit>> createTransactions(
-    List<({
-      String accountId,
-      String categoryId,
-      double amount,
-      DateTime date,
-      String? note,
-      bool isRecurring,
-    })> items,
-  ) async {
-    try {
-      await _transactionService.createTransactions(items);
-      return const Right(unit);
-    } catch (e) {
-      return Left(TransactionCreationError('Erreur: $e'));
-    }
-  }
-
   /// Met à jour une transaction existante
   Future<Either<TransactionError, Transaction>> updateTransaction({
     required String id,
@@ -264,109 +247,7 @@ class TransactionRepository {
     return _transactionService.countTransactions();
   }
 
-  // ==================== STATISTIQUES ====================
-
-  /// Récupère le total par catégorie sur une période
-  Future<Either<TransactionError, List<CategoryStatistics>>> getTotalByCategory(
-    DateTime startDate,
-    DateTime endDate,
-  ) async {
-    try {
-      final stats = await _statisticsService.getTotalByCategory(startDate, endDate);
-      return Right(stats);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
-  /// Stream du total par catégorie
-  Stream<List<CategoryStatistics>> watchTotalByCategory(
-    DateTime startDate,
-    DateTime endDate,
-  ) {
-    return _statisticsService.watchTotalByCategory(startDate, endDate);
-  }
-
-  /// Récupère le total par catégorie et type
-  Future<Either<TransactionError, List<CategoryStatistics>>>
-      getTotalByCategoryAndType(
-    DateTime startDate,
-    DateTime endDate,
-    CategoryType type,
-  ) async {
-    try {
-      final stats = await _statisticsService.getTotalByCategoryAndType(
-        startDate, endDate, type);
-      return Right(stats);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
-  /// Récupère les statistiques mensuelles d'une année
-  Future<Either<TransactionError, List<MonthlyStatistics>>>
-      getMonthlyStatistics(int year) async {
-    try {
-      final stats = await _statisticsService.getMonthlyStatistics(year);
-      return Right(stats);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
-  /// Stream des statistiques mensuelles
-  Stream<List<MonthlyStatistics>> watchMonthlyStatistics(int year) {
-    return _statisticsService.watchMonthlyStatistics(year);
-  }
-
-  /// Récupère le résumé financier global
-  Future<Either<TransactionError, FinancialSummary>>
-      getFinancialSummary() async {
-    try {
-      final summary = await _statisticsService.getFinancialSummary();
-      return Right(summary);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
-  /// Stream du résumé financier
-  Stream<FinancialSummary> watchFinancialSummary() {
-    return _statisticsService.watchFinancialSummary();
-  }
-
-  /// Récupère les dépenses d'une catégorie ce mois
-  Future<Either<TransactionError, double>> getCategorySpendingThisMonth(
-    String categoryId,
-  ) async {
-    try {
-      final spending =
-          await _statisticsService.getCategorySpendingThisMonth(categoryId);
-      return Right(spending);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
-  /// Stream des dépenses d'une catégorie ce mois
-  Stream<double> watchCategorySpendingThisMonth(String categoryId) {
-    return _statisticsService.watchCategorySpendingThisMonth(categoryId);
-  }
-
   // ==================== RECHERCHE ====================
-
-  /// Recherche les transactions par note (pour les suggestions)
-  Future<Either<TransactionError, List<TransactionWithDetails>>> searchByNote(
-    String query, {
-    int limit = 5,
-  }) async {
-    try {
-      final results = await _transactionService.searchByNote(query, limit: limit);
-      return Right(results);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
 
   /// Recherche les transactions par note et type de catégorie
   Future<Either<TransactionError, List<TransactionWithDetails>>>
@@ -378,18 +259,6 @@ class TransactionRepository {
     try {
       final results = await _transactionService
           .searchByNoteAndType(query, categoryType, limit: limit);
-      return Right(results);
-    } catch (e) {
-      return Left(TransactionFetchError('Erreur: $e'));
-    }
-  }
-
-  /// Récupère les notes distinctes récentes pour les suggestions
-  Future<Either<TransactionError, List<TransactionWithDetails>>>
-      getRecentDistinctNotes({int limit = 10}) async {
-    try {
-      final results =
-          await _transactionService.getRecentDistinctNotes(limit: limit);
       return Right(results);
     } catch (e) {
       return Left(TransactionFetchError('Erreur: $e'));

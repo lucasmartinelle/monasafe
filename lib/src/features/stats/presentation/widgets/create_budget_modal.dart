@@ -174,7 +174,7 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
 
             // Category grid
             categoriesAsync.when(
-              data: (categories) => _buildCategoryGrid(categories),
+              data: _buildCategoryGrid,
               loading: () => const SizedBox(
                 height: 100,
                 child: LoadingStateWidget(padding: EdgeInsets.zero),
@@ -215,7 +215,6 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
               child: AppButton(
                 label: 'Créer le budget',
-                variant: AppButtonVariant.primary,
                 fullWidth: true,
                 isLoading: _isSubmitting,
                 onPressed: _isValid ? _submit : null,

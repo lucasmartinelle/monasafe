@@ -10,9 +10,7 @@ class Account {
     required this.balance,
     required this.currency,
     required this.color,
-    this.lastSyncedAt,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.createdAt, required this.updatedAt, this.lastSyncedAt,
   });
 
   /// Crée un Account depuis une Map JSON (Supabase)

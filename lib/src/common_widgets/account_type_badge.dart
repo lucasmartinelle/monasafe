@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 import 'package:simpleflow/src/core/utils/currency_formatter.dart';
 import 'package:simpleflow/src/data/models/models.dart';
 
@@ -18,12 +19,9 @@ class AccountTypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark
+    final backgroundColor = context.isDark
         ? AppColors.primary.withValues(alpha: 0.2)
         : AppColors.primary.withValues(alpha: 0.1);
-    final textColor =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -42,7 +40,7 @@ class AccountTypeBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             '${getAccountTypeLabel(type)} ${CurrencyFormatter.format(balance)}',
-            style: AppTextStyles.caption(color: textColor),
+            style: AppTextStyles.caption(color: context.textSecondary),
           ),
         ],
       ),

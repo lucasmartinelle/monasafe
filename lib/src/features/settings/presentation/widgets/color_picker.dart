@@ -8,9 +8,7 @@ import 'package:simpleflow/src/features/settings/presentation/category_form_stat
 /// Sélecteur de couleur pour les catégories.
 class ColorPicker extends StatelessWidget {
   const ColorPicker({
-    super.key,
-    required this.selectedColor,
-    required this.onColorSelected,
+    required this.selectedColor, required this.onColorSelected, super.key,
     this.colors = categoryColors,
   });
 

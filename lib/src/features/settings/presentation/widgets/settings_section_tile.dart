@@ -6,13 +6,12 @@ import 'package:simpleflow/src/core/theme/app_text_styles.dart';
 /// Tuile pour une section dans les paramètres.
 class SettingsSectionTile extends StatelessWidget {
   const SettingsSectionTile({
-    super.key,
-    required this.icon,
-    required this.title,
+    required this.icon, required this.title, super.key,
     this.subtitle,
     this.onTap,
     this.trailing,
     this.enabled = true,
+    this.iconColor,
   });
 
   final IconData icon;
@@ -21,6 +20,7 @@ class SettingsSectionTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Widget? trailing;
   final bool enabled;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +42,13 @@ class SettingsSectionTile extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: (enabled ? AppColors.primary : disabledColor)
+                  color: (enabled ? (iconColor ?? AppColors.primary) : disabledColor)
                       .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   icon,
-                  color: enabled ? AppColors.primary : disabledColor,
+                  color: enabled ? (iconColor ?? AppColors.primary) : disabledColor,
                   size: 22,
                 ),
               ),

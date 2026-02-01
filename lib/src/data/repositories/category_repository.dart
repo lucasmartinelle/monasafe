@@ -55,29 +55,9 @@ class CategoryRepository {
     return _categoryService.watchAllCategories();
   }
 
-  /// Récupère les catégories de dépenses
-  Future<Either<CategoryError, List<Category>>> getExpenseCategories() async {
-    try {
-      final categories = await _categoryService.getExpenseCategories();
-      return Right(categories);
-    } catch (e) {
-      return Left(CategoryFetchError('Erreur: $e'));
-    }
-  }
-
   /// Stream des catégories de dépenses
   Stream<List<Category>> watchExpenseCategories() {
     return _categoryService.watchExpenseCategories();
-  }
-
-  /// Récupère les catégories de revenus
-  Future<Either<CategoryError, List<Category>>> getIncomeCategories() async {
-    try {
-      final categories = await _categoryService.getIncomeCategories();
-      return Right(categories);
-    } catch (e) {
-      return Left(CategoryFetchError('Erreur: $e'));
-    }
   }
 
   /// Stream des catégories de revenus
@@ -164,29 +144,6 @@ class CategoryRepository {
       return const Right(unit);
     } catch (e) {
       return Left(CategoryDeletionError('Erreur: $e'));
-    }
-  }
-
-  /// Met à jour la limite de budget d'une catégorie (Premium)
-  Future<Either<CategoryError, Unit>> updateBudgetLimit(
-    String id,
-    double? limit,
-  ) async {
-    try {
-      await _categoryService.updateBudgetLimit(id, limit);
-      return const Right(unit);
-    } catch (e) {
-      return Left(CategoryUpdateError('Erreur: $e'));
-    }
-  }
-
-  /// Récupère les catégories avec une limite de budget
-  Future<Either<CategoryError, List<Category>>> getCategoriesWithBudget() async {
-    try {
-      final categories = await _categoryService.getCategoriesWithBudget();
-      return Right(categories);
-    } catch (e) {
-      return Left(CategoryFetchError('Erreur: $e'));
     }
   }
 

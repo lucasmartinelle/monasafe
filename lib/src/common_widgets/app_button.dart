@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/theme/theme_helper.dart';
 
 /// Variantes disponibles pour AppButton
 enum AppButtonVariant {
@@ -74,26 +75,24 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return SizedBox(
       width: fullWidth ? double.infinity : null,
       height: _getHeight(),
       child: switch (variant) {
-        AppButtonVariant.primary => _buildPrimaryButton(isDark),
-        AppButtonVariant.secondary => _buildSecondaryButton(isDark),
-        AppButtonVariant.ghost => _buildGhostButton(isDark),
+        AppButtonVariant.primary => _buildPrimaryButton(context),
+        AppButtonVariant.secondary => _buildSecondaryButton(context),
+        AppButtonVariant.ghost => _buildGhostButton(context),
       },
     );
   }
 
-  Widget _buildPrimaryButton(bool isDark) {
+  Widget _buildPrimaryButton(BuildContext context) {
     return ElevatedButton(
       onPressed: _isEnabled ? onPressed : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        disabledBackgroundColor: isDark
+        disabledBackgroundColor: context.isDark
             ? AppColors.primaryDark.withValues(alpha: 0.5)
             : AppColors.primaryLight.withValues(alpha: 0.5),
         disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
@@ -107,13 +106,9 @@ class AppButton extends StatelessWidget {
     );
   }
 
-  Widget _buildSecondaryButton(bool isDark) {
-    final borderColor = _isEnabled
-        ? AppColors.primary
-        : (isDark ? AppColors.dividerDark : AppColors.dividerLight);
-    final textColor = _isEnabled
-        ? AppColors.primary
-        : (isDark ? AppColors.textHintDark : AppColors.textHintLight);
+  Widget _buildSecondaryButton(BuildContext context) {
+    final borderColor = _isEnabled ? AppColors.primary : context.dividerColor;
+    final textColor = _isEnabled ? AppColors.primary : context.textHint;
 
     return OutlinedButton(
       onPressed: _isEnabled ? onPressed : null,
@@ -129,10 +124,8 @@ class AppButton extends StatelessWidget {
     );
   }
 
-  Widget _buildGhostButton(bool isDark) {
-    final textColor = _isEnabled
-        ? AppColors.primary
-        : (isDark ? AppColors.textHintDark : AppColors.textHintLight);
+  Widget _buildGhostButton(BuildContext context) {
+    final textColor = _isEnabled ? AppColors.primary : context.textHint;
 
     return TextButton(
       onPressed: _isEnabled ? onPressed : null,

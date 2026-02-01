@@ -48,13 +48,13 @@ class AuthChoiceScreen extends ConsumerWidget {
                   const SizedBox(height: 24),
                   // Titre
                   Text(
-                    'How would you like\nto continue?',
+                    'Comment souhaitez-vous\ncontinuer ?',
                     style: AppTextStyles.h2(color: textPrimary),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Choose your preferred method',
+                    'Choisissez votre méthode préférée',
                     style: AppTextStyles.bodySmall(color: textSecondary),
                     textAlign: TextAlign.center,
                   ),
@@ -64,22 +64,24 @@ class AuthChoiceScreen extends ConsumerWidget {
                   _AuthOptionCard(
                     icon: Icons.cloud_outlined,
                     iconColor: Colors.blue,
-                    title: 'Simplicity',
-                    subtitle: 'Sync across devices',
-                    buttonLabel: 'Continue with Google',
+                    title: 'Simplicité',
+                    subtitle: 'Synchronisation multi-appareils',
+                    buttonLabel: 'Continuer avec Google',
                     buttonIcon: Icons.g_mobiledata,
                     buttonColor: AppColors.process,
                     isLoading: state.isLoading,
                     onPressed: () async {
-                      final success = await controller.completeWithGoogle();
-                      if (success && context.mounted) {
-                        onComplete();
-                      }
+                      // Lance OAuth - l'onboarding sera complété après le callback
+                      // dans _AppRoot._checkAndCompletePendingOnboarding()
+                      await controller.completeWithGoogle();
+                      // Note: Ne pas appeler onComplete() ici car l'OAuth
+                      // redirige vers un navigateur externe. L'app reprendra
+                      // après le callback et complétera l'onboarding automatiquement.
                     },
                     features: const [
-                      'Automatic backup',
-                      'Sync across all devices',
-                      'Recover your data anytime',
+                      'Sauvegarde automatique',
+                      'Synchronisation multi-appareils',
+                      'Récupérez vos données à tout moment',
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -90,7 +92,7 @@ class AuthChoiceScreen extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
-                          'or',
+                          'ou',
                           style: AppTextStyles.bodySmall(color: textSecondary),
                         ),
                       ),
@@ -102,9 +104,9 @@ class AuthChoiceScreen extends ConsumerWidget {
                   _AuthOptionCard(
                     icon: Icons.smartphone,
                     iconColor: AppColors.primary,
-                    title: 'Privacy',
-                    subtitle: 'Data stays on your device',
-                    buttonLabel: 'Start Local Only',
+                    title: 'Confidentialité',
+                    subtitle: 'Données sur votre appareil uniquement',
+                    buttonLabel: 'Commencer en local',
                     buttonIcon: Icons.lock_outline,
                     buttonVariant: AppButtonVariant.secondary,
                     isLoading: state.isLoading,
@@ -115,16 +117,16 @@ class AuthChoiceScreen extends ConsumerWidget {
                       }
                     },
                     features: const [
-                      'Complete privacy',
-                      'No account needed',
-                      'Works offline',
+                      'Confidentialité totale',
+                      'Aucun compte requis',
+                      'Fonctionne hors ligne',
                     ],
                   ),
                   const Spacer(),
                   const SizedBox(height: 24),
                   // Bouton retour
                   AppButton(
-                    label: 'Back',
+                    label: 'Retour',
                     variant: AppButtonVariant.ghost,
                     icon: Icons.arrow_back,
                     onPressed: state.isLoading ? null : controller.previousStep,
