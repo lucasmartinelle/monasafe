@@ -614,7 +614,17 @@ class _FormDateSelector extends ConsumerWidget {
           lastDate: DateTime.now().add(const Duration(days: 365)),
         );
         if (picked != null) {
-          ref.read(transactionFormNotifierProvider.notifier).setDate(picked);
+          // Combiner la date choisie avec l'heure actuelle pour un tri précis
+          final now = DateTime.now();
+          final dateWithTime = DateTime(
+            picked.year,
+            picked.month,
+            picked.day,
+            now.hour,
+            now.minute,
+            now.second,
+          );
+          ref.read(transactionFormNotifierProvider.notifier).setDate(dateWithTime);
         }
       },
       borderRadius: BorderRadius.circular(12),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simpleflow/src/common_widgets/icon_label_tile.dart';
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
 
 /// Toggle switch for recurring payment option.
@@ -30,10 +31,14 @@ class RecurrenceToggle extends ConsumerWidget {
     final recurring = isRecurring ?? formState.isRecurring;
     final isLinkedToRecurrence = formState.isLinkedToRecurrence;
     final isEditMode = formState.isEditMode;
+    final isIncome = formState.type == CategoryType.income;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final subtitleColor =
         isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
     final isActive = recurring;
+
+    // Labels selon le type de transaction
+    final label = isIncome ? 'Revenu récurrent' : 'Paiement récurrent';
 
     // Si la transaction est liee a une recurrence existante
     if (isLinkedToRecurrence) {
@@ -43,7 +48,7 @@ class RecurrenceToggle extends ConsumerWidget {
           IconLabelTile(
             icon: Icons.repeat,
             iconColor: AppColors.primary,
-            label: 'Paiement récurrent',
+            label: label,
             subtitle: 'Lié à une récurrence',
             trailing: Switch.adaptive(
               value: true,
@@ -71,7 +76,7 @@ class RecurrenceToggle extends ConsumerWidget {
     return IconLabelTile(
       icon: Icons.repeat,
       iconColor: isActive ? AppColors.primary : subtitleColor,
-      label: 'Paiement récurrent',
+      label: label,
       subtitle: 'Se répète chaque mois',
       trailing: Switch.adaptive(
         value: isActive,
