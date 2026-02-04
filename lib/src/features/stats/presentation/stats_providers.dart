@@ -109,8 +109,10 @@ Future<List<BudgetProgress>> budgetProgressList(Ref ref) async {
         .firstOrNull;
 
     return BudgetProgress(
+      budgetId: budget.id,
       category: category,
       budgetLimit: budget.budgetLimit * budgetMultiplier,
+      monthlyBudgetLimit: budget.budgetLimit,
       currentSpending: categorySpending?.total ?? 0,
     );
   }).toList();
@@ -151,10 +153,30 @@ Stream<List<BudgetProgress>> budgetProgressStream(Ref ref) async* {
           .firstOrNull;
 
       return BudgetProgress(
+        budgetId: budget.id,
         category: category,
         budgetLimit: budget.budgetLimit * budgetMultiplier,
+        monthlyBudgetLimit: budget.budgetLimit,
         currentSpending: categorySpending?.total ?? 0,
       );
     }).toList();
   }
+}
+
+/// Provider pour récupérer les transactions d'une catégorie pour une période donnée.
+@riverpod
+Future<List<TransactionWithDetails>> transactionsByCategory(
+  Ref ref,
+  String categoryId,
+  DateTime startDate,
+  DateTime endDate,
+) async {
+  final transactionService = ref.watch(transactionServiceProvider);
+  final transactions = await transactionService.getTransactionsByPeriod(
+    startDate,
+    endDate,
+  );
+  return transactions
+      .where((tx) => tx.transaction.categoryId == categoryId)
+      .toList();
 }

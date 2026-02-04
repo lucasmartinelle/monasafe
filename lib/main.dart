@@ -234,6 +234,8 @@ class _VaultAwareShell extends ConsumerStatefulWidget {
 
 class _VaultAwareShellState extends ConsumerState<_VaultAwareShell>
     with WidgetsBindingObserver {
+  bool _recurringGenerated = false;
+
   @override
   void initState() {
     super.initState();
@@ -258,6 +260,23 @@ class _VaultAwareShellState extends ConsumerState<_VaultAwareShell>
         ref.read(vaultNotifierProvider.notifier).lock();
       }
     }
+
+    // Regenerer les recurrences quand l'app revient au premier plan
+    if (state == AppLifecycleState.resumed) {
+      _generateRecurringTransactions();
+    }
+  }
+
+  /// Genere les transactions recurrentes en attente
+  void _generateRecurringTransactions() {
+    // Appeler le provider de generation (fire and forget)
+    ref.read(generateRecurringTransactionsProvider.future).then((count) {
+      if (count > 0) {
+        debugPrint('[Recurring] Generated $count recurring transactions');
+      }
+    }).catchError((Object e) {
+      debugPrint('[Recurring] Error generating transactions: $e');
+    });
   }
 
   @override
@@ -270,8 +289,18 @@ class _VaultAwareShellState extends ConsumerState<_VaultAwareShell>
         onUnlocked: () {
           // Force rebuild to show AppShell
           setState(() {});
+          // Generer les recurrences apres deverrouillage
+          _generateRecurringTransactions();
         },
       );
+    }
+
+    // Generer les recurrences au premier affichage (vault non active ou deja deverrouille)
+    if (!_recurringGenerated) {
+      _recurringGenerated = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _generateRecurringTransactions();
+      });
     }
 
     return const AppShell();

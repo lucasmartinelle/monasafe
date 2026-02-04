@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:simpleflow/src/core/middleware/vault_middleware.dart';
+import 'package:simpleflow/src/core/services/recurrence_date_service.dart';
+import 'package:simpleflow/src/core/services/recurrence_generator_service.dart';
 import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/data/repositories/account_repository.dart';
 import 'package:simpleflow/src/data/repositories/category_repository.dart';
 import 'package:simpleflow/src/data/repositories/settings_repository.dart';
 import 'package:simpleflow/src/data/repositories/transaction_repository.dart';
+import 'package:simpleflow/src/data/services/recurring_transaction_service.dart';
 import 'package:simpleflow/src/data/services/services.dart';
 import 'package:simpleflow/src/features/vault/presentation/vault_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -77,6 +80,37 @@ BudgetService budgetService(Ref ref) {
 @Riverpod(keepAlive: true)
 PendingOnboardingService pendingOnboardingService(Ref ref) {
   return PendingOnboardingService();
+}
+
+/// Provider pour le service de calcul des dates de recurrence
+@Riverpod(keepAlive: true)
+RecurrenceDateService recurrenceDateService(Ref ref) {
+  return RecurrenceDateService();
+}
+
+/// Provider pour le service des transactions recurrentes
+/// Injecte automatiquement le VaultMiddleware si le vault est deverrouille
+@Riverpod(keepAlive: true)
+RecurringTransactionService recurringTransactionService(Ref ref) {
+  final dek = ref.watch(currentDekProvider);
+  final vaultMiddleware = dek != null
+      ? VaultMiddleware(ref.watch(encryptionServiceProvider), dek)
+      : null;
+
+  return RecurringTransactionService(
+    ref.watch(supabaseClientProvider),
+    vaultMiddleware: vaultMiddleware,
+  );
+}
+
+/// Provider pour le service de generation des transactions recurrentes
+@Riverpod(keepAlive: true)
+RecurrenceGeneratorService recurrenceGeneratorService(Ref ref) {
+  return RecurrenceGeneratorService(
+    ref.watch(recurringTransactionServiceProvider),
+    ref.watch(transactionServiceProvider),
+    ref.watch(recurrenceDateServiceProvider),
+  );
 }
 
 // ==================== REPOSITORIES ====================
@@ -304,4 +338,38 @@ Future<bool> hasGoogleIdentity(Ref ref) async {
     return false;
   }
   return authService.fetchHasGoogleProvider();
+}
+
+// ==================== RECURRING TRANSACTIONS ====================
+
+/// Stream des transactions recurrentes actives
+@riverpod
+Stream<List<RecurringTransaction>> activeRecurringStream(Ref ref) {
+  final authService = ref.watch(authServiceProvider);
+  if (!authService.isAuthenticated) {
+    return Stream.value([]);
+  }
+
+  final service = ref.watch(recurringTransactionServiceProvider);
+  return service.watchActiveRecurring();
+}
+
+/// Provider pour la generation des transactions recurrentes au demarrage.
+/// Retourne le nombre de transactions generees.
+@riverpod
+Future<int> generateRecurringTransactions(Ref ref) async {
+  final authService = ref.watch(authServiceProvider);
+  if (!authService.isAuthenticated) {
+    return 0;
+  }
+
+  final generator = ref.watch(recurrenceGeneratorServiceProvider);
+  final count = await generator.generatePendingTransactions();
+
+  if (count > 0) {
+    // Rafraichir les transactions
+    ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
+  }
+
+  return count;
 }

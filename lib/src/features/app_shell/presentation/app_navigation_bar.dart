@@ -14,10 +14,15 @@ enum AppDestination {
     selectedIcon: Icons.bar_chart,
     label: 'Stats',
   ),
+  recurring(
+    icon: Icons.event_repeat_outlined,
+    selectedIcon: Icons.event_repeat,
+    label: 'Récurrences',
+  ),
   settings(
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings,
-    label: 'Réglages',
+    label: 'Reglages',
   );
 
   const AppDestination({
@@ -36,7 +41,9 @@ enum AppDestination {
 /// Uses a notched shape to accommodate the centered FAB.
 class AppNavigationBar extends StatelessWidget {
   const AppNavigationBar({
-    required this.currentIndex, required this.onDestinationSelected, super.key,
+    required this.currentIndex,
+    required this.onDestinationSelected,
+    super.key,
   });
 
   final int currentIndex;
@@ -45,9 +52,11 @@ class AppNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+    final backgroundColor =
+        isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
     const selectedColor = AppColors.primary;
-    final unselectedColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+    final unselectedColor =
+        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
 
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
@@ -74,11 +83,18 @@ class AppNavigationBar extends StatelessWidget {
             unselectedColor: unselectedColor,
           ),
           // Space for FAB
-          const SizedBox(width: 128),
+          const SizedBox(width: 56),
+          _buildNavItem(
+            context,
+            destination: AppDestination.recurring,
+            index: 2,
+            selectedColor: selectedColor,
+            unselectedColor: unselectedColor,
+          ),
           _buildNavItem(
             context,
             destination: AppDestination.settings,
-            index: 2,
+            index: 3,
             selectedColor: selectedColor,
             unselectedColor: unselectedColor,
           ),

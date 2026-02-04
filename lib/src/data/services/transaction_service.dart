@@ -199,7 +199,7 @@ class TransactionService {
     required double amount,
     required DateTime date,
     String? note,
-    bool isRecurring = false,
+    String? recurringId,
   }) async {
     final now = DateTime.now().toIso8601String();
     final data = <String, dynamic>{
@@ -207,7 +207,7 @@ class TransactionService {
       'account_id': accountId,
       'category_id': categoryId,
       'date': date.toIso8601String(),
-      'is_recurring': isRecurring,
+      'recurring_id': recurringId,
       'sync_status': SyncStatus.synced.name,
       'created_at': now,
       'updated_at': now,
@@ -245,7 +245,6 @@ class TransactionService {
     double? amount,
     DateTime? date,
     String? note,
-    bool? isRecurring,
   }) async {
     // Récupérer la transaction existante pour vérifier son état de chiffrement
     final existing = await _client
@@ -264,7 +263,6 @@ class TransactionService {
     if (accountId != null) data['account_id'] = accountId;
     if (categoryId != null) data['category_id'] = categoryId;
     if (date != null) data['date'] = date.toIso8601String();
-    if (isRecurring != null) data['is_recurring'] = isRecurring;
 
     // Gérer le chiffrement pour amount et note
     if (amount != null || note != null) {
@@ -464,20 +462,23 @@ class TransactionService {
         .from('transactions')
         .select(_selectWithDetails)
         .eq('user_id', _userId)
-        .eq('is_encrypted', false)
-        .ilike('note', '%$query%')
+        .not('note', 'is', null)
         .eq('categories.type', categoryType.name)
         .order('date', ascending: false)
-        .limit(limit * 2);
+        .limit(limit * 10);
 
     final results = await _decryptTransactionsList(response);
+    final queryLower = query.toLowerCase();
 
     final seen = <String>{};
     final unique = <TransactionWithDetails>[];
     for (final tx in results) {
       final note = tx.transaction.note ?? '';
-      if (note.isNotEmpty && !seen.contains(note.toLowerCase())) {
-        seen.add(note.toLowerCase());
+      final noteLower = note.toLowerCase();
+      if (note.isNotEmpty &&
+          noteLower.contains(queryLower) &&
+          !seen.contains(noteLower)) {
+        seen.add(noteLower);
         unique.add(tx);
         if (unique.length >= limit) break;
       }
@@ -495,7 +496,6 @@ class TransactionService {
         .from('transactions')
         .select(_selectWithDetails)
         .eq('user_id', _userId)
-        .eq('is_encrypted', false)
         .not('note', 'is', null)
         .eq('categories.type', categoryType.name)
         .order('date', ascending: false)

@@ -181,6 +181,70 @@ final pendingOnboardingServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PendingOnboardingServiceRef = ProviderRef<PendingOnboardingService>;
+String _$recurrenceDateServiceHash() =>
+    r'93033cfc4581d1112c02d632851aa9579ca7ab4a';
+
+/// Provider pour le service de calcul des dates de recurrence
+///
+/// Copied from [recurrenceDateService].
+@ProviderFor(recurrenceDateService)
+final recurrenceDateServiceProvider = Provider<RecurrenceDateService>.internal(
+  recurrenceDateService,
+  name: r'recurrenceDateServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$recurrenceDateServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef RecurrenceDateServiceRef = ProviderRef<RecurrenceDateService>;
+String _$recurringTransactionServiceHash() =>
+    r'434ae6289055af1840e166b0e3f8b0f5dfe6293a';
+
+/// Provider pour le service des transactions recurrentes
+/// Injecte automatiquement le VaultMiddleware si le vault est deverrouille
+///
+/// Copied from [recurringTransactionService].
+@ProviderFor(recurringTransactionService)
+final recurringTransactionServiceProvider =
+    Provider<RecurringTransactionService>.internal(
+      recurringTransactionService,
+      name: r'recurringTransactionServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$recurringTransactionServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef RecurringTransactionServiceRef =
+    ProviderRef<RecurringTransactionService>;
+String _$recurrenceGeneratorServiceHash() =>
+    r'c369981945ca7feb0bc225e81a0eecbfe6164acc';
+
+/// Provider pour le service de generation des transactions recurrentes
+///
+/// Copied from [recurrenceGeneratorService].
+@ProviderFor(recurrenceGeneratorService)
+final recurrenceGeneratorServiceProvider =
+    Provider<RecurrenceGeneratorService>.internal(
+      recurrenceGeneratorService,
+      name: r'recurrenceGeneratorServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$recurrenceGeneratorServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef RecurrenceGeneratorServiceRef = ProviderRef<RecurrenceGeneratorService>;
 String _$accountRepositoryHash() => r'1c9849d93b8862cba52d2c333ec3d38bb2650022';
 
 /// Provider pour le repository des comptes
@@ -221,7 +285,7 @@ final categoryRepositoryProvider = Provider<CategoryRepository>.internal(
 // ignore: unused_element
 typedef CategoryRepositoryRef = ProviderRef<CategoryRepository>;
 String _$transactionRepositoryHash() =>
-    r'71ceace6f968e8a725bc51fbc6430b350538b82f';
+    r'a981d1dac3f1a6fd3d6156183edc1b99f5eea6b6';
 
 /// Provider pour le repository des transactions
 ///
@@ -638,6 +702,50 @@ final hasGoogleIdentityProvider = AutoDisposeFutureProvider<bool>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef HasGoogleIdentityRef = AutoDisposeFutureProviderRef<bool>;
+String _$activeRecurringStreamHash() =>
+    r'6d1e6e182cf47e7f271893bd20c131350db159a6';
+
+/// Stream des transactions recurrentes actives
+///
+/// Copied from [activeRecurringStream].
+@ProviderFor(activeRecurringStream)
+final activeRecurringStreamProvider =
+    AutoDisposeStreamProvider<List<RecurringTransaction>>.internal(
+      activeRecurringStream,
+      name: r'activeRecurringStreamProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$activeRecurringStreamHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ActiveRecurringStreamRef =
+    AutoDisposeStreamProviderRef<List<RecurringTransaction>>;
+String _$generateRecurringTransactionsHash() =>
+    r'9d2c64a36e8bfd372135fd8a68e4ce53a376af40';
+
+/// Provider pour la generation des transactions recurrentes au demarrage.
+/// Retourne le nombre de transactions generees.
+///
+/// Copied from [generateRecurringTransactions].
+@ProviderFor(generateRecurringTransactions)
+final generateRecurringTransactionsProvider =
+    AutoDisposeFutureProvider<int>.internal(
+      generateRecurringTransactions,
+      name: r'generateRecurringTransactionsProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$generateRecurringTransactionsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef GenerateRecurringTransactionsRef = AutoDisposeFutureProviderRef<int>;
 String _$transactionsRefreshTriggerHash() =>
     r'd5a7d0279dc8c400186cb9a9e57aeb9635f99645';
 

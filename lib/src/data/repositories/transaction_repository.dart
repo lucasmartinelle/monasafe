@@ -149,7 +149,6 @@ class TransactionRepository {
     required double amount,
     required DateTime date,
     String? note,
-    bool isRecurring = false,
   }) async {
     try {
       // Valide le compte
@@ -170,7 +169,6 @@ class TransactionRepository {
         amount: amount,
         date: date,
         note: note,
-        isRecurring: isRecurring,
       );
 
       return Right(transaction);
@@ -187,7 +185,6 @@ class TransactionRepository {
     double? amount,
     DateTime? date,
     String? note,
-    bool? isRecurring,
   }) async {
     try {
       final existing = await _transactionService.getTransactionById(id);
@@ -218,7 +215,6 @@ class TransactionRepository {
         amount: amount,
         date: date,
         note: note,
-        isRecurring: isRecurring,
       );
 
       return Right(updated);

@@ -2,6 +2,8 @@ export 'account.dart';
 export 'category.dart';
 export 'enums.dart';
 export 'pending_onboarding_data.dart';
+export 'recurring_transaction.dart';
+export 'recurring_transaction_with_details.dart';
 export 'statistics.dart';
 export 'transaction.dart';
 export 'transaction_with_details.dart';

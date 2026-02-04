@@ -103,4 +103,13 @@ class BudgetService {
       }).toList();
     });
   }
+
+  /// Supprime un budget par son ID
+  Future<void> deleteBudget(String budgetId) async {
+    await _client
+        .from('user_budgets')
+        .delete()
+        .eq('id', budgetId)
+        .eq('user_id', _userId);
+  }
 }

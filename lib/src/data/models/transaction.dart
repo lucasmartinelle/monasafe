@@ -15,7 +15,11 @@ class Transaction {
     required this.categoryId,
     required String rawAmount,
     required this.date,
-    required this.isRecurring, required this.syncStatus, required this.createdAt, required this.updatedAt, String? rawNote,
+    required this.syncStatus,
+    required this.createdAt,
+    required this.updatedAt,
+    String? rawNote,
+    this.recurringId,
     this.isEncrypted = false,
     double? decryptedAmount,
     String? decryptedNote,
@@ -45,7 +49,7 @@ class Transaction {
       rawAmount: rawAmount,
       date: DateTime.parse(json['date'] as String),
       rawNote: json['note'] as String?,
-      isRecurring: json['is_recurring'] as bool? ?? false,
+      recurringId: json['recurring_id'] as String?,
       syncStatus: SyncStatus.fromString(json['sync_status'] as String? ?? 'synced'),
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
@@ -60,8 +64,11 @@ class Transaction {
   final String accountId;
   final String categoryId;
   final DateTime date;
-  final bool isRecurring;
+  final String? recurringId;
   final SyncStatus syncStatus;
+
+  /// Indique si cette transaction est liee a une recurrence
+  bool get isRecurring => recurringId != null;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -102,7 +109,7 @@ class Transaction {
       rawAmount: _rawAmount,
       date: date,
       rawNote: _rawNote,
-      isRecurring: isRecurring,
+      recurringId: recurringId,
       syncStatus: syncStatus,
       createdAt: createdAt,
       updatedAt: updatedAt,
@@ -122,7 +129,7 @@ class Transaction {
       'amount': _rawAmount,
       'date': date.toIso8601String(),
       'note': _rawNote,
-      'is_recurring': isRecurring,
+      'recurring_id': recurringId,
       'sync_status': syncStatus.name,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
@@ -139,7 +146,7 @@ class Transaction {
     String? rawAmount,
     DateTime? date,
     String? rawNote,
-    bool? isRecurring,
+    String? recurringId,
     SyncStatus? syncStatus,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -155,7 +162,7 @@ class Transaction {
       rawAmount: rawAmount ?? _rawAmount,
       date: date ?? this.date,
       rawNote: rawNote ?? _rawNote,
-      isRecurring: isRecurring ?? this.isRecurring,
+      recurringId: recurringId ?? this.recurringId,
       syncStatus: syncStatus ?? this.syncStatus,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

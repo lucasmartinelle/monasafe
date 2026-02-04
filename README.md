@@ -15,7 +15,9 @@ lib/
     │   ├── constants/
     │   │   └── app_constants.dart
     │   ├── services/
-    │   │   ├── encryption_service.dart   # Chiffrement pour le Vault
+    │   │   ├── encryption_service.dart          # Chiffrement pour le Vault
+    │   │   ├── recurrence_date_service.dart     # Calcul des dates de récurrence
+    │   │   ├── recurrence_generator_service.dart # Génération des occurrences
     │   │   └── services.dart
     │   ├── theme/
     │   │   ├── app_colors.dart
@@ -46,26 +48,29 @@ lib/
     ├── data/
     │   ├── data.dart                    # Barrel export
     │   ├── models/
-    │   │   ├── models.dart              # Barrel export
+    │   │   ├── models.dart                        # Barrel export
     │   │   ├── account.dart
     │   │   ├── category.dart
-    │   │   ├── enums.dart               # AccountType, CategoryType, SyncStatus
-    │   │   ├── statistics.dart          # DTOs statistiques
+    │   │   ├── enums.dart                         # AccountType, CategoryType, SyncStatus
+    │   │   ├── recurring_transaction.dart         # Transaction récurrente
+    │   │   ├── recurring_transaction_with_details.dart
+    │   │   ├── statistics.dart                    # DTOs statistiques
     │   │   ├── transaction.dart
     │   │   ├── transaction_with_details.dart
-    │   │   ├── user_budget.dart         # Budget par utilisateur/catégorie
+    │   │   ├── user_budget.dart                   # Budget par utilisateur/catégorie
     │   │   └── user_setting.dart
     │   ├── services/
-    │   │   ├── services.dart            # Barrel export
-    │   │   ├── account_service.dart     # CRUD comptes Supabase
-    │   │   ├── auth_service.dart        # Authentification Supabase
-    │   │   ├── budget_service.dart      # CRUD budgets utilisateur
-    │   │   ├── category_service.dart    # CRUD catégories Supabase
-    │   │   ├── seed_service.dart        # Données initiales
-    │   │   ├── settings_service.dart    # Paramètres utilisateur
-    │   │   ├── statistics_service.dart  # Agrégations et RPC
-    │   │   ├── transaction_service.dart # CRUD transactions
-    │   │   └── vault_middleware.dart    # Interception des accès si Vault verrouillé
+    │   │   ├── services.dart                      # Barrel export
+    │   │   ├── account_service.dart               # CRUD comptes Supabase
+    │   │   ├── auth_service.dart                  # Authentification Supabase
+    │   │   ├── budget_service.dart                # CRUD budgets utilisateur
+    │   │   ├── category_service.dart              # CRUD catégories Supabase
+    │   │   ├── recurring_transaction_service.dart # CRUD récurrences
+    │   │   ├── seed_service.dart                  # Données initiales
+    │   │   ├── settings_service.dart              # Paramètres utilisateur
+    │   │   ├── statistics_service.dart            # Agrégations et RPC
+    │   │   ├── transaction_service.dart           # CRUD transactions
+    │   │   └── vault_middleware.dart              # Interception des accès si Vault verrouillé
     │   ├── repositories/
     │   │   ├── account_repository.dart
     │   │   ├── category_repository.dart
@@ -134,6 +139,16 @@ lib/
         │           ├── budget_list.dart
         │           ├── budget_progress_tile.dart
         │           └── create_budget_modal.dart
+        ├── recurring/
+        │   └── presentation/
+        │       ├── recurring_form_state.dart
+        │       ├── recurring_form_provider.dart
+        │       ├── recurring_providers.dart
+        │       ├── screens/
+        │       │   └── recurring_list_screen.dart
+        │       └── widgets/
+        │           ├── recurring_tile.dart
+        │           └── recurring_detail_modal.dart
         ├── vault/
         │   └── presentation/
         │       ├── vault_providers.dart
@@ -339,7 +354,8 @@ L'application utilise une navigation conditionnelle basée sur l'état de l'onbo
 │   ┌─────────────────────────────────┐     │
 │   │ 0: Dashboard (Accueil)          │     │
 │   │ 1: Stats                        │     │
-│   │ 2: Réglages (Settings)          │     │
+│   │ 2: Récurrences                  │     │
+│   │ 3: Réglages (Settings)          │     │
 │   │ FAB central : ajout transaction  │     │
 │   └─────────────────────────────────┘     │
 └─────────────────────────────────────────┘
@@ -387,7 +403,7 @@ Structure principale de navigation avec `IndexedStack` pour préserver l'état d
 | Composant | Description |
 |-----------|-------------|
 | **AppShell** | Container principal avec IndexedStack et FAB central |
-| **AppNavigationBar** | Barre de navigation bottom avec 3 destinations |
+| **AppNavigationBar** | Barre de navigation bottom avec 4 destinations |
 
 **Onglets de navigation :**
 
@@ -395,7 +411,8 @@ Structure principale de navigation avec `IndexedStack` pour préserver l'état d
 |-------|-------|-------|-------------|
 | 0 | `dashboard` | Accueil | Dashboard (aperçu financier) |
 | 1 | `bar_chart` | Stats | Statistiques et budgets |
-| 2 | `settings` | Réglages | Paramètres (Compte, Catégories, Sécurité, À propos) |
+| 2 | `event_repeat` | Récurrences | Gestion des paiements récurrents |
+| 3 | `settings` | Réglages | Paramètres (Compte, Catégories, Sécurité, À propos) |
 
 **FAB central :** Bouton flottant orange pour ajouter une transaction.
 
@@ -441,7 +458,7 @@ Système complet de gestion des transactions avec formulaire en modal bottom she
 | **AmountDisplay** | Affichage du montant avec devise |
 | **NumericKeypad** | Clavier numérique personnalisé |
 | **CategoryGrid** | Grille de sélection des catégories |
-| **SmartNoteField** | Champ de note avec suggestions |
+| **SmartNoteField** | Champ de note avec auto-complétion intelligente (remplit catégorie + montant) |
 | **RecurrenceToggle** | Toggle pour transaction récurrente |
 
 ```dart
@@ -453,6 +470,61 @@ if (result == true) {
 
 // Ouvrir le modal d'édition
 final result = await EditTransactionScreen.show(context, transactionId: 'uuid');
+```
+
+### Transactions Récurrentes
+
+Système de gestion des paiements récurrents (abonnements, factures mensuelles, etc.).
+
+| Écran | Description |
+|-------|-------------|
+| **RecurringListScreen** | Liste de toutes les récurrences (actives/inactives) |
+| **RecurringDetailModal** | Modal pour voir/modifier une récurrence |
+
+**Composants :**
+
+| Widget | Description |
+|--------|-------------|
+| **RecurringTile** | Tuile affichant une récurrence avec catégorie, montant et prochaine date |
+| **RecurrenceToggle** | Toggle dans le formulaire de transaction pour activer la récurrence |
+
+**Fonctionnement :**
+
+1. **Création** : Lors de la création d'une transaction avec "Paiement récurrent" activé :
+   - Une entrée `recurring_transactions` est créée
+   - La première occurrence est générée dans `transactions` avec `recurring_id`
+
+2. **Génération automatique** : Les occurrences sont générées mensuellement à la même date
+
+3. **Gestion** :
+   - Activer/Désactiver une récurrence (les futures occurrences ne seront plus générées)
+   - Modifier le montant, la catégorie ou la note
+   - Supprimer une récurrence (les transactions existantes sont conservées mais détachées)
+
+**Services :**
+
+| Service | Description |
+|---------|-------------|
+| `RecurringTransactionService` | CRUD des récurrences dans Supabase |
+| `RecurrenceDateService` | Calcul des prochaines dates d'occurrence |
+| `RecurrenceGeneratorService` | Génération des occurrences de transactions |
+
+```dart
+// Créer une récurrence avec première occurrence
+final recurring = await recurringService.create(
+  accountId: 'account-uuid',
+  categoryId: 'category-uuid',
+  amount: 9.99,
+  note: 'Netflix',
+  startDate: DateTime.now(),
+);
+await generatorService.generateFirstOccurrence(recurring);
+
+// Récupérer toutes les récurrences avec détails
+final recurrings = await recurringService.getAllWithDetails();
+
+// Désactiver une récurrence
+await recurringService.setActive(id, false);
 ```
 
 ### Réglages (Settings)
@@ -604,11 +676,33 @@ dart run build_runner watch --delete-conflicting-outputs
 | `user_id` | UUID (FK) | Référence auth.users |
 | `account_id` | UUID (FK) | Référence accounts |
 | `category_id` | UUID (FK) | Référence categories |
-| `amount` | DECIMAL(12,2) | Montant (toujours positif) |
+| `recurring_id` | UUID (FK) | Référence recurring_transactions (nullable) |
+| `amount` | TEXT | Montant (chiffré si Vault actif, sinon string) |
 | `date` | TIMESTAMPTZ | Date de la transaction |
-| `note` | TEXT | Note optionnelle |
-| `is_recurring` | BOOL | Transaction récurrente |
+| `note` | TEXT | Note optionnelle (chiffré si Vault actif) |
+| `is_encrypted` | BOOL | Indique si les données sont chiffrées |
 | `sync_status` | TEXT | `pending`, `synced` |
+| `created_at` | TIMESTAMPTZ | Date de création |
+| `updated_at` | TIMESTAMPTZ | Date de modification |
+
+**Note :** Une transaction est considérée comme récurrente si `recurring_id` est non-null (`isRecurring` est un getter calculé).
+
+#### Table `recurring_transactions`
+
+Table pour les paiements récurrents (abonnements, factures mensuelles).
+
+| Colonne | Type | Description |
+|---------|------|-------------|
+| `id` | UUID (PK) | Généré automatiquement |
+| `user_id` | UUID (FK) | Référence auth.users |
+| `account_id` | UUID (FK) | Référence accounts |
+| `category_id` | UUID (FK) | Référence categories |
+| `amount` | DECIMAL(12,2) | Montant de chaque occurrence |
+| `note` | TEXT | Note optionnelle |
+| `start_date` | TIMESTAMPTZ | Date de début de la récurrence |
+| `end_date` | TIMESTAMPTZ | Date de fin (nullable) |
+| `last_generated_date` | TIMESTAMPTZ | Date de la dernière occurrence générée |
+| `is_active` | BOOL | Récurrence active ou suspendue |
 | `created_at` | TIMESTAMPTZ | Date de création |
 | `updated_at` | TIMESTAMPTZ | Date de modification |
 
@@ -675,7 +769,11 @@ CREATE POLICY "Users can delete own budgets" ON user_budgets
 | `idx_transactions_user_id` | transactions | `user_id` | Filtrage par utilisateur |
 | `idx_transactions_account_id` | transactions | `account_id` | JOIN avec accounts |
 | `idx_transactions_category_id` | transactions | `category_id` | JOIN avec categories |
+| `idx_transactions_recurring_id` | transactions | `recurring_id` | JOIN avec recurring_transactions |
 | `idx_transactions_date` | transactions | `date` | Filtrage par période |
+| `idx_recurring_user_id` | recurring_transactions | `user_id` | Filtrage par utilisateur |
+| `idx_recurring_account_id` | recurring_transactions | `account_id` | JOIN avec accounts |
+| `idx_recurring_category_id` | recurring_transactions | `category_id` | JOIN avec categories |
 | `idx_user_budgets_user_id` | user_budgets | `user_id` | Filtrage par utilisateur |
 | `idx_user_budgets_category_id` | user_budgets | `category_id` | JOIN avec categories |
 
@@ -787,6 +885,49 @@ CREATE POLICY "Users can update own budgets" ON user_budgets
 
 CREATE POLICY "Users can delete own budgets" ON user_budgets
   FOR DELETE USING (auth.uid() = user_id);
+```
+
+**Exemple - Ajouter la table recurring_transactions :**
+
+```sql
+CREATE TABLE recurring_transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  amount DECIMAL(12, 2) NOT NULL,
+  note TEXT,
+  start_date TIMESTAMPTZ NOT NULL,
+  end_date TIMESTAMPTZ,
+  last_generated_date TIMESTAMPTZ,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Index
+CREATE INDEX idx_recurring_user_id ON recurring_transactions(user_id);
+CREATE INDEX idx_recurring_account_id ON recurring_transactions(account_id);
+CREATE INDEX idx_recurring_category_id ON recurring_transactions(category_id);
+
+-- RLS
+ALTER TABLE recurring_transactions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own recurrings" ON recurring_transactions
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create own recurrings" ON recurring_transactions
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own recurrings" ON recurring_transactions
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own recurrings" ON recurring_transactions
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- Ajouter recurring_id à transactions
+ALTER TABLE transactions ADD COLUMN recurring_id UUID REFERENCES recurring_transactions(id);
+CREATE INDEX idx_transactions_recurring_id ON transactions(recurring_id);
 ```
 
 ## Debug

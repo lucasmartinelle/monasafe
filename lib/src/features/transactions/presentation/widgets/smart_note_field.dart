@@ -132,13 +132,12 @@ class _SmartNoteFieldState extends ConsumerState<SmartNoteField> {
   }
 
   void _onSuggestionSelected(TransactionWithDetails suggestion) {
-    // Apply the suggestion
+    // Always apply full suggestion (category, amount, note) to provider
+    ref.read(transactionFormNotifierProvider.notifier).applySuggestion(suggestion);
+
+    // Also notify via callback if provided
     if (widget.onChanged != null) {
-      // In standalone mode, just update the text and call the callback
       widget.onChanged!(suggestion.transaction.note ?? '');
-    } else {
-      // In provider mode, apply full suggestion
-      ref.read(transactionFormNotifierProvider.notifier).applySuggestion(suggestion);
     }
 
     // Update the text field

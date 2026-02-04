@@ -13,6 +13,7 @@ class TransactionFormState {
     this.note = '',
     this.date,
     this.isRecurring = false,
+    this.isLinkedToRecurrence = false,
     this.selectedAccountId,
     this.isSubmitting = false,
     this.isDeleting = false,
@@ -29,6 +30,10 @@ class TransactionFormState {
   final String note;
   final DateTime? date;
   final bool isRecurring;
+
+  /// Indique si la transaction est liee a une recurrence existante.
+  /// Si true, le toggle de recurrence est desactive en mode edition.
+  final bool isLinkedToRecurrence;
   final String? selectedAccountId;
   final bool isSubmitting;
   final bool isDeleting;
@@ -65,6 +70,7 @@ class TransactionFormState {
     String? note,
     DateTime? date,
     bool? isRecurring,
+    bool? isLinkedToRecurrence,
     String? selectedAccountId,
     bool? isSubmitting,
     bool? isDeleting,
@@ -80,6 +86,7 @@ class TransactionFormState {
       note: note ?? this.note,
       date: date ?? this.date,
       isRecurring: isRecurring ?? this.isRecurring,
+      isLinkedToRecurrence: isLinkedToRecurrence ?? this.isLinkedToRecurrence,
       selectedAccountId: selectedAccountId ?? this.selectedAccountId,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isDeleting: isDeleting ?? this.isDeleting,

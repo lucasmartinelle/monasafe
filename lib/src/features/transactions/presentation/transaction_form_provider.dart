@@ -30,6 +30,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
 
   /// Load an existing transaction for editing
   void loadTransaction(TransactionWithDetails transaction) {
+    final isLinked = transaction.transaction.recurringId != null;
     state = TransactionFormState(
       transactionId: transaction.transaction.id,
       type: transaction.category.type,
@@ -38,6 +39,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
       note: transaction.transaction.note ?? '',
       date: transaction.transaction.date,
       isRecurring: transaction.transaction.isRecurring,
+      isLinkedToRecurrence: isLinked,
       selectedAccountId: transaction.account.id,
     );
   }
@@ -110,6 +112,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
   // ============ Actions ============
 
   /// Create a new transaction
+  /// Si isRecurring est true, cree une RecurringTransaction + premiere occurrence
   Future<bool> create() async {
     if (!state.isValid) {
       state = state.copyWith(error: 'Veuillez remplir tous les champs requis');
@@ -119,31 +122,63 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
     state = state.copyWith(isSubmitting: true, clearError: true);
 
     try {
-      final repository = ref.read(transactionRepositoryProvider);
-      final result = await repository.createTransaction(
-        accountId: state.selectedAccountId!,
-        categoryId: state.categoryId!,
-        amount: state.amount,
-        date: state.effectiveDate,
-        note: state.note.isEmpty ? null : state.note,
-        isRecurring: state.isRecurring,
-      );
-
-      return result.fold(
-        (error) {
-          state = state.copyWith(isSubmitting: false, error: error.message);
-          return false;
-        },
-        (_) {
-          state = state.copyWith(isSubmitting: false);
-          _triggerRefresh();
-          return true;
-        },
-      );
+      if (state.isRecurring) {
+        // Creer une transaction recurrente
+        return await _createRecurring();
+      } else {
+        // Creer une transaction normale
+        return await _createTransaction();
+      }
     } catch (e) {
       state = state.copyWith(isSubmitting: false, error: 'Erreur: $e');
       return false;
     }
+  }
+
+  /// Cree une transaction normale
+  Future<bool> _createTransaction() async {
+    final repository = ref.read(transactionRepositoryProvider);
+    final result = await repository.createTransaction(
+      accountId: state.selectedAccountId!,
+      categoryId: state.categoryId!,
+      amount: state.amount,
+      date: state.effectiveDate,
+      note: state.note.isEmpty ? null : state.note,
+    );
+
+    return result.fold(
+      (error) {
+        state = state.copyWith(isSubmitting: false, error: error.message);
+        return false;
+      },
+      (_) {
+        state = state.copyWith(isSubmitting: false);
+        _triggerRefresh();
+        return true;
+      },
+    );
+  }
+
+  /// Cree une RecurringTransaction + premiere occurrence
+  Future<bool> _createRecurring() async {
+    final recurringService = ref.read(recurringTransactionServiceProvider);
+    final generatorService = ref.read(recurrenceGeneratorServiceProvider);
+
+    // 1. Creer la recurrence
+    final recurring = await recurringService.create(
+      accountId: state.selectedAccountId!,
+      categoryId: state.categoryId!,
+      amount: state.amount,
+      note: state.note.isEmpty ? null : state.note,
+      startDate: state.effectiveDate,
+    );
+
+    // 2. Generer la premiere occurrence
+    await generatorService.generateFirstOccurrence(recurring);
+
+    state = state.copyWith(isSubmitting: false);
+    _triggerRefresh();
+    return true;
   }
 
   /// Update an existing transaction
@@ -164,7 +199,6 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
         amount: state.amount,
         date: state.effectiveDate,
         note: state.note.isEmpty ? null : state.note,
-        isRecurring: state.isRecurring,
       );
 
       return result.fold(

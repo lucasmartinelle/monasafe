@@ -14,7 +14,8 @@
       "Bash(tree:*)",
       "Bash(grep:*)",
       "Bash(find:*)",
-      "Bash(dart analyze:*)"
+      "Bash(dart analyze:*)",
+      "Bash(ls:*)"
     ]
   }
 }

@@ -4,6 +4,7 @@ import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/features/app_shell/presentation/app_navigation_bar.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/dashboard_providers.dart';
 import 'package:simpleflow/src/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:simpleflow/src/features/recurring/recurring.dart';
 import 'package:simpleflow/src/features/settings/presentation/screens/settings_screen.dart';
 import 'package:simpleflow/src/features/stats/presentation/screens/stats_screen.dart';
 import 'package:simpleflow/src/features/transactions/presentation/screens/add_transaction_screen.dart';
@@ -24,6 +25,7 @@ class _AppShellState extends ConsumerState<AppShell> {
   final List<Widget> _screens = const [
     DashboardScreen(),
     StatsScreen(),
+    RecurringListScreen(),
     SettingsScreen(),
   ];
 

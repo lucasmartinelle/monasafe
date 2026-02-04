@@ -51,16 +51,24 @@ enum BudgetStatus {
 @immutable
 class BudgetProgress {
   const BudgetProgress({
+    required this.budgetId,
     required this.category,
     required this.budgetLimit,
+    required this.monthlyBudgetLimit,
     required this.currentSpending,
   });
+
+  /// L'ID du budget (UserBudget).
+  final String budgetId;
 
   /// La catégorie concernée.
   final Category category;
 
-  /// Limite de budget définie.
+  /// Limite de budget pour la période sélectionnée (peut être multipliée).
   final double budgetLimit;
+
+  /// Limite de budget mensuelle originale (non multipliée).
+  final double monthlyBudgetLimit;
 
   /// Dépenses actuelles pour la période.
   final double currentSpending;
