@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:simpleflow/src/core/config/supabase_config.dart';
@@ -15,10 +16,16 @@ import 'package:simpleflow/src/features/vault/vault.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  // Garder le splash natif affiché pendant l'initialisation
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // Charger les variables d'environnement en premier
   await dotenv.load();
+
+  // Timer pour garantir 2 secondes minimum de splash
+  final splashTimer = Future.delayed(const Duration(seconds: 2));
 
   await Future.wait([
     initializeDateFormatting('fr_FR'),
@@ -30,6 +37,12 @@ void main() async {
 
   // Injecter les données par défaut si nécessaire (utilise la secret key)
   await SeedService().runAllSeeds();
+
+  // Attendre que les 2 secondes soient écoulées
+  await splashTimer;
+
+  // Retirer le splash natif
+  FlutterNativeSplash.remove();
 
   runApp(
     const ProviderScope(
@@ -171,13 +184,13 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
 
   @override
   Widget build(BuildContext context) {
-    final onboardingCompleted = ref.watch(onboardingCompletedStreamProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
     final backgroundColor =
         isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
     final textColor =
         isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
+
+    final onboardingCompleted = ref.watch(onboardingCompletedStreamProvider);
 
     // Afficher un loader pendant la complétion de l'onboarding pending
     if (_isCompletingPendingOnboarding) {

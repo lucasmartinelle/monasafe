@@ -23,14 +23,28 @@ class AccountService {
   }
 
   /// Stream de tous les comptes (réactif via Supabase Realtime)
+  /// Triés par type (checking en premier) puis par nom
   Stream<List<Account>> watchAllAccounts() {
     return _client
         .from('accounts')
         .stream(primaryKey: ['id'])
         .eq('user_id', _userId)
         .order('name')
-        .map((data) =>
-            data.map(Account.fromJson).toList());
+        .map((data) {
+          final accounts = data.map(Account.fromJson).toList();
+          // Trier : checking en premier, puis savings, puis cash
+          accounts.sort((a, b) {
+            const typeOrder = {
+              AccountType.checking: 0,
+              AccountType.savings: 1,
+              AccountType.cash: 2,
+            };
+            final typeCompare = typeOrder[a.type]!.compareTo(typeOrder[b.type]!);
+            if (typeCompare != 0) return typeCompare;
+            return a.name.compareTo(b.name);
+          });
+          return accounts;
+        });
   }
 
   /// Récupère un compte par son ID

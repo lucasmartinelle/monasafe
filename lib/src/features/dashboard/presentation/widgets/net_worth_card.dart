@@ -21,7 +21,7 @@ class NetWorthCard extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Patrimoine net',
+            'Solde total',
             style: AppTextStyles.labelMedium(color: context.textSecondary),
           ),
           const SizedBox(height: 8),

@@ -79,7 +79,7 @@ class _SetupAccountScreenState extends ConsumerState<SetupAccountScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Entrez votre solde initial pour commencer le suivi',
+                    'Sélectionnez votre premier compte et saisissez son solde. Pas d’inquiétude : vous pourrez ajouter un second compte par la suite !',
                     style: AppTextStyles.bodySmall(color: context.textSecondary),
                     textAlign: TextAlign.center,
                   ),

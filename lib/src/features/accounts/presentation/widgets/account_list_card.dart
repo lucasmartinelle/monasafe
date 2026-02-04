@@ -84,7 +84,7 @@ class AccountListCard extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: isDark ? 0.2 : 0.1),
+          color: AppColors.primary.withValues(alpha: isDark ? 0.3 : 0.2),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(

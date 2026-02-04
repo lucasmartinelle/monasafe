@@ -108,17 +108,6 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   SettingsSectionTile(
-                    icon: Icons.lightbulb_outline,
-                    title: 'Idée portée par',
-                    subtitle: 'Joshua MARTINELLE',
-                    onTap: () => _launchUrl('https://github.com/JoshuaMart/'),
-                  ),
-                  Divider(
-                    height: 1,
-                    indent: 70,
-                    color: isDark ? AppColors.dividerDark : AppColors.dividerLight,
-                  ),
-                  SettingsSectionTile(
                     icon: Icons.code,
                     title: 'Développé par',
                     subtitle: 'Lucas MARTINELLE',

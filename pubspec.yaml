@@ -59,6 +59,9 @@ dev_dependencies:
   # App Icons
   flutter_launcher_icons: ^0.14.3
 
+  # Native Splash Screen
+  flutter_native_splash: ^2.4.4
+
   drift: any
 flutter:
   uses-material-design: true
@@ -67,6 +70,7 @@ flutter:
     - .env
     - assets/fonts/
     - assets/icons/
+    - assets/images/
 
   fonts:
     - family: Inter
@@ -89,3 +93,15 @@ flutter:
           weight: 600
         - asset: assets/fonts/Poppins-Bold.ttf
           weight: 700
+
+# Native Splash Screen Configuration
+flutter_native_splash:
+  color: "#E8E8E8"
+  color_dark: "#121212"
+  image: assets/images/full_logo.png
+  image_dark: assets/images/full_logo.png
+  android_12:
+    color: "#E8E8E8"
+    color_dark: "#121212"
+    image: assets/images/full_logo.png
+    image_dark: assets/images/full_logo.png
