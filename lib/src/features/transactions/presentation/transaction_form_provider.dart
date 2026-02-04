@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/data/providers/database_providers.dart';
+import 'package:simpleflow/src/features/recurring/presentation/recurring_providers.dart';
 import 'package:simpleflow/src/features/transactions/presentation/transaction_form_state.dart';
 
 part 'transaction_form_provider.g.dart';
@@ -178,7 +179,15 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
 
     state = state.copyWith(isSubmitting: false);
     _triggerRefresh();
+    _refreshRecurringProviders();
     return true;
+  }
+
+  /// Rafraîchit les providers de récurrence
+  void _refreshRecurringProviders() {
+    ref.invalidate(recurringWithDetailsProvider);
+    ref.invalidate(activeRecurringWithDetailsProvider);
+    ref.invalidate(activeRecurringCountProvider);
   }
 
   /// Update an existing transaction

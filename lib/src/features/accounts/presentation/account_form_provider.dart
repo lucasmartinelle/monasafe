@@ -85,6 +85,8 @@ class AccountFormNotifier extends _$AccountFormNotifier {
         },
         (account) {
           state = state.copyWith(isSubmitting: false);
+          // Déclencher le rafraîchissement des comptes
+          ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
           return true;
         },
       );
