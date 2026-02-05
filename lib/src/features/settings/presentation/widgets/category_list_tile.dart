@@ -9,16 +9,33 @@ import 'package:simpleflow/src/data/models/models.dart';
 /// Tuile affichant une catégorie avec actions.
 class CategoryListTile extends StatelessWidget {
   const CategoryListTile({
-    required this.category, super.key,
+    required this.category,
+    super.key,
     this.onTap,
     this.onEdit,
     this.onDelete,
+    this.hasTransactions = false,
   });
 
   final Category category;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+
+  /// Indique si la catégorie a des transactions liées.
+  /// Si true, le bouton supprimer sera désactivé.
+  final bool hasTransactions;
+
+  void _showCannotDeleteMessage(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Impossible de supprimer une catégorie liée à des transactions',
+        ),
+        backgroundColor: AppColors.warning,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,12 +90,16 @@ class CategoryListTile extends StatelessWidget {
                   ),
                 if (onDelete != null)
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.delete_outline,
-                      color: AppColors.error,
+                      color: hasTransactions
+                          ? subtitleColor.withValues(alpha: 0.4)
+                          : AppColors.error,
                       size: 20,
                     ),
-                    onPressed: onDelete,
+                    onPressed: hasTransactions
+                        ? () => _showCannotDeleteMessage(context)
+                        : onDelete,
                     tooltip: 'Supprimer',
                   ),
               ] else

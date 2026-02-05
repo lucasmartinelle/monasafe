@@ -245,6 +245,26 @@ final recurrenceGeneratorServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef RecurrenceGeneratorServiceRef = ProviderRef<RecurrenceGeneratorService>;
+String _$dataManagementServiceHash() =>
+    r'167374076e5a183be5824e71f6b35b7e054905a0';
+
+/// Provider pour le service de gestion des données (suppression)
+///
+/// Copied from [dataManagementService].
+@ProviderFor(dataManagementService)
+final dataManagementServiceProvider = Provider<DataManagementService>.internal(
+  dataManagementService,
+  name: r'dataManagementServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$dataManagementServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef DataManagementServiceRef = ProviderRef<DataManagementService>;
 String _$accountRepositoryHash() => r'1c9849d93b8862cba52d2c333ec3d38bb2650022';
 
 /// Provider pour le repository des comptes

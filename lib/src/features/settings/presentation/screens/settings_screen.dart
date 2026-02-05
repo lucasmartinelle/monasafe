@@ -105,8 +105,7 @@ class SettingsScreen extends ConsumerWidget {
                     SettingsSectionTile(
                       icon: Icons.storage_outlined,
                       title: 'Données',
-                      subtitle: 'Bientôt disponible',
-                      enabled: false,
+                      subtitle: 'Gérer vos données',
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute<void>(

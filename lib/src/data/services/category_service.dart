@@ -139,4 +139,13 @@ class CategoryService {
         .eq('user_id', _userId)
         .eq('is_default', false);
   }
+
+  /// Supprime toutes les catégories personnalisées de l'utilisateur
+  Future<void> deleteAllCustomCategories() async {
+    await _client
+        .from('categories')
+        .delete()
+        .eq('user_id', _userId)
+        .eq('is_default', false);
+  }
 }

@@ -113,6 +113,18 @@ RecurrenceGeneratorService recurrenceGeneratorService(Ref ref) {
   );
 }
 
+/// Provider pour le service de gestion des données (suppression)
+@Riverpod(keepAlive: true)
+DataManagementService dataManagementService(Ref ref) {
+  return DataManagementService(
+    transactionService: ref.watch(transactionServiceProvider),
+    recurringTransactionService: ref.watch(recurringTransactionServiceProvider),
+    budgetService: ref.watch(budgetServiceProvider),
+    accountService: ref.watch(accountServiceProvider),
+    categoryService: ref.watch(categoryServiceProvider),
+  );
+}
+
 // ==================== REPOSITORIES ====================
 
 /// Provider pour le repository des comptes

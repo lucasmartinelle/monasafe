@@ -299,4 +299,22 @@ class RecurringTransactionService {
         .eq('id', id)
         .eq('user_id', _userId);
   }
+
+  /// Supprime toutes les recurrences de l'utilisateur.
+  ///
+  /// Les transactions liees sont conservees mais leur recurring_id est mis a null.
+  Future<void> deleteAll() async {
+    // 1. Detacher toutes les transactions liees
+    await _client
+        .from('transactions')
+        .update({'recurring_id': null})
+        .eq('user_id', _userId)
+        .not('recurring_id', 'is', null);
+
+    // 2. Supprimer toutes les recurrences
+    await _client
+        .from('recurring_transactions')
+        .delete()
+        .eq('user_id', _userId);
+  }
 }

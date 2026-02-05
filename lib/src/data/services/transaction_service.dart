@@ -323,6 +323,11 @@ class TransactionService {
         .eq('user_id', _userId);
   }
 
+  /// Supprime toutes les transactions de l'utilisateur
+  Future<void> deleteAllTransactions() async {
+    await _client.from('transactions').delete().eq('user_id', _userId);
+  }
+
   // ==================== CHIFFREMENT/DÉCHIFFREMENT EN MASSE ====================
 
   /// Chiffre toutes les transactions non chiffrées.
@@ -445,6 +450,18 @@ class TransactionService {
         .select()
         .eq('user_id', _userId)
         .eq('account_id', accountId)
+        .count(CountOption.exact);
+
+    return response.count;
+  }
+
+  /// Compte les transactions par catégorie
+  Future<int> countTransactionsByCategory(String categoryId) async {
+    final response = await _client
+        .from('transactions')
+        .select()
+        .eq('user_id', _userId)
+        .eq('category_id', categoryId)
         .count(CountOption.exact);
 
     return response.count;

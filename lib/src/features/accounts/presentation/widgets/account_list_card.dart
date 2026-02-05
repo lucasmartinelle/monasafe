@@ -17,10 +17,12 @@ class AccountListCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final subtitleColor =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+    final textColor = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimaryLight;
+    final subtitleColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
 
     final accountsAsync = ref.watch(accountsStreamProvider);
 
@@ -32,10 +34,7 @@ class AccountListCard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Mes comptes',
-                style: AppTextStyles.h4(color: textColor),
-              ),
+              Text('Mes comptes', style: AppTextStyles.h4(color: textColor)),
               accountsAsync.when(
                 data: (accounts) => _buildAddButton(context, accounts, isDark),
                 loading: () => const SizedBox.shrink(),
@@ -90,11 +89,7 @@ class AccountListCard extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.add,
-              size: 16,
-              color: AppColors.primary,
-            ),
+            const Icon(Icons.add, size: 16, color: AppColors.primary),
             const SizedBox(width: 4),
             Text(
               'Ajouter',
@@ -142,34 +137,34 @@ class AccountListCard extends ConsumerWidget {
     return InkWell(
       onTap: () => AddAccountScreen.show(context),
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: isDark ? 0.1 : 0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.2),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: isDark ? 0.1 : 0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
           ),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              Icons.account_balance_wallet_outlined,
-              size: 48,
-              color: AppColors.primary.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Aucun compte',
-              style: AppTextStyles.labelMedium(color: subtitleColor),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Appuyez pour créer votre premier compte',
-              style: AppTextStyles.caption(color: subtitleColor),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          child: Column(
+            children: [
+              Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 48,
+                color: AppColors.primary.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Aucun compte',
+                style: AppTextStyles.labelMedium(color: subtitleColor),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Appuyez pour créer votre premier compte',
+                style: AppTextStyles.caption(color: subtitleColor),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

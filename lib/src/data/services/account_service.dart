@@ -137,6 +137,11 @@ class AccountService {
         .eq('user_id', _userId);
   }
 
+  /// Supprime tous les comptes de l'utilisateur
+  Future<void> deleteAllAccounts() async {
+    await _client.from('accounts').delete().eq('user_id', _userId);
+  }
+
   /// Compte le nombre total de comptes
   Future<int> countAccounts() async {
     final response = await _client

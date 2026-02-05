@@ -22,6 +22,20 @@ class CategoriesScreen extends ConsumerStatefulWidget {
 class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
   CategoryType _selectedType = CategoryType.expense;
 
+  /// Cache du nombre de transactions par catégorie.
+  final Map<String, int> _transactionCounts = {};
+
+  /// Charge le nombre de transactions pour une catégorie.
+  Future<int> _getTransactionCount(String categoryId) async {
+    if (_transactionCounts.containsKey(categoryId)) {
+      return _transactionCounts[categoryId]!;
+    }
+    final service = ref.read(transactionServiceProvider);
+    final count = await service.countTransactionsByCategory(categoryId);
+    _transactionCounts[categoryId] = count;
+    return count;
+  }
+
   Future<void> _showDeleteConfirmation(Category category) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -48,10 +62,11 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
     if ((confirmed ?? false) && mounted) {
       final repository = ref.read(categoryRepositoryProvider);
       await repository.deleteCategory(category.id);
-      ref.invalidate(categoriesStreamProvider);
-      ref.invalidate(expenseCategoriesStreamProvider);
-      ref.invalidate(incomeCategoriesStreamProvider);
-      ref.invalidate(budgetProgressStreamProvider);
+      ref
+        ..invalidate(categoriesStreamProvider)
+        ..invalidate(expenseCategoriesStreamProvider)
+        ..invalidate(incomeCategoriesStreamProvider)
+        ..invalidate(budgetProgressStreamProvider);
     }
   }
 
@@ -117,21 +132,28 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
                         color: cardColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: CategoryListTile(
-                        category: category,
-                        onEdit: category.isDefault
-                            ? null
-                            : () async {
-                                await CategoryFormModal.show(
-                                  context,
+                      child: category.isDefault
+                          ? CategoryListTile(category: category)
+                          : FutureBuilder<int>(
+                              future: _getTransactionCount(category.id),
+                              builder: (context, snapshot) {
+                                final hasTransactions =
+                                    (snapshot.data ?? 0) > 0;
+                                return CategoryListTile(
                                   category: category,
-                                  categoryType: _selectedType,
+                                  hasTransactions: hasTransactions,
+                                  onEdit: () async {
+                                    await CategoryFormModal.show(
+                                      context,
+                                      category: category,
+                                      categoryType: _selectedType,
+                                    );
+                                  },
+                                  onDelete: () =>
+                                      _showDeleteConfirmation(category),
                                 );
                               },
-                        onDelete: category.isDefault
-                            ? null
-                            : () => _showDeleteConfirmation(category),
-                      ),
+                            ),
                     );
                   },
                 );

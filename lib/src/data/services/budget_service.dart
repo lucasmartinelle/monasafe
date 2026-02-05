@@ -112,4 +112,9 @@ class BudgetService {
         .eq('id', budgetId)
         .eq('user_id', _userId);
   }
+
+  /// Supprime tous les budgets de l'utilisateur
+  Future<void> deleteAllBudgets() async {
+    await _client.from('user_budgets').delete().eq('user_id', _userId);
+  }
 }
