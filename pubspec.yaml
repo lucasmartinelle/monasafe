@@ -99,8 +99,9 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/logo.png"
-  adaptive_icon_background: "#32a88d"
+  adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/images/logo.png"
+  adaptive_icon_foreground_inset: 24
 
 # Native Splash Screen Configuration
 flutter_native_splash:
