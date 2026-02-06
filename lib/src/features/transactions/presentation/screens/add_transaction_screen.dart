@@ -25,7 +25,7 @@ class AddTransactionScreen extends ConsumerWidget {
       primaryButtonLabel: 'Confirmer la transaction',
       onPrimaryAction: () =>
           ref.read(transactionFormNotifierProvider.notifier).create(),
-      onInit: () => ref.read(transactionFormNotifierProvider.notifier).reset(),
+      onInit: () => ref.read(transactionFormNotifierProvider.notifier).initializeIfNeeded(),
     );
   }
 }

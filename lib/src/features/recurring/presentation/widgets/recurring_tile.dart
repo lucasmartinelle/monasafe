@@ -82,7 +82,9 @@ class RecurringTile extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Text(
-                            category?.name ?? 'Categorie supprimee',
+                            (rec.note != null && rec.note!.isNotEmpty)
+                                ? rec.note!
+                                : (category?.name ?? 'Categorie supprimee'),
                             style: AppTextStyles.bodyLarge(
                               color: isActive ? textColor : disabledColor,
                             ),

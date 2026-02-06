@@ -94,6 +94,14 @@ flutter:
         - asset: assets/fonts/Poppins-Bold.ttf
           weight: 700
 
+# Launcher Icons Configuration
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
+  adaptive_icon_background: "#32a88d"
+  adaptive_icon_foreground: "assets/images/logo.png"
+
 # Native Splash Screen Configuration
 flutter_native_splash:
   color: "#E8E8E8"

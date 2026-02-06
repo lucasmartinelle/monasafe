@@ -9,15 +9,20 @@ import 'package:simpleflow/src/features/transactions/presentation/transaction_fo
 part 'transaction_form_provider.g.dart';
 
 /// Unified notifier for transaction forms (add/edit).
-@riverpod
+@Riverpod(keepAlive: true)
 class TransactionFormNotifier extends _$TransactionFormNotifier {
   @override
-  TransactionFormState build() {
-    final accounts = ref.watch(accountsStreamProvider).valueOrNull;
+  TransactionFormState build() => const TransactionFormState();
+
+  /// Initialize default account only if not already set.
+  void initializeIfNeeded() {
+    if (state.selectedAccountId != null) return;
+    final accounts = ref.read(accountsStreamProvider).valueOrNull;
     final defaultAccountId =
         accounts?.isNotEmpty ?? false ? accounts!.first.id : null;
-
-    return TransactionFormState(selectedAccountId: defaultAccountId);
+    if (defaultAccountId != null) {
+      state = state.copyWith(selectedAccountId: defaultAccountId);
+    }
   }
 
   /// Reset form to initial state (for adding new transaction)

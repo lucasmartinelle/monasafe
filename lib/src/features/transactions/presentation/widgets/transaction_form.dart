@@ -141,22 +141,33 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
     final mediaQuery = MediaQuery.of(context);
     final keyboardHeight = mediaQuery.viewInsets.bottom;
 
-    return Container(
-      height: mediaQuery.size.height * 0.92,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        children: [
-          // Drag handle
-          _DragHandle(isDark: isDark),
+    return PopScope(
+      canPop: !_showKeypad && keyboardHeight == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          if (_showKeypad) {
+            _hideKeypad();
+          } else {
+            FocusScope.of(context).unfocus();
+          }
+        }
+      },
+      child: Container(
+        height: mediaQuery.size.height * 0.92,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            // Drag handle
+            _DragHandle(isDark: isDark),
 
-          // Header
-          _Header(title: widget.title, isDark: isDark),
+            // Header
+            _Header(title: widget.title, isDark: isDark),
 
-          // Content
-          Expanded(
+            // Content
+            Expanded(
             child: GestureDetector(
               onTap: _hideKeypad,
               behavior: HitTestBehavior.translucent,
@@ -189,7 +200,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
                     const SizedBox(height: 16),
 
                     // Date selector
-                    const _FormDateSelector(),
+                    _FormDateSelector(onInteraction: _hideKeypad),
 
                     const SizedBox(height: 16),
 
@@ -205,7 +216,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
                     const SizedBox(height: 8),
 
                     // Category grid
-                    const _FormCategoryGrid(),
+                    _FormCategoryGrid(onInteraction: _hideKeypad),
 
                     const SizedBox(height: 16),
 
@@ -222,7 +233,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
                     const SizedBox(height: 16),
 
                     // Recurrence toggle
-                    const _FormRecurrenceToggle(),
+                    _FormRecurrenceToggle(onInteraction: _hideKeypad),
 
                     const SizedBox(height: 16),
 
@@ -262,6 +273,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
             ),
           ],
         ],
+      ),
       ),
     );
   }
@@ -591,7 +603,9 @@ class _FormAccountDropdown extends ConsumerWidget {
 }
 
 class _FormDateSelector extends ConsumerWidget {
-  const _FormDateSelector();
+  const _FormDateSelector({this.onInteraction});
+
+  final VoidCallback? onInteraction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -607,6 +621,8 @@ class _FormDateSelector extends ConsumerWidget {
 
     return InkWell(
       onTap: () async {
+        onInteraction?.call();
+        FocusScope.of(context).unfocus();
         final picked = await showDatePicker(
           context: context,
           initialDate: state.effectiveDate,
@@ -659,7 +675,9 @@ class _FormDateSelector extends ConsumerWidget {
 }
 
 class _FormCategoryGrid extends ConsumerWidget {
-  const _FormCategoryGrid();
+  const _FormCategoryGrid({this.onInteraction});
+
+  final VoidCallback? onInteraction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -674,6 +692,8 @@ class _FormCategoryGrid extends ConsumerWidget {
           categories: categories,
           selectedCategoryId: state.categoryId,
           onCategorySelected: (categoryId) {
+            onInteraction?.call();
+            FocusScope.of(context).unfocus();
             ref
                 .read(transactionFormNotifierProvider.notifier)
                 .setCategory(categoryId);
@@ -707,7 +727,9 @@ class _FormSmartNoteField extends ConsumerWidget {
 }
 
 class _FormRecurrenceToggle extends ConsumerWidget {
-  const _FormRecurrenceToggle();
+  const _FormRecurrenceToggle({this.onInteraction});
+
+  final VoidCallback? onInteraction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -716,6 +738,8 @@ class _FormRecurrenceToggle extends ConsumerWidget {
     return RecurrenceToggle(
       isRecurring: state.isRecurring,
       onChanged: (value) {
+        onInteraction?.call();
+        FocusScope.of(context).unfocus();
         ref.read(transactionFormNotifierProvider.notifier).setRecurring(value);
       },
     );

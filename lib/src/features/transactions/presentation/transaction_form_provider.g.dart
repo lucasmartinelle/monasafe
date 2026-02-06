@@ -177,17 +177,14 @@ class _NoteSuggestionsProviderElement
 }
 
 String _$transactionFormNotifierHash() =>
-    r'55415073014c14771b74932c1a122d78c94af298';
+    r'ad34ba5463a2c85002018b1daedd6683a4bb5771';
 
 /// Unified notifier for transaction forms (add/edit).
 ///
 /// Copied from [TransactionFormNotifier].
 @ProviderFor(TransactionFormNotifier)
 final transactionFormNotifierProvider =
-    AutoDisposeNotifierProvider<
-      TransactionFormNotifier,
-      TransactionFormState
-    >.internal(
+    NotifierProvider<TransactionFormNotifier, TransactionFormState>.internal(
       TransactionFormNotifier.new,
       name: r'transactionFormNotifierProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -197,6 +194,6 @@ final transactionFormNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$TransactionFormNotifier = AutoDisposeNotifier<TransactionFormState>;
+typedef _$TransactionFormNotifier = Notifier<TransactionFormState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

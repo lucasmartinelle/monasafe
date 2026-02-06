@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simpleflow/src/common_widgets/common_widgets.dart';
 import 'package:simpleflow/src/core/theme/app_colors.dart';
 import 'package:simpleflow/src/core/theme/app_text_styles.dart';
+import 'package:simpleflow/src/core/utils/currency_formatter.dart';
 import 'package:simpleflow/src/data/models/models.dart';
 import 'package:simpleflow/src/features/recurring/presentation/recurring_providers.dart';
 import 'package:simpleflow/src/features/recurring/presentation/widgets/recurring_detail_modal.dart';
@@ -71,6 +72,16 @@ class RecurringListScreen extends ConsumerWidget {
                     child: Column(
                       children: _buildTileList(context, active, cardColor, isDark),
                     ),
+                  ),
+                ],
+
+                // Totaux depenses/revenus (actives uniquement)
+                if (active.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _TotalsSection(
+                    active: active,
+                    cardColor: cardColor,
+                    isDark: isDark,
                   ),
                 ],
 
@@ -168,6 +179,77 @@ class RecurringListScreen extends ConsumerWidget {
     RecurringTransactionWithDetails recurring,
   ) async {
     await RecurringDetailModal.show(context, recurring);
+  }
+}
+
+/// Section affichant les totaux depenses et revenus des recurrences actives.
+class _TotalsSection extends StatelessWidget {
+  const _TotalsSection({
+    required this.active,
+    required this.cardColor,
+    required this.isDark,
+  });
+
+  final List<RecurringTransactionWithDetails> active;
+  final Color cardColor;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final secondaryColor =
+        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+
+    double totalExpenses = 0;
+    double totalIncome = 0;
+
+    for (final item in active) {
+      if (item.category?.type == CategoryType.expense) {
+        totalExpenses += item.recurring.amount;
+      } else if (item.category?.type == CategoryType.income) {
+        totalIncome += item.recurring.amount;
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total dépenses',
+                style: AppTextStyles.bodySmall(color: secondaryColor),
+              ),
+              Text(
+                CurrencyFormatter.format(totalExpenses),
+                style: AppTextStyles.bodySmall(color: AppColors.error)
+                    .copyWith(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total revenus',
+                style: AppTextStyles.bodySmall(color: secondaryColor),
+              ),
+              Text(
+                CurrencyFormatter.format(totalIncome),
+                style: AppTextStyles.bodySmall(color: AppColors.success)
+                    .copyWith(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 

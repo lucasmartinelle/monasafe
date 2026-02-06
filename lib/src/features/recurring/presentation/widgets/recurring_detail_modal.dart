@@ -43,10 +43,15 @@ class RecurringDetailModal extends ConsumerStatefulWidget {
 
 class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
   bool _showKeypad = false;
+  late final TextEditingController _noteController;
+  final FocusNode _noteFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _noteController = TextEditingController(
+      text: widget.recurring.recurring.note ?? '',
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref
           .read(recurringFormNotifierProvider.notifier)
@@ -66,6 +71,13 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
         _showKeypad = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    _noteFocusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _handleUpdate() async {
@@ -401,27 +413,56 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                         ),
                       ),
 
-                      // Note
-                      if (rec.note != null && rec.note!.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Text(
-                          'Note',
-                          style: AppTextStyles.labelMedium(color: secondaryColor),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: cardColor,
+                      // Note (editable)
+                      const SizedBox(height: 16),
+                      Text(
+                        'Note',
+                        style: AppTextStyles.labelMedium(color: secondaryColor),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _noteController,
+                        focusNode: _noteFocusNode,
+                        onChanged: (value) {
+                          ref
+                              .read(recurringFormNotifierProvider.notifier)
+                              .setNote(value);
+                        },
+                        style: AppTextStyles.bodyMedium(color: textColor),
+                        decoration: InputDecoration(
+                          hintText: 'Ajouter une note...',
+                          hintStyle: AppTextStyles.bodyMedium(
+                            color: isDark
+                                ? AppColors.textHintDark
+                                : AppColors.textHintLight,
+                          ),
+                          filled: true,
+                          fillColor: cardColor,
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: isDark
+                                  ? AppColors.dividerDark
+                                  : AppColors.dividerLight,
+                            ),
                           ),
-                          child: Text(
-                            rec.note!,
-                            style: AppTextStyles.bodyMedium(color: textColor),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: isDark
+                                  ? AppColors.dividerDark
+                                  : AppColors.dividerLight,
+                            ),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.all(12),
                         ),
-                      ],
+                      ),
 
                       const SizedBox(height: 16),
                     ],
