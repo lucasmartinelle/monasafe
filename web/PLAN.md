@@ -134,6 +134,9 @@ simpleflow-web/
 │   │   ├── CategoryIcon.vue
 │   │   ├── AccountTypeBadge.vue
 │   │   └── LoadingState.vue
+│   ├── onboarding/
+│   │   ├── AccountCard.vue
+│   │   ├── AccountForm.vue
 │   ├── dashboard/
 │   │   ├── NetWorthCard.vue
 │   │   ├── AccountListCard.vue
@@ -791,7 +794,7 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ---
 
-### Phase 3 : Onboarding & Comptes
+### Phase 3 : Onboarding & Comptes [FAIT]
 
 #### 3.1 Store settings (état pur)
 - [ ] Créer `stores/settings.ts`
