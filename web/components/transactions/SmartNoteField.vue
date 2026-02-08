@@ -1,9 +1,17 @@
 <script setup lang="ts">
+import type { Transaction, Category } from '~/types/models'
+
+interface NoteSuggestion {
+  note: string
+  transaction: Transaction
+  category: Category | null
+}
+
 interface Props {
   modelValue: string
   label?: string
   placeholder?: string
-  suggestions?: string[]
+  suggestions?: NoteSuggestion[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -14,7 +22,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
+  'select-suggestion': [suggestion: NoteSuggestion]
 }>()
+
+const { format: formatMoney } = useCurrency()
 
 const showSuggestions = ref(false)
 const inputRef = ref<HTMLInputElement | null>(null)
@@ -23,7 +34,7 @@ const filteredSuggestions = computed(() => {
   if (!props.modelValue || props.modelValue.length < 2) return []
   const query = props.modelValue.toLowerCase()
   return props.suggestions
-    .filter(s => s.toLowerCase().includes(query))
+    .filter(s => s.note.toLowerCase().includes(query))
     .slice(0, 5)
 })
 
@@ -33,8 +44,9 @@ function onInput(event: Event) {
   showSuggestions.value = true
 }
 
-function selectSuggestion(suggestion: string) {
-  emit('update:modelValue', suggestion)
+function selectSuggestion(suggestion: NoteSuggestion) {
+  emit('update:modelValue', suggestion.note)
+  emit('select-suggestion', suggestion)
   showSuggestions.value = false
   inputRef.value?.focus()
 }
@@ -69,12 +81,28 @@ function onBlur() {
     >
       <button
         v-for="suggestion in filteredSuggestions"
-        :key="suggestion"
+        :key="suggestion.transaction.id"
         type="button"
-        class="w-full px-4 py-2.5 text-left text-sm text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        class="w-full px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-3"
         @mousedown.prevent="selectSuggestion(suggestion)"
       >
-        {{ suggestion }}
+        <CommonCategoryIcon
+          v-if="suggestion.category"
+          :icon-key="suggestion.category.iconKey"
+          :color="suggestion.category.color"
+          size="sm"
+        />
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-gray-900 dark:text-white truncate">
+            {{ suggestion.note }}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            {{ suggestion.category?.name ?? '' }}
+          </p>
+        </div>
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 shrink-0">
+          {{ formatMoney(Math.abs(suggestion.transaction.amount)) }}
+        </p>
       </button>
     </div>
   </div>

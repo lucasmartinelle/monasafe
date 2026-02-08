@@ -13,17 +13,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Routes exclues du check onboarding
   const isExcluded =
     to.path === '/' ||
-    to.path.startsWith('/auth') ||
-    to.path.startsWith('/onboarding')
+    to.path.startsWith('/auth')
 
   if (isExcluded) return
+
+  const isOnboardingRoute = to.path.startsWith('/onboarding')
 
   // Cache du statut onboarding par userId (survit aux navigations)
   const onboardingStatus = useState<Record<string, boolean | null>>('onboarding-status', () => ({}))
   const uid = user.value.id
-
-  // Si déjà vérifié et complété, on passe
-  if (onboardingStatus.value[uid] === true) return
 
   // Si pas encore vérifié, on fetch
   if (onboardingStatus.value[uid] === undefined || onboardingStatus.value[uid] === null) {
@@ -43,7 +41,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
 
-  if (!onboardingStatus.value[uid]) {
+  const completed = onboardingStatus.value[uid] === true
+
+  // Onboarding déjà fait → bloquer l'accès à /onboarding
+  if (isOnboardingRoute && completed) {
+    return navigateTo('/dashboard')
+  }
+
+  // Onboarding pas fait → forcer l'accès à /onboarding
+  if (!isOnboardingRoute && !completed) {
     return navigateTo('/onboarding')
   }
 })

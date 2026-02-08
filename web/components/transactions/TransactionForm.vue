@@ -21,6 +21,7 @@ const emit = defineEmits<{
     amount: number
     date: string
     note: string | null
+    isRecurring: boolean
   }]
   cancel: []
 }>()
@@ -29,6 +30,10 @@ const isEditing = computed(() => !!props.transaction)
 
 const { sortedAccounts, fetchAccounts } = useAccounts()
 const { categoryById } = useCategories()
+
+// Recurring state
+const isRecurring = ref(false)
+const isLinkedToRecurrence = computed(() => !!props.transaction?.recurringId)
 
 // Form state
 const categoryType = ref<CategoryType>(CategoryType.EXPENSE)
@@ -41,11 +46,31 @@ const note = ref('')
 // Suggestions de notes (basées sur les transactions existantes)
 const { transactions } = useTransactions()
 const noteSuggestions = computed(() => {
-  const notes = transactions.value
-    .map(t => t.note)
-    .filter((n): n is string => !!n && n.trim().length > 0)
-  return [...new Set(notes)]
+  const seen = new Set<string>()
+  return transactions.value
+    .filter((t) => {
+      if (!t.note || t.note.trim().length === 0) return false
+      const key = t.note.toLowerCase()
+      if (seen.has(key)) return false
+      seen.add(key)
+      // Filtrer par type de catégorie correspondant
+      const cat = categoryById.value(t.categoryId)
+      return cat?.type === categoryType.value
+    })
+    .map((t) => ({
+      note: t.note!,
+      transaction: t,
+      category: categoryById.value(t.categoryId),
+    }))
 })
+
+function applySuggestion(suggestion: { note: string; transaction: { amount: number; categoryId: string }; category: { type: string } | null }) {
+  categoryId.value = suggestion.transaction.categoryId
+  amount.value = Math.abs(suggestion.transaction.amount)
+  if (suggestion.category) {
+    categoryType.value = suggestion.category.type as CategoryType
+  }
+}
 
 // Validation
 const schema = z.object({
@@ -64,6 +89,7 @@ function resetForm() {
   amount.value = 0
   date.value = toISODateString(new Date())
   note.value = ''
+  isRecurring.value = false
   errors.value = {}
 }
 
@@ -133,6 +159,7 @@ function handleSubmit() {
     amount: amount.value,
     date: date.value,
     note: note.value.trim() || null,
+    isRecurring: isRecurring.value,
   })
 }
 </script>
@@ -213,8 +240,8 @@ function handleSubmit() {
       />
     </div>
 
-    <!-- Date -->
-    <div class="w-full">
+    <!-- Date (masqué en édition) -->
+    <div v-if="!isEditing" class="w-full">
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
         Date
       </label>
@@ -235,7 +262,56 @@ function handleSubmit() {
     <TransactionsSmartNoteField
       v-model="note"
       :suggestions="noteSuggestions"
+      @select-suggestion="applySuggestion"
     />
+
+    <!-- Récurrence -->
+    <!-- Mode création : toggle actif -->
+    <div v-if="!isEditing" class="flex items-center justify-between py-3 px-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-900 dark:text-white">
+          {{ categoryType === CategoryType.EXPENSE ? 'Paiement récurrent' : 'Revenu récurrent' }}
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          Se répète chaque mois
+        </p>
+      </div>
+      <button
+        type="button"
+        :class="[
+          'relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ml-3',
+          isRecurring ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600',
+        ]"
+        @click="isRecurring = !isRecurring"
+      >
+        <span
+          :class="[
+            'inline-block h-4 w-4 rounded-full bg-white transition-transform',
+            isRecurring ? 'translate-x-6' : 'translate-x-1',
+          ]"
+        />
+      </button>
+    </div>
+
+    <!-- Mode édition : lié à une récurrence (lecture seule) -->
+    <div v-else-if="isLinkedToRecurrence" class="py-3 px-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+      <div class="flex items-center justify-between">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 dark:text-white">
+            {{ categoryType === CategoryType.EXPENSE ? 'Paiement récurrent' : 'Revenu récurrent' }}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Lié à une récurrence
+          </p>
+        </div>
+        <span class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary shrink-0 ml-3 opacity-50 cursor-not-allowed">
+          <span class="inline-block h-4 w-4 rounded-full bg-white translate-x-6" />
+        </span>
+      </div>
+      <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+        Pour modifier ou désactiver la récurrence, rendez-vous dans l'onglet Récurrences.
+      </p>
+    </div>
 
     <!-- Actions -->
     <div class="flex gap-3 pt-2">

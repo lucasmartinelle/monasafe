@@ -32,10 +32,11 @@ async function handleSubmit(data: {
   amount: number
   date: string
   note: string | null
+  isRecurring: boolean
 }) {
   const result = await updateTransaction(transactionId.value, data)
   if (result) {
-    router.push('/transactions')
+    router.push('/dashboard')
   }
 }
 
@@ -49,7 +50,7 @@ function handleCancel() {
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
       <NuxtLink
-        to="/transactions"
+        to="/dashboard"
         class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
       >
         <ArrowLeftIcon class="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -86,7 +87,7 @@ function handleCancel() {
       class="text-center py-12 text-gray-500 dark:text-gray-400"
     >
       <p class="text-sm">Transaction introuvable</p>
-      <NuxtLink to="/transactions" class="mt-3 inline-block">
+      <NuxtLink to="/dashboard" class="mt-3 inline-block">
         <CommonAppButton variant="secondary" size="sm">
           Retour aux transactions
         </CommonAppButton>

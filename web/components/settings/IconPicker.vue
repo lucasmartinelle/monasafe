@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ICON_MAP, getIcon } from '~/utils/icons'
+import { getIcon, getAvailableIconKeys } from '~/utils/icons'
 import { intToHex, contrastTextColor } from '~/utils/colors'
 
 interface Props {
@@ -15,27 +15,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
-// Icônes principales dédupliquées (on ne garde que les clés canoniques)
-const PICKER_ICONS: string[] = [
-  // Dépenses
-  'shopping_cart', 'restaurant', 'local_gas_station', 'home',
-  'power', 'wifi', 'phone_android', 'movie', 'sports_esports',
-  'fitness_center', 'medical_services', 'school', 'child_care',
-  'pets', 'flight', 'hotel', 'beach_access', 'card_giftcard',
-  'checkroom', 'content_cut', 'local_laundry_service', 'build',
-  'store', 'local_grocery_store', 'local_cafe', 'local_bar',
-  'fastfood', 'icecream', 'cake',
-  // Revenus
-  'work', 'attach_money', 'account_balance', 'trending_up',
-  'card_membership', 'redeem', 'savings',
-  // Divers
-  'category', 'more_horiz', 'star', 'favorite', 'bookmark',
-  'flag', 'label', 'lightbulb', 'extension', 'widgets',
-  'auto_awesome', 'psychology', 'self_improvement', 'spa',
-  'volunteer_activism', 'celebration', 'emoji_events',
-  'military_tech', 'workspace_premium', 'diamond',
-  'rocket_launch', 'science', 'biotech', 'memory', 'token', 'bolt',
-]
+const PICKER_ICONS = getAvailableIconKeys()
 
 const bgColor = computed(() => intToHex(props.color))
 const textColorSelected = computed(() => contrastTextColor(props.color))

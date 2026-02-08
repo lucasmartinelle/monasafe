@@ -1,5 +1,5 @@
 import type { Account } from '~/types/models'
-import type { AccountType } from '~/types/enums'
+import { type AccountType, CategoryType } from '~/types/enums'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
 interface CreateAccountData {
@@ -44,8 +44,49 @@ export function useAccounts() {
   const store = useAccountsStore()
   const supabase = useSupabaseClient<any>()
   const user = useSupabaseUser()
+  const categoriesStore = useCategoriesStore()
 
   let realtimeChannel: RealtimeChannel | null = null
+
+  // Soldes calculés à partir des transactions
+  const computedBalances = ref<Record<string, number>>({})
+
+  const totalComputedBalance = computed(() =>
+    Object.values(computedBalances.value).reduce((sum, b) => sum + b, 0),
+  )
+
+  /**
+   * Calcule les soldes réels de chaque compte à partir des transactions.
+   * Formule : solde initial (DB) + somme(revenus) - somme(dépenses)
+   */
+  async function refreshComputedBalances(): Promise<void> {
+    if (!user.value) return
+
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('account_id, amount, category_id')
+        .eq('user_id', user.value.id)
+
+      if (error || !data) return
+
+      const netByAccount: Record<string, number> = {}
+      for (const row of data) {
+        const cat = categoriesStore.categoryById(row.category_id)
+        const signed = cat?.type === CategoryType.EXPENSE ? -row.amount : row.amount
+        netByAccount[row.account_id] = (netByAccount[row.account_id] ?? 0) + signed
+      }
+
+      const result: Record<string, number> = {}
+      for (const account of store.accounts) {
+        result[account.id] = account.balance + (netByAccount[account.id] ?? 0)
+      }
+
+      computedBalances.value = result
+    } catch {
+      // En cas d'erreur, on utilise les soldes bruts
+    }
+  }
 
   /**
    * Récupère tous les comptes de l'utilisateur
@@ -232,6 +273,8 @@ export function useAccounts() {
     accounts: computed(() => store.accounts),
     sortedAccounts: computed(() => store.sortedAccounts),
     totalBalance: computed(() => store.totalBalance),
+    computedBalances,
+    totalComputedBalance,
     selectedAccountId: computed(() => store.selectedAccountId),
     isLoading: computed(() => store.isLoading),
     error: computed(() => store.error),
@@ -242,6 +285,7 @@ export function useAccounts() {
     createAccount,
     updateAccount,
     deleteAccount,
+    refreshComputedBalances,
     subscribeRealtime,
     unsubscribeRealtime,
     setSelectedAccountId: store.setSelectedAccountId,

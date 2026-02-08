@@ -20,8 +20,8 @@ const menuItems = [
     href: '/settings/categories',
   },
   {
-    label: 'Comptes',
-    description: 'Gérer les comptes et la devise',
+    label: 'Compte',
+    description: 'Connexion, synchronisation Google',
     icon: BanknotesIcon,
     href: '/settings/accounts',
   },

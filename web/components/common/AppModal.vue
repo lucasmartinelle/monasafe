@@ -55,7 +55,7 @@ const sizeClasses: Record<string, string> = {
         >
           <DialogPanel
             :class="[
-              'w-full rounded-xl bg-white dark:bg-card-dark p-6 shadow-xl',
+              'w-full rounded-xl bg-white dark:bg-card-dark p-6 shadow-xl max-h-[90vh] overflow-y-auto',
               sizeClasses[props.size],
             ]"
           >

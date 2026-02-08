@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   HomeIcon,
-  ArrowsRightLeftIcon,
   ArrowPathIcon,
   ChartBarIcon,
   Cog6ToothIcon,
@@ -11,7 +10,6 @@ const route = useRoute()
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Transactions', href: '/transactions', icon: ArrowsRightLeftIcon },
   { name: 'Récurrences', href: '/recurring', icon: ArrowPathIcon },
   { name: 'Statistiques', href: '/stats', icon: ChartBarIcon },
   { name: 'Paramètres', href: '/settings', icon: Cog6ToothIcon },
