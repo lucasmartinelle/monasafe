@@ -1,6 +1,23 @@
-import type { FinancialSummary, CategoryStatistics, MonthlyStatistics, DailyStatistics } from '~/types/models'
+import type { FinancialSummary, CategoryStatistics, MonthlyStatistics, DailyStatistics, BudgetProgress } from '~/types/models'
 import { CategoryType } from '~/types/enums'
 import { getMonthRange, toISODateString } from '~/utils/dates'
+
+export type PeriodType = 'thisMonth' | 'lastMonth' | 'yearToDate'
+
+export type BudgetStatus = 'safe' | 'warning' | 'exceeded'
+
+export function getBudgetStatus(spending: number, limit: number): BudgetStatus {
+  if (limit <= 0) return 'safe'
+  const ratio = spending / limit
+  if (ratio >= 1) return 'exceeded'
+  if (ratio >= 0.75) return 'warning'
+  return 'safe'
+}
+
+export function getBudgetPercentage(spending: number, limit: number): number {
+  if (limit <= 0) return 0
+  return (spending / limit) * 100
+}
 
 /**
  * Composable statistiques — logique métier.
@@ -12,6 +29,7 @@ export function useStatistics() {
   const accountsStore = useAccountsStore()
   const transactionsStore = useTransactionsStore()
   const categoriesStore = useCategoriesStore()
+  const budgetsStore = useBudgetsStore()
 
   /**
    * Résumé financier global
@@ -194,10 +212,60 @@ export function useStatistics() {
     return results.sort((a, b) => a.date.localeCompare(b.date))
   }
 
+  /**
+   * Progression des budgets pour une période donnée.
+   * Pour la vue année, le budget mensuel est multiplié par 12.
+   */
+  function calculateBudgetProgress(
+    startDate: string,
+    endDate: string,
+    periodType: PeriodType = 'thisMonth',
+  ): BudgetProgress[] {
+    const budgets = budgetsStore.budgets
+    const categories = categoriesStore.categories
+    const transactions = transactionsStore.transactions
+
+    const categoryMap = new Map(categories.map(c => [c.id, c]))
+
+    // Dépenses par catégorie pour la période
+    const spendingMap = new Map<string, number>()
+    for (const tx of transactions) {
+      if (tx.date < startDate || tx.date > endDate) continue
+      const cat = categoryMap.get(tx.categoryId)
+      if (cat?.type !== CategoryType.EXPENSE) continue
+      const current = spendingMap.get(tx.categoryId) ?? 0
+      spendingMap.set(tx.categoryId, current + Math.abs(tx.amount))
+    }
+
+    const multiplier = periodType === 'yearToDate' ? 12 : 1
+
+    const results: BudgetProgress[] = []
+    for (const budget of budgets) {
+      const category = categoryMap.get(budget.categoryId)
+      if (!category) continue
+
+      results.push({
+        budgetId: budget.id,
+        category,
+        budgetLimit: budget.budgetLimit * multiplier,
+        monthlyBudgetLimit: budget.budgetLimit,
+        currentSpending: spendingMap.get(budget.categoryId) ?? 0,
+      })
+    }
+
+    // Trier par pourcentage d'utilisation décroissant
+    return results.sort((a, b) => {
+      const ratioA = a.budgetLimit > 0 ? a.currentSpending / a.budgetLimit : 0
+      const ratioB = b.budgetLimit > 0 ? b.currentSpending / b.budgetLimit : 0
+      return ratioB - ratioA
+    })
+  }
+
   return {
     calculateFinancialSummary,
     calculateCategoryStats,
     calculateMonthlyStats,
     calculateDailyStats,
+    calculateBudgetProgress,
   }
 }

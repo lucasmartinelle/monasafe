@@ -46,6 +46,7 @@ const sizeClasses: Record<string, string> = {
 
       <div class="fixed inset-0 flex items-center justify-center p-4">
         <TransitionChild
+          :class="['w-full', sizeClasses[props.size]]"
           enter="ease-out duration-200"
           enter-from="opacity-0 scale-95"
           enter-to="opacity-100 scale-100"
@@ -54,10 +55,7 @@ const sizeClasses: Record<string, string> = {
           leave-to="opacity-0 scale-95"
         >
           <DialogPanel
-            :class="[
-              'w-full rounded-xl bg-white dark:bg-card-dark p-6 shadow-xl max-h-[90vh] overflow-y-auto',
-              sizeClasses[props.size],
-            ]"
+            class="w-full rounded-xl bg-white dark:bg-card-dark p-6 shadow-xl max-h-[90vh] overflow-y-auto"
           >
             <div v-if="props.title" class="flex items-center justify-between mb-4">
               <DialogTitle class="text-lg font-heading font-semibold text-gray-900 dark:text-white">

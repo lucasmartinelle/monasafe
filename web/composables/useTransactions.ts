@@ -124,6 +124,35 @@ export function useTransactions() {
   }
 
   /**
+   * Récupère toutes les transactions sans pagination (pour les statistiques)
+   */
+  async function fetchAllTransactions(): Promise<void> {
+    if (!user.value) return
+
+    store.setLoading(true)
+    store.setError(null)
+
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.value.id)
+        .order('date', { ascending: false })
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      store.setTransactions((data ?? []).map(mapTransaction))
+      store.setHasMore(false)
+      store.setCurrentPage(0)
+    } catch (e: any) {
+      store.setError(e.message || 'Erreur lors du chargement des transactions')
+    } finally {
+      store.setLoading(false)
+    }
+  }
+
+  /**
    * Charge la page suivante
    */
   async function fetchNextPage(options: Omit<FetchTransactionsOptions, 'page'> = {}): Promise<void> {
@@ -289,6 +318,7 @@ export function useTransactions() {
 
     // Actions
     fetchTransactions,
+    fetchAllTransactions,
     fetchNextPage,
     createTransaction,
     updateTransaction,
