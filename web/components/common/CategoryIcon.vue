@@ -17,9 +17,9 @@ const iconComponent = computed(() => getIcon(props.iconKey))
 </script>
 
 <template>
-  <IconContainer :color="props.color" :size="props.size">
+  <CommonIconContainer :color="props.color" :size="props.size">
     <template #default="{ iconClass }">
       <component :is="iconComponent" :class="iconClass" />
     </template>
-  </IconContainer>
+  </CommonIconContainer>
 </template>
