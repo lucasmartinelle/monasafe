@@ -67,7 +67,7 @@ const showLockScreen = computed(() => vault.isEnabled.value && vault.isLocked.va
       </header>
 
       <!-- Page content — key sur l'état vault pour forcer le remount après déverrouillage -->
-      <main class="p-4 lg:p-8" :key="showLockScreen ? 'locked' : 'unlocked'">
+      <main class="p-4 pb-20 lg:p-8" :key="showLockScreen ? 'locked' : 'unlocked'">
         <slot />
       </main>
     </div>

@@ -31,6 +31,14 @@ export function useStatistics() {
   const categoriesStore = useCategoriesStore()
   const budgetsStore = useBudgetsStore()
 
+  // Maps memoizées — recalculées uniquement quand les catégories changent
+  const categoryTypeMap = computed(() =>
+    new Map(categoriesStore.categories.map(c => [c.id, c.type])),
+  )
+  const categoryMap = computed(() =>
+    new Map(categoriesStore.categories.map(c => [c.id, c])),
+  )
+
   /**
    * Résumé financier global
    */
@@ -38,9 +46,6 @@ export function useStatistics() {
     const totalBalance = accountsStore.totalBalance
 
     const allTransactions = transactionsStore.transactions
-    const categories = categoriesStore.categories
-
-    const categoryTypeMap = new Map(categories.map(c => [c.id, c.type]))
 
     let totalIncome = 0
     let totalExpense = 0
@@ -53,7 +58,7 @@ export function useStatistics() {
     const monthEndStr = toISODateString(monthEnd)
 
     for (const tx of allTransactions) {
-      const catType = categoryTypeMap.get(tx.categoryId)
+      const catType = categoryTypeMap.value.get(tx.categoryId)
       const amount = Math.abs(tx.amount)
 
       if (catType === CategoryType.INCOME) {
@@ -90,17 +95,15 @@ export function useStatistics() {
     type?: CategoryType,
     accountId?: string | null,
   ): CategoryStatistics[] {
-    const categories = categoriesStore.categories
     const transactions = transactionsStore.transactions
-
-    const categoryTypeMap = new Map(categories.map(c => [c.id, c]))
+    const catMap = categoryMap.value
 
     // Filtrer les transactions par période et compte
     const filtered = transactions.filter(tx => {
       if (tx.date < startDate || tx.date > endDate) return false
       if (accountId && tx.accountId !== accountId) return false
       if (type) {
-        const cat = categoryTypeMap.get(tx.categoryId)
+        const cat = catMap.get(tx.categoryId)
         if (cat?.type !== type) return false
       }
       return true
@@ -125,7 +128,7 @@ export function useStatistics() {
     // Construire les résultats
     const results: CategoryStatistics[] = []
     for (const [categoryId, { total, count }] of grouped) {
-      const cat = categoryTypeMap.get(categoryId)
+      const cat = catMap.get(categoryId)
       results.push({
         categoryId,
         categoryName: cat?.name ?? 'Inconnue',
@@ -142,10 +145,8 @@ export function useStatistics() {
    * Statistiques mensuelles (revenus vs dépenses)
    */
   function calculateMonthlyStats(year: number): MonthlyStatistics[] {
-    const categories = categoriesStore.categories
     const transactions = transactionsStore.transactions
-
-    const categoryTypeMap = new Map(categories.map(c => [c.id, c.type]))
+    const catTypeMap = categoryTypeMap.value
 
     const months: MonthlyStatistics[] = []
 
@@ -161,7 +162,7 @@ export function useStatistics() {
       for (const tx of transactions) {
         if (tx.date < startStr || tx.date > endStr) continue
 
-        const catType = categoryTypeMap.get(tx.categoryId)
+        const catType = catTypeMap.get(tx.categoryId)
         const amount = Math.abs(tx.amount)
 
         if (catType === CategoryType.INCOME) {
@@ -181,10 +182,8 @@ export function useStatistics() {
    * Statistiques journalières pour une période
    */
   function calculateDailyStats(startDate: string, endDate: string): DailyStatistics[] {
-    const categories = categoriesStore.categories
     const transactions = transactionsStore.transactions
-
-    const categoryTypeMap = new Map(categories.map(c => [c.id, c.type]))
+    const catTypeMap = categoryTypeMap.value
 
     const dailyMap = new Map<string, { income: number; expense: number }>()
 
@@ -192,7 +191,7 @@ export function useStatistics() {
       if (tx.date < startDate || tx.date > endDate) continue
 
       const existing = dailyMap.get(tx.date) ?? { income: 0, expense: 0 }
-      const catType = categoryTypeMap.get(tx.categoryId)
+      const catType = catTypeMap.get(tx.categoryId)
       const amount = Math.abs(tx.amount)
 
       if (catType === CategoryType.INCOME) {
@@ -222,16 +221,14 @@ export function useStatistics() {
     periodType: PeriodType = 'thisMonth',
   ): BudgetProgress[] {
     const budgets = budgetsStore.budgets
-    const categories = categoriesStore.categories
     const transactions = transactionsStore.transactions
-
-    const categoryMap = new Map(categories.map(c => [c.id, c]))
+    const catMap = categoryMap.value
 
     // Dépenses par catégorie pour la période
     const spendingMap = new Map<string, number>()
     for (const tx of transactions) {
       if (tx.date < startDate || tx.date > endDate) continue
-      const cat = categoryMap.get(tx.categoryId)
+      const cat = catMap.get(tx.categoryId)
       if (cat?.type !== CategoryType.EXPENSE) continue
       const current = spendingMap.get(tx.categoryId) ?? 0
       spendingMap.set(tx.categoryId, current + Math.abs(tx.amount))
@@ -241,7 +238,7 @@ export function useStatistics() {
 
     const results: BudgetProgress[] = []
     for (const budget of budgets) {
-      const category = categoryMap.get(budget.categoryId)
+      const category = catMap.get(budget.categoryId)
       if (!category) continue
 
       results.push({
@@ -261,11 +258,34 @@ export function useStatistics() {
     })
   }
 
+  /**
+   * Totaux revenus/dépenses pour une période arbitraire.
+   */
+  function calculatePeriodTotals(startDate: string, endDate: string): { income: number; expense: number } {
+    const transactions = transactionsStore.transactions
+    const catTypeMap = categoryTypeMap.value
+
+    let income = 0
+    let expense = 0
+    for (const tx of transactions) {
+      if (tx.date < startDate || tx.date > endDate) continue
+      const catType = catTypeMap.get(tx.categoryId)
+      const amount = Math.abs(tx.amount)
+      if (catType === CategoryType.INCOME) {
+        income += amount
+      } else {
+        expense += amount
+      }
+    }
+    return { income, expense }
+  }
+
   return {
     calculateFinancialSummary,
     calculateCategoryStats,
     calculateMonthlyStats,
     calculateDailyStats,
     calculateBudgetProgress,
+    calculatePeriodTotals,
   }
 }

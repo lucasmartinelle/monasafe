@@ -30,9 +30,12 @@ const { format: formatMoney } = useCurrency()
 const showSuggestions = ref(false)
 const inputRef = ref<HTMLInputElement | null>(null)
 
+// Debounce la recherche pour éviter de filtrer à chaque frappe
+const searchQuery = refDebounced(computed(() => props.modelValue), 200)
+
 const filteredSuggestions = computed(() => {
-  if (!props.modelValue || props.modelValue.length < 2) return []
-  const query = props.modelValue.toLowerCase()
+  if (!searchQuery.value || searchQuery.value.length < 2) return []
+  const query = searchQuery.value.toLowerCase()
   return props.suggestions
     .filter(s => s.note.toLowerCase().includes(query))
     .slice(0, 5)

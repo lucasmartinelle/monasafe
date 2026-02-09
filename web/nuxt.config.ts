@@ -5,8 +5,15 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/color-mode',
     '@vueuse/nuxt',
   ],
+
+  colorMode: {
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'light',
+  },
 
   supabase: {
     redirectOptions: {
@@ -25,6 +32,7 @@ export default defineNuxtConfig({
   },
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: 'SimpleFlow',
       meta: [

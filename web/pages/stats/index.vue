@@ -17,7 +17,7 @@ const {
   unsubscribeRealtime: unsubscribeBudgets,
   error: budgetError,
 } = useBudgets()
-const { calculateMonthlyStats, calculateDailyStats, calculateBudgetProgress } = useStatistics()
+const { calculateMonthlyStats, calculateDailyStats, calculateBudgetProgress, calculatePeriodTotals } = useStatistics()
 const { format: formatMoney } = useCurrency()
 const budgetsStore = useBudgetsStore()
 
@@ -58,26 +58,9 @@ const dailyStats = computed(() => {
 })
 
 // Résumé période
-const periodIncome = computed(() => {
-  const { startDate, endDate } = periodRange.value
-  const store = useTransactionsStore()
-  const catStore = useCategoriesStore()
-  const catTypeMap = new Map(catStore.categories.map(c => [c.id, c.type]))
-
-  let income = 0
-  let expense = 0
-  for (const tx of store.transactions) {
-    if (tx.date < startDate || tx.date > endDate) continue
-    const catType = catTypeMap.get(tx.categoryId)
-    const amount = Math.abs(tx.amount)
-    if (catType === 'income') {
-      income += amount
-    } else {
-      expense += amount
-    }
-  }
-  return { income, expense }
-})
+const periodIncome = computed(() =>
+  calculatePeriodTotals(periodRange.value.startDate, periodRange.value.endDate),
+)
 
 // Budgets
 const budgetProgress = computed(() =>

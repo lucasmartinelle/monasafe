@@ -76,12 +76,18 @@ const version = '1.0.0'
           Liens
         </p>
         <div class="space-y-2">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <NuxtLink
+            to="/settings/terms"
+            class="block text-sm text-primary dark:text-primary-light hover:underline"
+          >
             Conditions d'utilisation
-          </p>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          </NuxtLink>
+          <NuxtLink
+            to="/settings/privacy"
+            class="block text-sm text-primary dark:text-primary-light hover:underline"
+          >
             Politique de confidentialité
-          </p>
+          </NuxtLink>
         </div>
       </div>
     </div>
