@@ -102,4 +102,4 @@ Pages → Composables (logique metier + appels Supabase) → Stores (etat reacti
 ## Documentation
 
 - [API des composables](docs/composables.md)
-- [Guide de contribution](CONTRIBUTING.md)
+- [Guide de contribution](../CONTRIBUTING.md)
