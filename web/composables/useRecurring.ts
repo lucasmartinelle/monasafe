@@ -30,24 +30,44 @@ interface UpdateRecurringData {
  * Mapping Supabase snake_case → TypeScript camelCase
  */
 function mapRecurring(row: any): RecurringTransaction {
+  const isEncrypted = row.is_encrypted ?? false
+  const rawAmount = String(row.amount)
+  const rawNote = row.note ?? null
+
   return {
     id: row.id,
     userId: row.user_id,
     accountId: row.account_id,
     categoryId: row.category_id,
-    amount: row.amount,
-    rawAmount: String(row.amount),
-    note: row.note,
-    rawNote: row.note,
+    amount: isEncrypted ? 0 : (parseFloat(rawAmount) || 0),
+    rawAmount,
+    note: isEncrypted ? null : rawNote,
+    rawNote,
     originalDay: row.original_day,
     startDate: row.start_date,
     endDate: row.end_date,
     lastGenerated: row.last_generated,
     isActive: row.is_active,
-    isEncrypted: row.is_encrypted ?? false,
+    isEncrypted,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
+}
+
+/**
+ * Déchiffre les champs d'une récurrence si nécessaire
+ */
+async function decryptRecurringIfNeeded(
+  recurring: RecurringTransaction,
+  vault: ReturnType<typeof useVault>,
+): Promise<RecurringTransaction> {
+  if (!recurring.isEncrypted || !vault.isUnlocked.value) return recurring
+
+  const { amount, note } = await vault.decryptTransactionData(
+    recurring.rawAmount,
+    recurring.rawNote,
+  )
+  return { ...recurring, amount, note }
 }
 
 /**
@@ -61,6 +81,7 @@ export function useRecurring() {
   const store = useRecurringStore()
   const supabase = useSupabaseClient<any>()
   const user = useSupabaseUser()
+  const vault = useVault()
 
   let realtimeChannel: RealtimeChannel | null = null
 
@@ -82,7 +103,10 @@ export function useRecurring() {
 
       if (error) throw error
 
-      store.setRecurrings((data ?? []).map(mapRecurring))
+      const mapped = await Promise.all(
+        (data ?? []).map(mapRecurring).map(r => decryptRecurringIfNeeded(r, vault)),
+      )
+      store.setRecurrings(mapped)
     } catch (e: any) {
       store.setError(e.message || 'Erreur lors du chargement des récurrences')
     } finally {
@@ -100,27 +124,29 @@ export function useRecurring() {
     store.setError(null)
 
     try {
+      const encrypted = await vault.encryptTransactionData(data.amount, data.note ?? null)
+
       const { data: row, error } = await supabase
         .from('recurring_transactions')
         .insert({
           user_id: user.value.id,
           account_id: data.accountId,
           category_id: data.categoryId,
-          amount: data.amount,
-          note: data.note ?? null,
+          amount: encrypted.isEncrypted ? encrypted.rawAmount : String(data.amount),
+          note: encrypted.isEncrypted ? encrypted.rawNote : (data.note ?? null),
           original_day: data.originalDay,
           start_date: data.startDate,
           end_date: data.endDate ?? null,
           last_generated: data.lastGenerated ?? null,
           is_active: true,
-          is_encrypted: false,
+          is_encrypted: encrypted.isEncrypted,
         })
         .select()
         .single()
 
       if (error) throw error
 
-      const recurring = mapRecurring(row)
+      const recurring = await decryptRecurringIfNeeded(mapRecurring(row), vault)
       store.addRecurring(recurring)
       return recurring
     } catch (e: any) {
@@ -144,12 +170,27 @@ export function useRecurring() {
       const updateData: Record<string, any> = {}
       if (data.accountId !== undefined) updateData.account_id = data.accountId
       if (data.categoryId !== undefined) updateData.category_id = data.categoryId
-      if (data.amount !== undefined) updateData.amount = data.amount
-      if (data.note !== undefined) updateData.note = data.note
       if (data.originalDay !== undefined) updateData.original_day = data.originalDay
       if (data.startDate !== undefined) updateData.start_date = data.startDate
       if (data.endDate !== undefined) updateData.end_date = data.endDate
       if (data.isActive !== undefined) updateData.is_active = data.isActive
+
+      // Chiffrer amount/note si vault actif
+      if (data.amount !== undefined || data.note !== undefined) {
+        const currentRec = store.recurringById(id)
+        const amount = data.amount ?? currentRec?.amount ?? 0
+        const note = data.note !== undefined ? data.note : (currentRec?.note ?? null)
+
+        if (vault.isUnlocked.value) {
+          const encrypted = await vault.encryptTransactionData(amount, note)
+          updateData.amount = encrypted.isEncrypted ? encrypted.rawAmount : String(amount)
+          updateData.note = encrypted.isEncrypted ? encrypted.rawNote : note
+          updateData.is_encrypted = encrypted.isEncrypted
+        } else {
+          if (data.amount !== undefined) updateData.amount = data.amount
+          if (data.note !== undefined) updateData.note = data.note
+        }
+      }
 
       const { data: row, error } = await supabase
         .from('recurring_transactions')
@@ -161,7 +202,7 @@ export function useRecurring() {
 
       if (error) throw error
 
-      const recurring = mapRecurring(row)
+      const recurring = await decryptRecurringIfNeeded(mapRecurring(row), vault)
       store.updateRecurring(id, recurring)
       return recurring
     } catch (e: any) {
@@ -286,6 +327,24 @@ export function useRecurring() {
         }
 
         try {
+          // Hériter de l'état chiffré de la récurrence
+          // rawAmount/rawNote contiennent déjà le Base64 chiffré si isEncrypted
+          let dbAmount: string = String(recurring.amount)
+          let dbNote: string | null = recurring.note
+          let txIsEncrypted = recurring.isEncrypted
+
+          if (recurring.isEncrypted) {
+            // La récurrence est déjà chiffrée, passer les valeurs raw directement
+            dbAmount = recurring.rawAmount
+            dbNote = recurring.rawNote
+          } else if (vault.isUnlocked.value) {
+            // Vault actif mais récurrence non chiffrée → chiffrer
+            const encrypted = await vault.encryptTransactionData(recurring.amount, recurring.note)
+            dbAmount = encrypted.isEncrypted ? encrypted.rawAmount : String(recurring.amount)
+            dbNote = encrypted.isEncrypted ? encrypted.rawNote : recurring.note
+            txIsEncrypted = encrypted.isEncrypted
+          }
+
           // Créer la transaction
           const { error: insertError } = await supabase
             .from('transactions')
@@ -293,11 +352,11 @@ export function useRecurring() {
               user_id: user.value!.id,
               account_id: recurring.accountId,
               category_id: recurring.categoryId,
-              amount: recurring.amount,
+              amount: dbAmount,
               date: toISODateString(txDate),
-              note: recurring.note,
+              note: dbNote,
               recurring_id: recurring.id,
-              is_encrypted: recurring.isEncrypted,
+              is_encrypted: txIsEncrypted,
               sync_status: SyncStatus.SYNCED,
             })
 
@@ -341,12 +400,13 @@ export function useRecurring() {
           table: 'recurring_transactions',
           filter: `user_id=eq.${user.value.id}`,
         },
-        (payload) => {
+        async (payload) => {
           if (payload.eventType === 'INSERT') {
-            store.addRecurring(mapRecurring(payload.new))
+            const rec = await decryptRecurringIfNeeded(mapRecurring(payload.new), vault)
+            store.addRecurring(rec)
           } else if (payload.eventType === 'UPDATE') {
-            const recurring = mapRecurring(payload.new)
-            store.updateRecurring(recurring.id, recurring)
+            const rec = await decryptRecurringIfNeeded(mapRecurring(payload.new), vault)
+            store.updateRecurring(rec.id, rec)
           } else if (payload.eventType === 'DELETE') {
             store.removeRecurring((payload.old as any).id)
           }

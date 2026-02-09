@@ -133,6 +133,8 @@ simpleflow-web/
 │   │   ├── IconContainer.vue
 │   │   ├── CategoryIcon.vue
 │   │   ├── AccountTypeBadge.vue
+│   │   ├── CategoryGrid.vue
+│   │   ├── ColorPicker.vue
 │   │   └── LoadingState.vue
 │   ├── onboarding/
 │   │   ├── AccountCard.vue
@@ -141,18 +143,18 @@ simpleflow-web/
 │   │   ├── NetWorthCard.vue
 │   │   ├── AccountListCard.vue
 │   │   ├── ExpenseBreakdownCard.vue
-│   │   └── RecentTransactionsCard.vue
 │   ├── transactions/
 │   │   ├── TransactionForm.vue
 │   │   ├── TransactionTile.vue
 │   │   ├── AmountInput.vue
-│   │   ├── CategoryGrid.vue
 │   │   └── SmartNoteField.vue
 │   ├── recurring/
 │   │   ├── RecurringTile.vue
 │   │   └── RecurringForm.vue
 │   ├── stats/
 │   │   ├── CashflowChart.vue
+│   │   ├── BudgetDetailModal.vue
+│   │   ├── BudgetFormModal.vue
 │   │   ├── BudgetProgressBar.vue
 │   │   ├── BudgetList.vue
 │   │   └── PeriodSelector.vue
@@ -160,17 +162,14 @@ simpleflow-web/
 │   │   ├── CategoryListTile.vue
 │   │   ├── CategoryFormModal.vue
 │   │   ├── IconPicker.vue
-│   │   └── ColorPicker.vue
-│   └── layout/
-│       ├── AppSidebar.vue
-│       ├── AppHeader.vue
-│       └── AppNavigation.vue
 ├── composables/
 │   ├── useAccounts.ts        # CRUD comptes
 │   ├── useTransactions.ts    # CRUD transactions
 │   ├── useRecurring.ts       # CRUD récurrences
 │   ├── useCategories.ts      # CRUD catégories
 │   ├── useBudgets.ts         # CRUD budgets
+│   ├── useSettings.ts        # CRUD paramètres
+│   ├── useDataManagement.ts  # Suppression des données
 │   ├── useStatistics.ts      # Calculs stats
 │   ├── useVault.ts           # Chiffrement E2E
 │   ├── useCurrency.ts        # Formatage devise
@@ -180,9 +179,8 @@ simpleflow-web/
 │   ├── auth.vue              # Layout authentification
 │   └── blank.vue             # Layout vide
 ├── middleware/
-│   ├── auth.ts               # Protection routes authentifiées
 │   ├── guest.ts              # Protection routes non authentifiées
-│   └── onboarding.ts         # Vérification onboarding complété
+│   └── onboarding.global.ts  # Vérification onboarding complété
 ├── pages/
 │   ├── index.vue             # Redirect → /dashboard ou /auth
 │   ├── auth/
@@ -245,7 +243,7 @@ simpleflow-web/
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        PAGES (Vue)                          │
-│  dashboard / transactions / recurring / stats / settings    │
+│          dashboard / recurring / stats / settings           │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -836,7 +834,7 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ---
 
-### Phase 4 : Catégories
+### Phase 4 : Catégories [FAIT]
 
 #### 4.1 Store catégories (état pur)
 - [ ] Créer `stores/categories.ts`
@@ -871,7 +869,7 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ---
 
-### Phase 5 : Transactions
+### Phase 5 : Transactions [FAIT]
 
 #### 5.1 Store transactions (état pur)
 - [ ] Créer `stores/transactions.ts`
@@ -905,7 +903,7 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ---
 
-### Phase 6 : Dashboard
+### Phase 6 : Dashboard [FAIT]
 
 #### 6.1 Composable statistiques (logique métier, calculs)
 - [ ] Créer `composables/useStatistics.ts`
@@ -933,15 +931,41 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ---
 
-### Phase 7 : Récurrences
+### Phase 7 : Paramètres [FAIT]
 
-#### 7.1 Store récurrences (état pur)
+#### 7.1 Pages settings
+- [ ] `pages/settings/index.vue` (menu principal)
+- [ ] `pages/settings/accounts.vue` (gestion comptes + devise)
+- [ ] `pages/settings/data.vue` (suppression données)
+- [ ] `pages/settings/about.vue` (version, crédits, liens)
+
+#### 7.2 Composable data management (logique métier)
+- [ ] Créer `composables/useDataManagement.ts`
+  - deleteTransactions() → supabase + invalidation store
+  - deleteRecurrings() → supabase + invalidation store
+  - deleteBudgets() → supabase + invalidation store
+  - deleteAllData() → supabase + reset tous les stores
+  - Confirmation "SUPPRIMER" gérée côté page
+
+#### 7.3 Page about
+- [ ] Logo et version
+- [ ] Crédits développeur
+- [ ] Liens légaux (CGU, confidentialité)
+- [ ] Contact
+
+**Livrable Phase 7** : Paramètres complets
+
+---
+
+### Phase 8 : Récurrences [FAIT]
+
+#### 8.1 Store récurrences (état pur)
 - [ ] Créer `stores/recurring.ts`
   - State: recurrings, isLoading, error
   - Getters: activeRecurrings, inactiveRecurrings
   - Mutations: setRecurrings, addRecurring, updateRecurring, removeRecurring, setLoading, setError
 
-#### 7.2 Composable (logique métier, appels Supabase, génération)
+#### 8.2 Composable (logique métier, appels Supabase, génération)
 - [ ] Créer `composables/useRecurring.ts`
   - fetchRecurrings() → supabase + store.setRecurrings()
   - createRecurring() → supabase + store.addRecurring()
@@ -953,42 +977,42 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
   - Gestion jours > jours du mois
   - Realtime subscription
 
-#### 7.3 Composants
+#### 8.3 Composants
 - [ ] `RecurringTile.vue` (affichage récurrence)
 - [ ] `RecurringForm.vue` (création/édition)
 - [ ] `RecurringDetailModal.vue` (détails + actions)
 - [ ] `NextDateBadge.vue` (prochaine génération)
 
-#### 7.4 Page récurrences
+#### 8.4 Page récurrences
 - [ ] `pages/recurring/index.vue`
   - Sections: Actives / Inactives
   - Toggle activation
   - CRUD complet
 
-#### 7.5 Intégration
+#### 8.5 Intégration
 - [ ] Hook au démarrage app pour générer transactions pending
 - [ ] Notification si transactions générées
 
-**Livrable Phase 7** : Récurrences fonctionnelles avec génération auto
+**Livrable Phase 8** : Récurrences fonctionnelles avec génération auto
 
 ---
 
-### Phase 8 : Statistiques & Budgets
+### Phase 9 : Statistiques & Budgets [FAIT]
 
-#### 8.1 Store budgets (état pur)
+#### 9.1 Store budgets (état pur)
 - [ ] Créer `stores/budgets.ts`
   - State: budgets, isLoading, error
   - Getters: budgetByCategory, budgetProgress
   - Mutations: setBudgets, upsertBudget, removeBudget, setLoading, setError
 
-#### 8.2 Composables (logique métier, appels Supabase)
+#### 9.2 Composables (logique métier, appels Supabase)
 - [ ] Créer `composables/useBudgets.ts`
   - fetchBudgets() → supabase + store.setBudgets()
   - upsertBudget() → supabase.from('user_budgets').upsert() + store.upsertBudget()
   - deleteBudget() → supabase + store.removeBudget()
 - [ ] Enrichir `composables/useStatistics.ts`
 
-#### 8.3 Composants stats
+#### 9.3 Composants stats
 - [ ] `PeriodSelector.vue` (mois/trimestre/année)
 - [ ] `CashflowChart.vue` (bar chart revenus/dépenses)
 - [ ] `BudgetProgressBar.vue` (barre progression)
@@ -996,42 +1020,14 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 - [ ] `BudgetFormModal.vue` (création/édition)
 - [ ] `BudgetDetailModal.vue` (détails + transactions)
 
-#### 8.4 Page stats
+#### 9.4 Page stats
 - [ ] `pages/stats/index.vue`
   - Sélecteur période
   - Graphique cashflow
   - Liste budgets avec progression
   - Drill-down par catégorie
 
-**Livrable Phase 8** : Stats et budgets complets
-
----
-
-### Phase 9 : Paramètres
-
-#### 9.1 Pages settings
-- [ ] `pages/settings/index.vue` (menu principal)
-- [ ] `pages/settings/accounts.vue` (gestion comptes + devise)
-- [ ] `pages/settings/data.vue` (suppression données)
-- [ ] `pages/settings/about.vue` (version, crédits, liens)
-
-#### 9.2 Composable data management (logique métier)
-- [ ] Créer `composables/useDataManagement.ts`
-  - deleteTransactions() → supabase + invalidation store
-  - deleteRecurrings() → supabase + invalidation store
-  - deleteBudgets() → supabase + invalidation store
-  - deleteAllData() → supabase + reset tous les stores
-  - Confirmation "SUPPRIMER" gérée côté page
-
-#### 9.3 Page about
-- [ ] Logo et version
-- [ ] Crédits développeur
-- [ ] Liens légaux (CGU, confidentialité)
-- [ ] Contact
-
-**Livrable Phase 9** : Paramètres complets
-
----
+**Livrable Phase 9** : Stats et budgets complets
 
 ### Phase 10 : Vault / Chiffrement
 
@@ -1084,11 +1080,6 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 - [ ] Pagination infinie transactions
 - [ ] Debounce recherches
 - [ ] Memoization calculs stats
-
-#### 11.4 Tests
-- [ ] Tests unitaires composables
-- [ ] Tests composants (Vitest + Vue Test Utils)
-- [ ] Tests E2E critiques (Playwright)
 
 #### 11.5 Documentation
 - [ ] README.md

@@ -58,22 +58,40 @@ export function useAccounts() {
   /**
    * Calcule les soldes réels de chaque compte à partir des transactions.
    * Formule : solde initial (DB) + somme(revenus) - somme(dépenses)
+   *
+   * Les transactions chiffrées sont déchiffrées si le vault est déverrouillé,
+   * sinon elles sont ignorées (montant inconnu).
    */
   async function refreshComputedBalances(): Promise<void> {
     if (!user.value) return
 
+    const vault = useVault()
+
     try {
       const { data, error } = await supabase
         .from('transactions')
-        .select('account_id, amount, category_id')
+        .select('account_id, amount, category_id, is_encrypted')
         .eq('user_id', user.value.id)
 
       if (error || !data) return
 
       const netByAccount: Record<string, number> = {}
       for (const row of data) {
+        let amount: number
+
+        if (row.is_encrypted) {
+          if (!vault.isUnlocked.value) continue
+          const decrypted = await vault.decryptTransactionData(
+            String(row.amount),
+            null,
+          )
+          amount = decrypted.amount
+        } else {
+          amount = parseFloat(String(row.amount)) || 0
+        }
+
         const cat = categoriesStore.categoryById(row.category_id)
-        const signed = cat?.type === CategoryType.EXPENSE ? -row.amount : row.amount
+        const signed = cat?.type === CategoryType.EXPENSE ? -amount : amount
         netByAccount[row.account_id] = (netByAccount[row.account_id] ?? 0) + signed
       }
 

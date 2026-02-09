@@ -94,6 +94,47 @@ export function useSettings() {
     }
   }
 
+  /**
+   * Récupère un setting individuel par clé
+   */
+  async function getSetting(key: string): Promise<string | null> {
+    if (!user.value) return null
+
+    try {
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('value')
+        .eq('user_id', user.value.id)
+        .eq('key', key)
+        .maybeSingle()
+
+      if (error) throw error
+      return data?.value ?? null
+    } catch (e: any) {
+      console.error(`Erreur lecture setting "${key}":`, e.message)
+      return null
+    }
+  }
+
+  /**
+   * Supprime un setting par clé
+   */
+  async function deleteSetting(key: string): Promise<void> {
+    if (!user.value) return
+
+    try {
+      const { error } = await supabase
+        .from('user_settings')
+        .delete()
+        .eq('user_id', user.value.id)
+        .eq('key', key)
+
+      if (error) throw error
+    } catch (e: any) {
+      console.error(`Erreur suppression setting "${key}":`, e.message)
+    }
+  }
+
   return {
     // State (readonly, depuis le store)
     currency: computed(() => store.currency),
@@ -104,6 +145,8 @@ export function useSettings() {
     // Actions
     loadSettings,
     updateSetting,
+    getSetting,
+    deleteSetting,
     completeOnboarding,
   }
 }

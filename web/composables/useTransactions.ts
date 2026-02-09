@@ -33,22 +33,42 @@ const PAGE_SIZE = 30
  * Mapping Supabase snake_case → TypeScript camelCase
  */
 function mapTransaction(row: any): Transaction {
+  const isEncrypted = row.is_encrypted ?? false
+  const rawAmount = String(row.amount)
+  const rawNote = row.note ?? null
+
   return {
     id: row.id,
     userId: row.user_id,
     accountId: row.account_id,
     categoryId: row.category_id,
-    amount: row.amount,
-    rawAmount: String(row.amount),
+    amount: isEncrypted ? 0 : (parseFloat(rawAmount) || 0),
+    rawAmount,
     date: row.date,
-    note: row.note,
-    rawNote: row.note,
+    note: isEncrypted ? null : rawNote,
+    rawNote,
     recurringId: row.recurring_id,
-    isEncrypted: row.is_encrypted ?? false,
+    isEncrypted,
     syncStatus: row.sync_status ?? SyncStatus.SYNCED,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
+}
+
+/**
+ * Déchiffre les champs d'une transaction si nécessaire
+ */
+async function decryptIfNeeded(
+  transaction: Transaction,
+  vault: ReturnType<typeof useVault>,
+): Promise<Transaction> {
+  if (!transaction.isEncrypted || !vault.isUnlocked.value) return transaction
+
+  const { amount, note } = await vault.decryptTransactionData(
+    transaction.rawAmount,
+    transaction.rawNote,
+  )
+  return { ...transaction, amount, note }
 }
 
 /**
@@ -61,6 +81,7 @@ export function useTransactions() {
   const store = useTransactionsStore()
   const supabase = useSupabaseClient<any>()
   const user = useSupabaseUser()
+  const vault = useVault()
 
   let realtimeChannel: RealtimeChannel | null = null
 
@@ -104,7 +125,9 @@ export function useTransactions() {
 
       if (error) throw error
 
-      const mapped = (data ?? []).map(mapTransaction)
+      const mapped = await Promise.all(
+        (data ?? []).map(mapTransaction).map(tx => decryptIfNeeded(tx, vault)),
+      )
 
       if (isFirstPage) {
         store.setTransactions(mapped)
@@ -142,7 +165,10 @@ export function useTransactions() {
 
       if (error) throw error
 
-      store.setTransactions((data ?? []).map(mapTransaction))
+      const mapped = await Promise.all(
+        (data ?? []).map(mapTransaction).map(tx => decryptIfNeeded(tx, vault)),
+      )
+      store.setTransactions(mapped)
       store.setHasMore(false)
       store.setCurrentPage(0)
     } catch (e: any) {
@@ -170,17 +196,19 @@ export function useTransactions() {
     store.setError(null)
 
     try {
+      const encrypted = await vault.encryptTransactionData(data.amount, data.note ?? null)
+
       const { data: row, error } = await supabase
         .from('transactions')
         .insert({
           user_id: user.value.id,
           account_id: data.accountId,
           category_id: data.categoryId,
-          amount: data.amount,
+          amount: encrypted.isEncrypted ? encrypted.rawAmount : String(data.amount),
           date: data.date,
-          note: data.note ?? null,
+          note: encrypted.isEncrypted ? encrypted.rawNote : (data.note ?? null),
           recurring_id: data.recurringId ?? null,
-          is_encrypted: false,
+          is_encrypted: encrypted.isEncrypted,
           sync_status: SyncStatus.SYNCED,
         })
         .select()
@@ -188,7 +216,7 @@ export function useTransactions() {
 
       if (error) throw error
 
-      const transaction = mapTransaction(row)
+      const transaction = await decryptIfNeeded(mapTransaction(row), vault)
       store.addTransaction(transaction)
       return transaction
     } catch (e: any) {
@@ -212,9 +240,24 @@ export function useTransactions() {
       const updateData: Record<string, any> = {}
       if (data.accountId !== undefined) updateData.account_id = data.accountId
       if (data.categoryId !== undefined) updateData.category_id = data.categoryId
-      if (data.amount !== undefined) updateData.amount = data.amount
       if (data.date !== undefined) updateData.date = data.date
-      if (data.note !== undefined) updateData.note = data.note
+
+      // Chiffrer amount/note si vault actif
+      if (data.amount !== undefined || data.note !== undefined) {
+        const currentTx = store.transactionById(id)
+        const amount = data.amount ?? currentTx?.amount ?? 0
+        const note = data.note !== undefined ? data.note : (currentTx?.note ?? null)
+
+        if (vault.isUnlocked.value) {
+          const encrypted = await vault.encryptTransactionData(amount, note)
+          updateData.amount = encrypted.isEncrypted ? encrypted.rawAmount : String(amount)
+          updateData.note = encrypted.isEncrypted ? encrypted.rawNote : note
+          updateData.is_encrypted = encrypted.isEncrypted
+        } else {
+          if (data.amount !== undefined) updateData.amount = data.amount
+          if (data.note !== undefined) updateData.note = data.note
+        }
+      }
 
       const { data: row, error } = await supabase
         .from('transactions')
@@ -226,7 +269,7 @@ export function useTransactions() {
 
       if (error) throw error
 
-      const transaction = mapTransaction(row)
+      const transaction = await decryptIfNeeded(mapTransaction(row), vault)
       store.updateTransaction(id, transaction)
       return transaction
     } catch (e: any) {
@@ -281,12 +324,13 @@ export function useTransactions() {
           table: 'transactions',
           filter: `user_id=eq.${user.value.id}`,
         },
-        (payload) => {
+        async (payload) => {
           if (payload.eventType === 'INSERT') {
-            store.addTransaction(mapTransaction(payload.new))
+            const tx = await decryptIfNeeded(mapTransaction(payload.new), vault)
+            store.addTransaction(tx)
           } else if (payload.eventType === 'UPDATE') {
-            const transaction = mapTransaction(payload.new)
-            store.updateTransaction(transaction.id, transaction)
+            const tx = await decryptIfNeeded(mapTransaction(payload.new), vault)
+            store.updateTransaction(tx.id, tx)
           } else if (payload.eventType === 'DELETE') {
             store.removeTransaction((payload.old as any).id)
           }

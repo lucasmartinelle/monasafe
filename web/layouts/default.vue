@@ -7,6 +7,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
+const vault = useVault()
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
@@ -18,10 +19,18 @@ const navigation = [
 function isActive(href: string): boolean {
   return route.path.startsWith(href)
 }
+
+// Initialiser le vault avant le rendu des pages enfants
+await vault.init()
+
+const showLockScreen = computed(() => vault.isEnabled.value && vault.isLocked.value)
 </script>
 
 <template>
-  <div class="min-h-screen bg-background-light dark:bg-background-dark">
+  <!-- Lock screen overlay -->
+  <VaultLockScreen v-if="showLockScreen" />
+
+  <div v-show="!showLockScreen" class="min-h-screen bg-background-light dark:bg-background-dark">
     <!-- Sidebar (desktop) -->
     <aside class="fixed inset-y-0 left-0 z-40 hidden w-64 lg:flex flex-col bg-white dark:bg-surface-dark border-r border-gray-200 dark:border-gray-700">
       <!-- Logo -->
@@ -57,8 +66,8 @@ function isActive(href: string): boolean {
         <div class="flex-1" />
       </header>
 
-      <!-- Page content -->
-      <main class="p-4 lg:p-8">
+      <!-- Page content — key sur l'état vault pour forcer le remount après déverrouillage -->
+      <main class="p-4 lg:p-8" :key="showLockScreen ? 'locked' : 'unlocked'">
         <slot />
       </main>
     </div>
