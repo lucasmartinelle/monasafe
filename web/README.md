@@ -2,6 +2,9 @@
 
 Application de gestion de finances personnelles. Version web construite avec Nuxt 3.
 
+URL staging : https://staging-open-simpleflow.vercel.app/
+URL production : https://open-simpleflow.vercel.app/
+
 ## Stack technique
 
 | Outil | Usage |
