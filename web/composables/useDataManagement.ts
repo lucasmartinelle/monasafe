@@ -35,8 +35,8 @@ export function useDataManagement() {
 
       transactionsStore.reset()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Erreur lors de la suppression des transactions'
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Erreur lors de la suppression des transactions'
       return false
     } finally {
       isLoading.value = false
@@ -69,8 +69,8 @@ export function useDataManagement() {
 
       recurringStore.setRecurrings([])
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Erreur lors de la suppression des récurrences'
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Erreur lors de la suppression des récurrences'
       return false
     } finally {
       isLoading.value = false
@@ -95,8 +95,8 @@ export function useDataManagement() {
       if (err) throw err
 
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Erreur lors de la suppression des budgets'
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Erreur lors de la suppression des budgets'
       return false
     } finally {
       isLoading.value = false
@@ -158,8 +158,8 @@ export function useDataManagement() {
       )
 
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Erreur lors de la suppression des données'
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Erreur lors de la suppression des données'
       return false
     } finally {
       isLoading.value = false

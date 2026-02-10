@@ -46,6 +46,10 @@ const periodRange = computed(() => {
       const { start, end } = getYearRange(now)
       return { startDate: toISODateString(start), endDate: toISODateString(end) }
     }
+    default: {
+      const { start, end } = getMonthRange(now)
+      return { startDate: toISODateString(start), endDate: toISODateString(end) }
+    }
   }
 })
 

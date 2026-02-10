@@ -2,7 +2,7 @@ import type { RecurringTransaction } from '~/types/models'
 import { SyncStatus } from '~/types/enums'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { clampDayToMonth, toISODateString } from '~/utils/dates'
-import { addMonths, startOfMonth, endOfMonth, isBefore, isAfter, parseISO } from 'date-fns'
+import { addMonths, startOfMonth, isAfter, parseISO } from 'date-fns'
 
 interface CreateRecurringData {
   accountId: string
@@ -107,8 +107,8 @@ export function useRecurring() {
         (data ?? []).map(mapRecurring).map(r => decryptRecurringIfNeeded(r, vault)),
       )
       store.setRecurrings(mapped)
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors du chargement des récurrences')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors du chargement des récurrences')
     } finally {
       store.setLoading(false)
     }
@@ -149,8 +149,8 @@ export function useRecurring() {
       const recurring = await decryptRecurringIfNeeded(mapRecurring(row), vault)
       store.addRecurring(recurring)
       return recurring
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la création de la récurrence')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la création de la récurrence')
       return null
     } finally {
       store.setLoading(false)
@@ -205,8 +205,8 @@ export function useRecurring() {
       const recurring = await decryptRecurringIfNeeded(mapRecurring(row), vault)
       store.updateRecurring(id, recurring)
       return recurring
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la mise à jour de la récurrence')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la mise à jour de la récurrence')
       return null
     } finally {
       store.setLoading(false)
@@ -249,8 +249,8 @@ export function useRecurring() {
 
       store.removeRecurring(id)
       return true
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la suppression de la récurrence')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la suppression de la récurrence')
       return false
     } finally {
       store.setLoading(false)
@@ -263,7 +263,6 @@ export function useRecurring() {
   function calculateNextDate(recurring: RecurringTransaction): Date | null {
     if (!recurring.isActive) return null
 
-    const now = new Date()
     let checkDate: Date
 
     if (recurring.lastGenerated) {
@@ -373,8 +372,8 @@ export function useRecurring() {
           store.updateRecurring(recurring.id, { lastGenerated: txDateStr })
           lastGen = txDate
           generated++
-        } catch (e: any) {
-          console.error(`Erreur génération récurrence ${recurring.id}:`, e.message)
+        } catch (e: unknown) {
+          console.error(`Erreur génération récurrence ${recurring.id}:`, e instanceof Error ? e.message : e)
         }
 
         checkMonth = addMonths(checkMonth, 1)
@@ -408,7 +407,7 @@ export function useRecurring() {
             const rec = await decryptRecurringIfNeeded(mapRecurring(payload.new), vault)
             store.updateRecurring(rec.id, rec)
           } else if (payload.eventType === 'DELETE') {
-            store.removeRecurring((payload.old as any).id)
+            store.removeRecurring((payload.old as Record<string, string>).id)
           }
         },
       )

@@ -49,7 +49,8 @@ const dayLabel = computed(() => {
 </script>
 
 <template>
-  <div :class="[
+  <div
+:class="[
     'flex items-center gap-3 px-4 py-3 bg-white dark:bg-card-dark rounded-xl transition-opacity',
     !props.recurring.isActive ? 'opacity-50' : '',
   ]">

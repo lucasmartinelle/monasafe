@@ -125,8 +125,8 @@ export function useAccounts() {
       if (error) throw error
 
       store.setAccounts((data ?? []).map(mapAccount))
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors du chargement des comptes')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors du chargement des comptes')
     } finally {
       store.setLoading(false)
     }
@@ -160,8 +160,8 @@ export function useAccounts() {
       const account = mapAccount(row)
       store.addAccount(account)
       return account
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la création du compte')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la création du compte')
       return null
     } finally {
       store.setLoading(false)
@@ -197,8 +197,8 @@ export function useAccounts() {
       const account = mapAccount(row)
       store.updateAccount(id, account)
       return account
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la mise à jour du compte')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la mise à jour du compte')
       return null
     } finally {
       store.setLoading(false)
@@ -238,8 +238,8 @@ export function useAccounts() {
 
       store.removeAccount(id)
       return true
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la suppression du compte')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la suppression du compte')
       return false
     } finally {
       store.setLoading(false)
@@ -269,7 +269,7 @@ export function useAccounts() {
             const account = mapAccount(payload.new)
             store.updateAccount(account.id, account)
           } else if (payload.eventType === 'DELETE') {
-            store.removeAccount((payload.old as any).id)
+            store.removeAccount((payload.old as Record<string, string>).id)
           }
         },
       )

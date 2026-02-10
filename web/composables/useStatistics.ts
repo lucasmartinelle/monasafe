@@ -42,7 +42,7 @@ export function useStatistics() {
   /**
    * Résumé financier global
    */
-  function calculateFinancialSummary(startDate?: string, endDate?: string): FinancialSummary {
+  function calculateFinancialSummary(_startDate?: string, _endDate?: string): FinancialSummary {
     const totalBalance = accountsStore.totalBalance
 
     const allTransactions = transactionsStore.transactions

@@ -43,7 +43,7 @@ const chartOptions = {
     legend: { display: false },
     tooltip: {
       callbacks: {
-        label: (ctx: any) => {
+        label: (ctx: { raw: unknown; dataIndex: number; label: string }) => {
           const value = ctx.raw as number
           const pct = props.stats[ctx.dataIndex]?.percentage ?? 0
           return ` ${ctx.label}: ${formatMoney(value)} (${pct.toFixed(0)}%)`

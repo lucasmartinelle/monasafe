@@ -35,8 +35,8 @@ export function useSettings() {
           }
         }
       }
-    } catch (e: any) {
-      console.error('Erreur chargement settings:', e.message)
+    } catch (e: unknown) {
+      console.error('Erreur chargement settings:', e instanceof Error ? e.message : e)
     } finally {
       store.setLoading(false)
     }
@@ -61,8 +61,8 @@ export function useSettings() {
       if (key === 'currency') {
         store.setCurrency(value)
       }
-    } catch (e: any) {
-      console.error('Erreur mise à jour setting:', e.message)
+    } catch (e: unknown) {
+      console.error('Erreur mise à jour setting:', e instanceof Error ? e.message : e)
     }
   }
 
@@ -89,8 +89,8 @@ export function useSettings() {
       if (onboardingStatus.value) {
         onboardingStatus.value[user.value.id] = true
       }
-    } catch (e: any) {
-      console.error('Erreur complétion onboarding:', e.message)
+    } catch (e: unknown) {
+      console.error('Erreur complétion onboarding:', e instanceof Error ? e.message : e)
     }
   }
 
@@ -110,8 +110,8 @@ export function useSettings() {
 
       if (error) throw error
       return data?.value ?? null
-    } catch (e: any) {
-      console.error(`Erreur lecture setting "${key}":`, e.message)
+    } catch (e: unknown) {
+      console.error(`Erreur lecture setting "${key}":`, e instanceof Error ? e.message : e)
       return null
     }
   }
@@ -130,8 +130,8 @@ export function useSettings() {
         .eq('key', key)
 
       if (error) throw error
-    } catch (e: any) {
-      console.error(`Erreur suppression setting "${key}":`, e.message)
+    } catch (e: unknown) {
+      console.error(`Erreur suppression setting "${key}":`, e instanceof Error ? e.message : e)
     }
   }
 

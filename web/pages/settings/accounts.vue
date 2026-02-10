@@ -94,7 +94,8 @@ async function handleLinkGoogle() {
               v-if="hasGoogleProvider"
               class="h-4 w-4 text-success shrink-0"
             />
-            <p :class="[
+            <p
+:class="[
               'text-xs',
               hasGoogleProvider
                 ? 'text-success'
