@@ -68,8 +68,8 @@ export function useCategories() {
       if (error) throw error
 
       store.setCategories((data ?? []).map(mapCategory))
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors du chargement des catégories')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors du chargement des catégories')
     } finally {
       store.setLoading(false)
     }
@@ -104,8 +104,8 @@ export function useCategories() {
       const category = mapCategory(row)
       store.addCategory(category)
       return category
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la création de la catégorie')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la création de la catégorie')
       return null
     } finally {
       store.setLoading(false)
@@ -142,8 +142,8 @@ export function useCategories() {
       const category = mapCategory(row)
       store.updateCategory(id, category)
       return category
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la mise à jour de la catégorie')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la mise à jour de la catégorie')
       return null
     } finally {
       store.setLoading(false)
@@ -190,8 +190,8 @@ export function useCategories() {
 
       store.removeCategory(id)
       return true
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la suppression de la catégorie')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la suppression de la catégorie')
       return false
     } finally {
       store.setLoading(false)
@@ -221,7 +221,7 @@ export function useCategories() {
             const category = mapCategory(payload.new)
             store.updateCategory(category.id, category)
           } else if (payload.eventType === 'DELETE') {
-            store.removeCategory((payload.old as any).id)
+            store.removeCategory((payload.old as Record<string, string>).id)
           }
         },
       )

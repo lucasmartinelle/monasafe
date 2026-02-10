@@ -32,7 +32,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         .select('value')
         .eq('user_id', uid)
         .eq('key', 'onboarding_completed')
-        .maybeSingle()
+        .maybeSingle() as { data: { value: string } | null }
 
       onboardingStatus.value[uid] = data?.value === 'true'
     } catch {

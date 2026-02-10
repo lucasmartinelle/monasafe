@@ -58,8 +58,8 @@ export function useVault() {
       store.setLocked(false)
 
       await encryptAllTransactions()
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de l\'activation du vault')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de l\'activation du vault')
       throw e
     } finally {
       store.setLoading(false)
@@ -88,7 +88,7 @@ export function useVault() {
 
       store.setDek(dek)
       store.setLocked(false)
-    } catch (e: any) {
+    } catch (e: unknown) {
       store.setError('Mot de passe incorrect')
       throw e
     } finally {
@@ -138,7 +138,7 @@ export function useVault() {
       await settings.updateSetting('vault_dek_encrypted', newEncryptedDek)
 
       store.setDek(dek)
-    } catch (e: any) {
+    } catch (e: unknown) {
       store.setError('Mot de passe actuel incorrect')
       throw e
     } finally {
@@ -169,8 +169,8 @@ export function useVault() {
       store.clearDek()
       store.setEnabled(false)
       store.setLocked(true)
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la désactivation du vault')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la désactivation du vault')
       throw e
     } finally {
       store.setLoading(false)
@@ -299,8 +299,8 @@ export function useVault() {
             })
             .eq('id', tx.id)
             .eq('user_id', user.value.id)
-        } catch (e: any) {
-          console.error(`Erreur déchiffrement transaction ${tx.id}:`, e.message)
+        } catch (e: unknown) {
+          console.error(`Erreur déchiffrement transaction ${tx.id}:`, e instanceof Error ? e.message : e)
         }
       }
     }
@@ -327,8 +327,8 @@ export function useVault() {
             })
             .eq('id', rec.id)
             .eq('user_id', user.value.id)
-        } catch (e: any) {
-          console.error(`Erreur déchiffrement récurrence ${rec.id}:`, e.message)
+        } catch (e: unknown) {
+          console.error(`Erreur déchiffrement récurrence ${rec.id}:`, e instanceof Error ? e.message : e)
         }
       }
     }

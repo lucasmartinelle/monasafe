@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BudgetProgress, Transaction, Category } from '~/types/models'
+import type { BudgetProgress } from '~/types/models'
 import { CategoryType } from '~/types/enums'
 import { getBudgetStatus, getBudgetPercentage } from '~/composables/useStatistics'
 import { intToHex } from '~/utils/colors'
@@ -101,6 +101,7 @@ const statusColor = computed(() => {
     case 'safe': return 'bg-green-500'
     case 'warning': return 'bg-orange-500'
     case 'exceeded': return 'bg-red-500'
+    default: return 'bg-green-500'
   }
 })
 
@@ -109,6 +110,7 @@ const statusTextColor = computed(() => {
     case 'safe': return 'text-green-600 dark:text-green-400'
     case 'warning': return 'text-orange-600 dark:text-orange-400'
     case 'exceeded': return 'text-red-600 dark:text-red-400'
+    default: return 'text-green-600 dark:text-green-400'
   }
 })
 

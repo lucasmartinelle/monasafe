@@ -137,8 +137,8 @@ export function useTransactions() {
 
       store.setCurrentPage(page)
       store.setHasMore(mapped.length >= pageSize)
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors du chargement des transactions')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors du chargement des transactions')
     } finally {
       if (isFirstPage) {
         store.setLoading(false)
@@ -171,8 +171,8 @@ export function useTransactions() {
       store.setTransactions(mapped)
       store.setHasMore(false)
       store.setCurrentPage(0)
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors du chargement des transactions')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors du chargement des transactions')
     } finally {
       store.setLoading(false)
     }
@@ -219,8 +219,8 @@ export function useTransactions() {
       const transaction = await decryptIfNeeded(mapTransaction(row), vault)
       store.addTransaction(transaction)
       return transaction
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la création de la transaction')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la création de la transaction')
       return null
     } finally {
       store.setLoading(false)
@@ -272,8 +272,8 @@ export function useTransactions() {
       const transaction = await decryptIfNeeded(mapTransaction(row), vault)
       store.updateTransaction(id, transaction)
       return transaction
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la mise à jour de la transaction')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la mise à jour de la transaction')
       return null
     } finally {
       store.setLoading(false)
@@ -300,8 +300,8 @@ export function useTransactions() {
 
       store.removeTransaction(id)
       return true
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la suppression de la transaction')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la suppression de la transaction')
       return false
     } finally {
       store.setLoading(false)
@@ -332,7 +332,7 @@ export function useTransactions() {
             const tx = await decryptIfNeeded(mapTransaction(payload.new), vault)
             store.updateTransaction(tx.id, tx)
           } else if (payload.eventType === 'DELETE') {
-            store.removeTransaction((payload.old as any).id)
+            store.removeTransaction((payload.old as Record<string, string>).id)
           }
         },
       )

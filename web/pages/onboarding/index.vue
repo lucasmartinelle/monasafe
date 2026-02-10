@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AccountType, AccountTypeLabels } from '~/types/enums'
+import { AccountType } from '~/types/enums'
 import {
   CurrencyEuroIcon,
   BanknotesIcon,

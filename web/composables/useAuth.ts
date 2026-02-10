@@ -1,3 +1,5 @@
+import type {User} from "@supabase/auth-js";
+
 /**
  * Composable d'authentification — logique métier.
  *
@@ -23,8 +25,8 @@ export function useAuth() {
 
       await router.push('/onboarding')
       return data.user
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la connexion anonyme')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la connexion anonyme')
       return null
     } finally {
       store.setLoading(false)
@@ -47,8 +49,8 @@ export function useAuth() {
       })
       if (error) throw error
       // La page se recharge via redirect Google, pas de setLoading(false)
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la connexion Google')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la connexion Google')
       store.setLoading(false)
     }
   }
@@ -73,8 +75,8 @@ export function useAuth() {
         },
       })
       if (error) throw error
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la liaison Google')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la liaison Google')
       store.setLoading(false)
     }
   }
@@ -91,8 +93,8 @@ export function useAuth() {
       if (error) throw error
 
       await router.push('/auth')
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la déconnexion')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la déconnexion')
     } finally {
       store.setLoading(false)
     }

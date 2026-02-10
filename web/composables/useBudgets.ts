@@ -47,8 +47,8 @@ export function useBudgets() {
       if (error) throw error
 
       store.setBudgets((data ?? []).map(mapBudget))
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors du chargement des budgets')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors du chargement des budgets')
     } finally {
       store.setLoading(false)
     }
@@ -82,8 +82,8 @@ export function useBudgets() {
       const budget = mapBudget(data)
       store.upsertBudget(budget)
       return budget
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la sauvegarde du budget')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la sauvegarde du budget')
       return null
     } finally {
       store.setLoading(false)
@@ -110,8 +110,8 @@ export function useBudgets() {
 
       store.removeBudget(id)
       return true
-    } catch (e: any) {
-      store.setError(e.message || 'Erreur lors de la suppression du budget')
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors de la suppression du budget')
       return false
     } finally {
       store.setLoading(false)
