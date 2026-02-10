@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /onboarding/
+Disallow: /dashboard/
+Disallow: /transactions/
+Disallow: /recurring/
+Disallow: /stats/
+Disallow: /settings/
+
+Sitemap: https://open-simpleflow.vercel.app/sitemap.xml

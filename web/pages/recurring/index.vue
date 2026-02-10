@@ -3,6 +3,11 @@ import type { RecurringTransaction } from '~/types/models'
 import { CategoryType } from '~/types/enums'
 import { PlusIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 
+useSeoMeta({
+  title: 'Récurrences — SimpleFlow',
+  description: 'Gérez vos paiements récurrents : abonnements, loyers et revenus automatiques.',
+})
+
 definePageMeta({
   layout: 'default',
 })

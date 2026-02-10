@@ -1,0 +1,5 @@
+{
+  "framework": "nuxtjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".output"
+}

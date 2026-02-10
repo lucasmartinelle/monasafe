@@ -7,6 +7,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
     '@vueuse/nuxt',
+    '@nuxtjs/sitemap',
+    '@nuxt/eslint',
   ],
 
   colorMode: {
@@ -31,16 +33,53 @@ export default defineNuxtConfig({
     strict: true,
   },
 
+  site: {
+    url: 'https://open-simpleflow.vercel.app',
+  },
+
+  sitemap: {
+    exclude: [
+      '/auth/**',
+      '/onboarding/**',
+      '/dashboard/**',
+      '/transactions/**',
+      '/recurring/**',
+      '/stats/**',
+      '/settings/**',
+    ],
+  },
+
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
-      title: 'SimpleFlow',
+      htmlAttrs: { lang: 'fr' },
+      title: 'SimpleFlow — Gestion de finances personnelles',
       meta: [
-        { name: 'description', content: 'Gestion de finances personnelles' },
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'Gérez vos finances personnelles simplement avec SimpleFlow : suivi de comptes, transactions, budgets, récurrences et statistiques.' },
         { name: 'theme-color', content: '#1B5E5A' },
+        { name: 'author', content: 'Lucas MARTINELLE' },
+        // Open Graph
+        { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: 'https://open-simpleflow.vercel.app' },
+        { property: 'og:title', content: 'SimpleFlow — Gestion de finances personnelles' },
+        { property: 'og:description', content: 'Gérez vos finances personnelles simplement avec SimpleFlow : suivi de comptes, transactions, budgets, récurrences et statistiques.' },
+        { property: 'og:image', content: 'https://open-simpleflow.vercel.app/og.png' },
+        { property: 'og:locale', content: 'fr_FR' },
+        { property: 'og:site_name', content: 'SimpleFlow' },
+        // Twitter Card
+        { name: 'twitter:card', content: 'summary' },
+        { name: 'twitter:title', content: 'SimpleFlow — Gestion de finances personnelles' },
+        { name: 'twitter:description', content: 'Gérez vos finances personnelles simplement avec SimpleFlow.' },
+        { name: 'twitter:image', content: 'https://open-simpleflow.vercel.app/og.png' },
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon-96x96.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'manifest', href: '/site.webmanifest' },
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap',

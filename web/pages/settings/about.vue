@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
+useSeoMeta({
+  title: 'À propos — SimpleFlow',
+  description: 'Informations sur SimpleFlow : version, développeur et technologies utilisées.',
+})
+
 definePageMeta({
   layout: 'default',
 })

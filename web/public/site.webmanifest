@@ -1,0 +1,23 @@
+{
+  "name": "SimpleFlow - Gestion de finances personnelles",
+  "short_name": "SimpleFlow",
+  "description": "Gérez vos finances personnelles simplement : comptes, transactions, budgets et statistiques.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1B5E5A",
+  "background_color": "#F9FAFB",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

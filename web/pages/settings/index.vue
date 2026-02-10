@@ -11,6 +11,11 @@ import {
 } from '@heroicons/vue/24/outline'
 import { ChevronRightIcon } from '@heroicons/vue/24/solid'
 
+useSeoMeta({
+  title: 'Paramètres — SimpleFlow',
+  description: 'Configurez SimpleFlow : apparence, catégories, comptes, sécurité et données.',
+})
+
 definePageMeta({
   layout: 'default',
 })

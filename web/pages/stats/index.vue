@@ -3,6 +3,11 @@ import type { BudgetProgress } from '~/types/models'
 import type { PeriodType } from '~/composables/useStatistics'
 import { getMonthRange, getYearRange, toISODateString, getPreviousMonth } from '~/utils/dates'
 
+useSeoMeta({
+  title: 'Statistiques — SimpleFlow',
+  description: 'Analysez vos finances : graphiques de cashflow, budgets et suivi des dépenses par catégorie.',
+})
+
 definePageMeta({
   layout: 'default',
 })

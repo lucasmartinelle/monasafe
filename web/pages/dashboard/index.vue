@@ -5,6 +5,11 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import { getMonthRange, toISODateString, formatMonthYear, formatRelativeDate } from '~/utils/dates'
 import { colorStyle } from '~/utils/colors'
 
+useSeoMeta({
+  title: 'Dashboard — SimpleFlow',
+  description: 'Tableau de bord de vos finances : solde, transactions récentes et répartition des dépenses.',
+})
+
 definePageMeta({
   layout: 'default',
 })

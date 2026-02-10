@@ -1,4 +1,9 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Connexion — SimpleFlow',
+  description: 'Connectez-vous à SimpleFlow pour gérer vos finances personnelles.',
+})
+
 definePageMeta({
   layout: 'auth',
   middleware: ['guest'],
