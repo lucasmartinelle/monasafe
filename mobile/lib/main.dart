@@ -6,10 +6,8 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:simpleflow/src/core/config/supabase_config.dart';
-import 'package:simpleflow/src/core/services/seed_service.dart';
 import 'package:simpleflow/src/core/theme/theme.dart';
 import 'package:simpleflow/src/data/providers/database_providers.dart';
-import 'package:simpleflow/src/data/services/services.dart';
 import 'package:simpleflow/src/features/app_shell/app_shell.dart';
 import 'package:simpleflow/src/features/onboarding/onboarding.dart';
 import 'package:simpleflow/src/features/vault/vault.dart';
@@ -34,9 +32,6 @@ void main() async {
       anonKey: SupabaseConfig.anonKey,
     ),
   ]);
-
-  // Injecter les données par défaut si nécessaire (utilise la secret key)
-  await SeedService().runAllSeeds();
 
   // Attendre que les 2 secondes soient écoulées
   await splashTimer;

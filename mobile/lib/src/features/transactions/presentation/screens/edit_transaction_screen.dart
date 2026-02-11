@@ -38,8 +38,8 @@ class EditTransactionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return TransactionForm(
-      title: 'Modifier la transaction',
-      primaryButtonLabel: 'Modifier',
+      title: 'Sauvegarder les modifications',
+      primaryButtonLabel: 'Sauvegarder',
       onPrimaryAction: () async {
         final success =
             await ref.read(transactionFormNotifierProvider.notifier).update();
