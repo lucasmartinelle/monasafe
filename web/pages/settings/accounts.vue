@@ -10,6 +10,9 @@ definePageMeta({
   layout: 'default',
 })
 
+const route = useRoute()
+const router = useRouter()
+
 const {
   isAnonymous,
   hasGoogleProvider,
@@ -17,6 +20,7 @@ const {
   isLoading,
   error,
   linkGoogle,
+  switchToGoogle,
   signOut,
   clearError,
 } = useAuth()
@@ -31,6 +35,23 @@ const statusDescription = computed(() =>
     ? 'Vos données sont synchronisées avec votre compte Google.'
     : 'Données liées à cette session uniquement.',
 )
+
+// Modal conflit d'identité (compte Google déjà existant)
+const showIdentityConflict = ref(route.query.identity_conflict === 'true')
+
+// Nettoyer les query params sans recharger la page
+if (route.query.identity_conflict || route.query.auth_error) {
+  router.replace({ query: {} })
+}
+
+function cancelIdentityConflict() {
+  showIdentityConflict.value = false
+}
+
+async function confirmSwitchToGoogle() {
+  showIdentityConflict.value = false
+  await switchToGoogle()
+}
 
 // Modal déconnexion
 const showLogoutConfirm = ref(false)
@@ -168,6 +189,38 @@ async function handleLinkGoogle() {
         Se déconnecter
       </CommonAppButton>
     </div>
+
+    <!-- Modal conflit d'identité Google -->
+    <CommonAppModal
+      :open="showIdentityConflict"
+      title="Compte Google existant"
+      size="sm"
+      @close="cancelIdentityConflict"
+    >
+      <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        Ce compte Google est déjà associé à un utilisateur existant.
+        En continuant, vous serez connecté à ce compte et
+        <span class="font-medium text-gray-900 dark:text-white">toutes les données de votre compte anonyme actuel seront perdues</span>.
+      </p>
+
+      <div class="flex gap-3">
+        <CommonAppButton
+          variant="secondary"
+          class="flex-1"
+          @click="cancelIdentityConflict"
+        >
+          Annuler
+        </CommonAppButton>
+        <CommonAppButton
+          variant="danger"
+          class="flex-1"
+          :loading="isLoading"
+          @click="confirmSwitchToGoogle"
+        >
+          Continuer
+        </CommonAppButton>
+      </div>
+    </CommonAppModal>
 
     <!-- Modal confirmation déconnexion -->
     <CommonAppModal
