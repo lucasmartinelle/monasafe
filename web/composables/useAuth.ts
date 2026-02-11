@@ -82,6 +82,29 @@ export function useAuth() {
   }
 
   /**
+   * Abandonne le compte anonyme et se connecte au compte Google existant.
+   * Utilisé quand linkIdentity échoue car l'identité existe déjà.
+   */
+  async function switchToGoogle(): Promise<void> {
+    store.setLoading(true)
+    store.clearError()
+
+    try {
+      await supabase.auth.signOut()
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+      if (error) throw error
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors du changement de compte')
+      store.setLoading(false)
+    }
+  }
+
+  /**
    * Déconnexion + redirect vers auth
    */
   async function signOut(): Promise<void> {
@@ -115,6 +138,7 @@ export function useAuth() {
     signInAnonymous,
     signInGoogle,
     linkGoogle,
+    switchToGoogle,
     signOut,
     clearError: store.clearError,
   }
