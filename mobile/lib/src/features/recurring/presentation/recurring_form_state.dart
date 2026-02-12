@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart' hide Category;
 
-import 'package:simpleflow/src/data/models/models.dart';
+import 'package:monasafe/src/data/models/models.dart';
 
 /// Etat du formulaire de modification d'une transaction recurrente.
 @immutable

@@ -1,4 +1,4 @@
-import 'package:simpleflow/src/data/models/models.dart';
+import 'package:monasafe/src/data/models/models.dart';
 
 /// État du formulaire de création de compte.
 class AccountFormState {

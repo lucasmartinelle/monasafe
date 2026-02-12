@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: 'SimpleFlow — Gestion de finances personnelles',
-  description: 'Gérez vos finances personnelles simplement avec SimpleFlow : suivi de comptes, transactions, budgets et statistiques.',
+  title: 'Monasafe — Gestion de finances personnelles',
+  description: 'Gérez vos finances personnelles simplement avec Monasafe : suivi de comptes, transactions, budgets et statistiques.',
 })
 
 definePageMeta({

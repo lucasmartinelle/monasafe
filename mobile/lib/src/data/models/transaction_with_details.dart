@@ -1,6 +1,6 @@
-import 'package:simpleflow/src/data/models/account.dart';
-import 'package:simpleflow/src/data/models/category.dart';
-import 'package:simpleflow/src/data/models/transaction.dart';
+import 'package:monasafe/src/data/models/account.dart';
+import 'package:monasafe/src/data/models/category.dart';
+import 'package:monasafe/src/data/models/transaction.dart';
 
 /// DTO pour une transaction avec ses relations (compte et catégorie)
 class TransactionWithDetails {

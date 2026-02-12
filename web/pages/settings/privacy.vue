@@ -2,8 +2,8 @@
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 useSeoMeta({
-  title: 'Politique de confidentialité — SimpleFlow',
-  description: 'Découvrez comment SimpleFlow protège vos données personnelles et financières.',
+  title: 'Politique de confidentialité — Monasafe',
+  description: 'Découvrez comment Monasafe protège vos données personnelles et financières.',
 })
 
 definePageMeta({
@@ -35,7 +35,7 @@ definePageMeta({
         1. Données collectées
       </h2>
       <p>
-        SimpleFlow collecte uniquement les données que vous saisissez volontairement :
+        Monasafe collecte uniquement les données que vous saisissez volontairement :
         comptes bancaires, transactions, catégories, récurrences, budgets et paramètres.
         Aucune donnée de navigation, de localisation ou de comportement n'est collectée.
       </p>

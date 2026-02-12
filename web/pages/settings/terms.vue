@@ -2,8 +2,8 @@
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 useSeoMeta({
-  title: 'Conditions d\'utilisation — SimpleFlow',
-  description: 'Consultez les conditions d\'utilisation de SimpleFlow.',
+  title: 'Conditions d\'utilisation — Monasafe',
+  description: 'Consultez les conditions d\'utilisation de Monasafe.',
 })
 
 definePageMeta({
@@ -35,7 +35,7 @@ definePageMeta({
         1. Acceptation des conditions
       </h2>
       <p>
-        En utilisant SimpleFlow, vous acceptez les présentes conditions d'utilisation.
+        En utilisant Monasafe, vous acceptez les présentes conditions d'utilisation.
         Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser l'application.
       </p>
 
@@ -43,7 +43,7 @@ definePageMeta({
         2. Description du service
       </h2>
       <p>
-        SimpleFlow est une application de gestion de finances personnelles permettant de
+        Monasafe est une application de gestion de finances personnelles permettant de
         suivre vos comptes, transactions, récurrences et budgets. L'application est fournie
         "en l'état" à titre gratuit.
       </p>
@@ -52,7 +52,7 @@ definePageMeta({
         3. Compte utilisateur
       </h2>
       <p>
-        Vous pouvez utiliser SimpleFlow de manière anonyme ou en vous connectant via Google.
+        Vous pouvez utiliser Monasafe de manière anonyme ou en vous connectant via Google.
         Vous êtes responsable de la confidentialité de vos identifiants de connexion.
       </p>
 
@@ -70,7 +70,7 @@ definePageMeta({
         5. Responsabilité
       </h2>
       <p>
-        SimpleFlow est un outil de suivi et ne constitue pas un conseil financier.
+        Monasafe est un outil de suivi et ne constitue pas un conseil financier.
         L'application est fournie sans garantie d'exactitude des calculs ni de disponibilité.
         L'éditeur ne saurait être tenu responsable de toute perte de données ou d'erreur
         de calcul.

@@ -5,13 +5,154 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4919bb25-5d1f-4d23-a9f2-b563ec686ac4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/mobile-ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/mobile-ci.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.github/workflows/web-ci-cd.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/web-ci-cd.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" afterPath="$PROJECT_DIR$/CONTRIBUTING.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/kotlin/com/lurieldev/simpleflow/simpleflow/MainActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Info.plist" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/lib/src/core/services/seed_service.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/account_type_badge.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/account_type_badge.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/app_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/app_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/app_text_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/app_text_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/app_text_input.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/app_text_input.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/async_state_handler.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/async_state_handler.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/common_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/glass_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/glass_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/icon_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/icon_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/icon_label_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/icon_label_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/selectable_badge.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/selectable_badge.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/common_widgets/selectable_option_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/common_widgets/selectable_option_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/core/middleware/vault_middleware.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/core/middleware/vault_middleware.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/core/services/recurrence_generator_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/core/services/recurrence_generator_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/core/theme/app_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/core/theme/app_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/core/theme/theme_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/core/theme/theme_helper.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/models/account.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/models/account.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/models/category.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/models/category.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/models/pending_onboarding_data.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/models/pending_onboarding_data.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/models/recurring_transaction_with_details.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/models/recurring_transaction_with_details.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/models/statistics.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/models/statistics.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/models/transaction.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/models/transaction.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/models/transaction_with_details.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/models/transaction_with_details.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/providers/database_providers.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/providers/database_providers.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/repositories/account_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/repositories/account_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/repositories/category_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/repositories/category_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/repositories/settings_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/repositories/settings_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/repositories/transaction_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/repositories/transaction_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/account_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/account_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/auth_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/auth_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/budget_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/budget_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/category_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/category_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/data_management_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/data_management_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/pending_onboarding_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/pending_onboarding_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/recurring_transaction_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/recurring_transaction_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/statistics_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/statistics_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/data/services/transaction_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/data/services/transaction_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/accounts/presentation/account_form_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/accounts/presentation/account_form_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/accounts/presentation/account_form_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/accounts/presentation/account_form_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/accounts/presentation/screens/add_account_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/accounts/presentation/screens/add_account_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/accounts/presentation/widgets/account_list_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/accounts/presentation/widgets/account_list_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/app_shell/presentation/app_navigation_bar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/app_shell/presentation/app_navigation_bar.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/app_shell/presentation/app_shell.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/app_shell/presentation/app_shell.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/dashboard_providers.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/dashboard_providers.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/screens/dashboard_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/screens/dashboard_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/account_selector.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/account_selector.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/expense_breakdown_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/expense_breakdown_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/net_worth_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/net_worth_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/recent_transactions_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/recent_transactions_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/transaction_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/dashboard/presentation/widgets/transaction_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/onboarding.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/onboarding.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/onboarding_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/onboarding_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/onboarding_flow.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/onboarding_flow.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/screens/auth_choice_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/screens/auth_choice_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/screens/setup_account_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/screens/setup_account_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/screens/welcome_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/onboarding/presentation/screens/welcome_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/recurring_form_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/recurring_form_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/recurring_form_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/recurring_form_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/recurring_providers.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/recurring_providers.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/screens/recurring_list_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/screens/recurring_list_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/widgets/recurring_detail_modal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/widgets/recurring_detail_modal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/widgets/recurring_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/recurring/presentation/widgets/recurring_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/category_form_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/category_form_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/category_form_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/category_form_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/about_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/about_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/account_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/account_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/categories_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/categories_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/data_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/data_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/security_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/security_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/settings_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/screens/settings_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/category_form_modal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/category_form_modal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/category_list_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/category_list_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/color_picker.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/color_picker.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/icon_picker.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/icon_picker.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/settings_section_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/settings/presentation/widgets/settings_section_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/budget_form_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/budget_form_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/budget_form_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/budget_form_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/screens/stats_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/screens/stats_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/stats_providers.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/stats_providers.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/stats_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/stats_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/budget_detail_modal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/budget_detail_modal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/budget_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/budget_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/budget_progress_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/budget_progress_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/cashflow_chart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/cashflow_chart.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/create_budget_modal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/create_budget_modal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/period_selector.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/stats/presentation/widgets/period_selector.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/screens/add_transaction_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/screens/add_transaction_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/screens/edit_transaction_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/screens/edit_transaction_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/transaction_form_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/transaction_form_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/transaction_form_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/transaction_form_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/amount_display.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/amount_display.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/category_grid.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/category_grid.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/numeric_keypad.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/numeric_keypad.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/recurrence_toggle.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/recurrence_toggle.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/smart_note_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/smart_note_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/transaction_form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/transaction_form.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/transaction_type_tabs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/widgets/transaction_type_tabs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/vault/presentation/screens/lock_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/vault/presentation/screens/lock_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/vault/presentation/screens/vault_setup_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/vault/presentation/screens/vault_setup_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/vault/presentation/vault_providers.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/vault/presentation/vault_providers.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/vault/presentation/vault_providers.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/vault/presentation/vault_providers.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/linux/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/linux/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/linux/runner/my_application.cc" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/linux/runner/my_application.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/macos/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/macos/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/macos/Runner/Configs/AppInfo.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/macos/Runner/Configs/AppInfo.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/test/helpers/test_database.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/test/helpers/test_database.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/test/widget_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/windows/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/windows/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/windows/runner/Runner.rc" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/windows/runner/Runner.rc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/windows/runner/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/windows/runner/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/web/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/app.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/app.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/recurring/RecurringForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/recurring/RecurringForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/transactions/TransactionForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/transactions/TransactionForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/vault/LockScreen.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/vault/LockScreen.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/docs/composables.md" beforeDir="false" afterPath="$PROJECT_DIR$/web/docs/composables.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/layouts/auth.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/layouts/auth.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/layouts/default.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/layouts/default.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/nuxt.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/web/nuxt.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/auth/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/auth/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/dashboard/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/dashboard/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/recurring/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/recurring/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/settings/about.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/settings/about.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/settings/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/settings/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/settings/privacy.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/settings/privacy.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/settings/terms.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/settings/terms.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/stats/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/stats/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/transactions/add.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/transactions/add.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/robots.txt" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/robots.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/site.webmanifest" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/site.webmanifest" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +186,7 @@
     "cidr.known.project.marker": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feature/ajustements__mobile",
+    "git-widget-placeholder": "develop",
     "junie.onboarding.icon.badge.shown": "true",
     "last_opened_file_path": "/wks/projets-perso/simple-flow/simpleflow",
     "node.js.detected.package.eslint": "true",

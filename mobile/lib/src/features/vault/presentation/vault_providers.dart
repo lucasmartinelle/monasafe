@@ -5,10 +5,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:simpleflow/src/core/services/encryption_service.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
-import 'package:simpleflow/src/data/services/transaction_service.dart';
-import 'package:simpleflow/src/core/middleware/vault_middleware.dart';
+import 'package:monasafe/src/core/services/encryption_service.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/data/services/transaction_service.dart';
+import 'package:monasafe/src/core/middleware/vault_middleware.dart';
 
 part 'vault_providers.g.dart';
 
@@ -18,7 +18,7 @@ const String _kVaultEnabled = 'vault_enabled';
 const String _kVaultSalt = 'vault_salt';
 const String _kVaultDekEncrypted = 'vault_dek_encrypted';
 const String _kVaultBiometryEnabled = 'vault_biometry_enabled';
-const String _kSecureStorageDekKey = 'simpleflow_vault_dek';
+const String _kSecureStorageDekKey = 'monasafe_vault_dek';
 
 // ==================== STATE ====================
 
@@ -215,7 +215,25 @@ class VaultNotifier extends _$VaultNotifier {
       // Store DEK in memory
       ref.read(dekInMemoryProvider.notifier).set(dek);
 
-      state = state.copyWith(isLocked: false, isLoading: false);
+      // Auto-enregistrer la DEK dans le secure storage si la biométrie est activée
+      // mais que la DEK n'est pas encore sur cet appareil (cas d'un nouvel appareil).
+      final isBiometryEnabled = await settingsService.getBool(_kVaultBiometryEnabled);
+      if (isBiometryEnabled) {
+        final secureStorage = ref.read(secureStorageProvider);
+        final existingDek = await secureStorage.read(key: _kSecureStorageDekKey);
+        if (existingDek == null) {
+          await secureStorage.write(
+            key: _kSecureStorageDekKey,
+            value: encryptionService.encodeSalt(dek),
+          );
+        }
+      }
+
+      state = state.copyWith(
+        isLocked: false,
+        isLoading: false,
+        isBiometryEnabled: isBiometryEnabled,
+      );
       return true;
     } catch (e) {
       state = state.copyWith(
@@ -236,8 +254,23 @@ class VaultNotifier extends _$VaultNotifier {
       final localAuth = ref.read(localAuthProvider);
       final secureStorage = ref.read(secureStorageProvider);
 
+      // Vérifier que la DEK existe dans le secure storage AVANT le prompt biométrique.
+      // Sur un nouvel appareil, la DEK n'est pas encore enregistrée localement
+      // même si la biométrie est activée dans les settings (synchronisés via Supabase).
+      final dekBase64 = await secureStorage.read(key: _kSecureStorageDekKey);
+      if (dekBase64 == null) {
+        // DEK absente sur cet appareil — désactiver la biométrie dans le state
+        // (pas en DB) pour masquer le bouton sur le lock screen.
+        // Elle sera réactivée automatiquement après un déverrouillage par mot de passe.
+        state = state.copyWith(
+          isLoading: false,
+          isBiometryEnabled: false,
+        );
+        return false;
+      }
+
       final authenticated = await localAuth.authenticate(
-        localizedReason: 'Déverrouiller SimpleFlow',
+        localizedReason: 'Déverrouiller Monasafe',
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: true,
@@ -246,16 +279,6 @@ class VaultNotifier extends _$VaultNotifier {
 
       if (!authenticated) {
         state = state.copyWith(isLoading: false);
-        return false;
-      }
-
-      // Get DEK from secure storage
-      final dekBase64 = await secureStorage.read(key: _kSecureStorageDekKey);
-      if (dekBase64 == null) {
-        state = state.copyWith(
-          isLoading: false,
-          error: 'DEK non trouvée dans le stockage sécurisé',
-        );
         return false;
       }
 
@@ -292,7 +315,7 @@ class VaultNotifier extends _$VaultNotifier {
 
       // Authenticate first
       final authenticated = await localAuth.authenticate(
-        localizedReason: 'Activer la biométrie pour SimpleFlow',
+        localizedReason: 'Activer la biométrie pour Monasafe',
         options: const AuthenticationOptions(stickyAuth: true),
       );
 

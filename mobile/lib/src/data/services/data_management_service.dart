@@ -1,8 +1,8 @@
-import 'package:simpleflow/src/data/services/account_service.dart';
-import 'package:simpleflow/src/data/services/budget_service.dart';
-import 'package:simpleflow/src/data/services/category_service.dart';
-import 'package:simpleflow/src/data/services/recurring_transaction_service.dart';
-import 'package:simpleflow/src/data/services/transaction_service.dart';
+import 'package:monasafe/src/data/services/account_service.dart';
+import 'package:monasafe/src/data/services/budget_service.dart';
+import 'package:monasafe/src/data/services/category_service.dart';
+import 'package:monasafe/src/data/services/recurring_transaction_service.dart';
+import 'package:monasafe/src/data/services/transaction_service.dart';
 
 /// Service pour la gestion des données utilisateur (suppression).
 class DataManagementService {

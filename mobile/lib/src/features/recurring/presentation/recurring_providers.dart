@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
 
 part 'recurring_providers.g.dart';
 

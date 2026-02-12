@@ -66,12 +66,12 @@ jobs:
       - name: Decode keystore
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/simpleflow-release.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/monasafe-release.jks
           cat <<EOF > android/key.properties
           storePassword=${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.KEY_PASSWORD }}
           keyAlias=${{ secrets.KEY_ALIAS }}
-          storeFile=simpleflow-release.jks
+          storeFile=monasafe-release.jks
           EOF
 
       - name: Install dependencies

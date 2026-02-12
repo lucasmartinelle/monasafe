@@ -1,4 +1,4 @@
-import 'package:simpleflow/src/data/models/enums.dart';
+import 'package:monasafe/src/data/models/enums.dart';
 
 /// Modèle représentant une catégorie de transaction
 class Category {

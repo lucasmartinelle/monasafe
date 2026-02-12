@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
-import 'package:simpleflow/src/features/stats/presentation/stats_state.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/features/stats/presentation/stats_state.dart';
 
 part 'stats_providers.g.dart';
 

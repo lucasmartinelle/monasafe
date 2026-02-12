@@ -1,7 +1,7 @@
 /// Composants UI atomiques réutilisables.
 ///
 /// ```dart
-/// import 'package:simpleflow/src/common_widgets/common_widgets.dart';
+/// import 'package:monasafe/src/common_widgets/common_widgets.dart';
 /// ```
 library;
 

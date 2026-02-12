@@ -1,4 +1,4 @@
-package com.lurieldev.simpleflow.simpleflow
+package com.lurieldev.monasafe
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

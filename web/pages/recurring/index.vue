@@ -4,7 +4,7 @@ import { CategoryType } from '~/types/enums'
 import { PlusIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 
 useSeoMeta({
-  title: 'Récurrences — SimpleFlow',
+  title: 'Récurrences — Monasafe',
   description: 'Gérez vos paiements récurrents : abonnements, loyers et revenus automatiques.',
 })
 

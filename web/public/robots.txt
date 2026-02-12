@@ -8,4 +8,4 @@ Disallow: /recurring/
 Disallow: /stats/
 Disallow: /settings/
 
-Sitemap: https://open-simpleflow.vercel.app/sitemap.xml
+Sitemap: https://monasafe.com/sitemap.xml

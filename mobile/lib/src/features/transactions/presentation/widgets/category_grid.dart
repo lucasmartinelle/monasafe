@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/async_state_handler.dart';
-import 'package:simpleflow/src/common_widgets/category_icon.dart';
-import 'package:simpleflow/src/common_widgets/selectable_option_container.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/utils/icon_mapper.dart';
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
-import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
+import 'package:monasafe/src/common_widgets/async_state_handler.dart';
+import 'package:monasafe/src/common_widgets/category_icon.dart';
+import 'package:monasafe/src/common_widgets/selectable_option_container.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/utils/icon_mapper.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
 
 /// Horizontal scrolling grid of categories filtered by transaction type.
 ///

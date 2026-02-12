@@ -1,4 +1,4 @@
-# SimpleFlow
+# Monasafe
 
 Application de gestion de finances personnelles multi-plateforme avec **Supabase** comme backend.
 
@@ -16,7 +16,7 @@ Application de gestion de finances personnelles multi-plateforme avec **Supabase
 ## Architecture
 
 ```
-simpleflow/
+monasafe/
 ├── mobile/     # Application Flutter (iOS, Android)
 ├── web/        # Application Nuxt 3 (navigateur)
 └── README.md

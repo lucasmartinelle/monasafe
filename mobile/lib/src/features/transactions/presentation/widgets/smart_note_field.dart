@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/icon_label_tile.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/core/utils/currency_formatter.dart';
-import 'package:simpleflow/src/core/utils/icon_mapper.dart';
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
+import 'package:monasafe/src/common_widgets/icon_label_tile.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/core/utils/currency_formatter.dart';
+import 'package:monasafe/src/core/utils/icon_mapper.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
 
 /// Smart note field with autocomplete suggestions from transaction history.
 ///

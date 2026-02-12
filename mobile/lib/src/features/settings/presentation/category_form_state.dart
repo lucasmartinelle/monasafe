@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:simpleflow/src/data/models/enums.dart';
+import 'package:monasafe/src/data/models/enums.dart';
 
 /// État du formulaire de création/édition de catégorie.
 @immutable

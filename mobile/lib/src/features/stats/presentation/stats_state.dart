@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart' hide Category;
 
-import 'package:simpleflow/src/data/models/models.dart' show Category;
+import 'package:monasafe/src/data/models/models.dart' show Category;
 
-export 'package:simpleflow/src/data/models/models.dart' show Category;
+export 'package:monasafe/src/data/models/models.dart' show Category;
 
 /// Période de filtrage pour les statistiques.
 enum PeriodType {

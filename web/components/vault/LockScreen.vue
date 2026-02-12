@@ -30,7 +30,7 @@ async function onUnlock() {
       <!-- Titre -->
       <div>
         <h1 class="text-2xl font-heading font-bold text-gray-900 dark:text-white">
-          SimpleFlow verrouillé
+          Monasafe verrouillé
         </h1>
         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
           Entrez votre mot de passe maître pour déverrouiller l'application

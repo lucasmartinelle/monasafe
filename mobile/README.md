@@ -1,4 +1,4 @@
-# SimpleFlow
+# Monasafe
 
 Application de gestion de finances personnelles avec **Supabase** comme backend. Mode local ou synchronisation Google, **Vault** optionnel (chiffrement E2EE et verrouillage par biométrie / PIN).
 
@@ -218,7 +218,7 @@ Les polices sont dans `assets/fonts/` ; les icônes dans `assets/icons/`.
 Composants réutilisables situés dans `lib/src/common_widgets/`.
 
 ```dart
-import 'package:simpleflow/src/common_widgets/common_widgets.dart';
+import 'package:monasafe/src/common_widgets/common_widgets.dart';
 ```
 
 ### AppButton
@@ -613,7 +613,7 @@ PRIVACY_URL=https://your_privacy_url
 ```bash
 # 1. Cloner le repository
 git clone <repo-url>
-cd simpleflow
+cd monasafe
 
 # 2. Installer les dépendances
 flutter pub get
@@ -783,7 +783,7 @@ CREATE POLICY "Users can delete own budgets" ON user_budgets
 
 ```dart
 // Import unique pour toute la couche data
-import 'package:simpleflow/src/data/data.dart';
+import 'package:monasafe/src/data/data.dart';
 ```
 
 ### Providers Riverpod

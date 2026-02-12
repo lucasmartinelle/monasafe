@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/app_button.dart';
-import 'package:simpleflow/src/common_widgets/app_text_field.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/features/settings/presentation/category_form_provider.dart';
-import 'package:simpleflow/src/features/settings/presentation/widgets/color_picker.dart';
-import 'package:simpleflow/src/features/settings/presentation/widgets/icon_picker.dart';
+import 'package:monasafe/src/common_widgets/app_button.dart';
+import 'package:monasafe/src/common_widgets/app_text_field.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/features/settings/presentation/category_form_provider.dart';
+import 'package:monasafe/src/features/settings/presentation/widgets/color_picker.dart';
+import 'package:monasafe/src/features/settings/presentation/widgets/icon_picker.dart';
 
 /// Modal pour créer ou éditer une catégorie.
 class CategoryFormModal extends ConsumerStatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:simpleflow/src/data/data.dart';
+import 'package:monasafe/src/data/data.dart';
 
 /// Crée une base de données en mémoire pour les tests
 ///

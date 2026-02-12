@@ -1,9 +1,9 @@
-# SimpleFlow Web
+# Monasafe Web
 
 Application de gestion de finances personnelles. Version web construite avec Nuxt 3.
 
-URL staging : https://staging-open-simpleflow.vercel.app/
-URL production : https://open-simpleflow.vercel.app/
+URL staging : https://staging.monasafe.com/
+URL production : https://monasafe.com/
 
 ## Stack technique
 
@@ -23,7 +23,7 @@ URL production : https://open-simpleflow.vercel.app/
 ```bash
 # Cloner le projet
 git clone <repo-url>
-cd simpleflow/web
+cd monasafe/web
 
 # Installer les dependances
 npm install

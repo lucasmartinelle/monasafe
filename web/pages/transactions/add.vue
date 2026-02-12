@@ -3,8 +3,8 @@ import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 import { parseISO } from 'date-fns'
 
 useSeoMeta({
-  title: 'Nouvelle transaction — SimpleFlow',
-  description: 'Ajoutez une nouvelle transaction à vos comptes SimpleFlow.',
+  title: 'Nouvelle transaction — Monasafe',
+  description: 'Ajoutez une nouvelle transaction à vos comptes Monasafe.',
 })
 
 definePageMeta({

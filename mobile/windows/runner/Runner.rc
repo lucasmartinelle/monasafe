@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.lurieldev.simpleflow" "\0"
-            VALUE "FileDescription", "simpleflow" "\0"
+            VALUE "CompanyName", "com.lurieldev.monasafe" "\0"
+            VALUE "FileDescription", "monasafe" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "simpleflow" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.lurieldev.simpleflow. All rights reserved." "\0"
-            VALUE "OriginalFilename", "simpleflow.exe" "\0"
-            VALUE "ProductName", "simpleflow" "\0"
+            VALUE "InternalName", "monasafe" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.lurieldev.monasafe. All rights reserved." "\0"
+            VALUE "OriginalFilename", "monasafe.exe" "\0"
+            VALUE "ProductName", "monasafe" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

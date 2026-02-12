@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/common_widgets.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/common_widgets/common_widgets.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
 
 /// Écran de gestion du compte.
 class AccountScreen extends ConsumerStatefulWidget {
@@ -133,7 +133,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen>
           children: [
             Text(
               'La liaison avec ce compte Google a échoué.\n\n'
-              'Cela peut arriver si ce compte Google est déjà associé à un autre compte SimpleFlow.',
+              'Cela peut arriver si ce compte Google est déjà associé à un autre compte Monasafe.',
               style: AppTextStyles.bodyMedium(color: textColor),
             ),
             const SizedBox(height: 16),
