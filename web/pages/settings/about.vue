@@ -82,13 +82,13 @@ const version = '1.0.0'
         </p>
         <div class="space-y-2">
           <NuxtLink
-            to="/settings/terms"
+            to="/terms"
             class="block text-sm text-primary dark:text-primary-light hover:underline"
           >
             Conditions d'utilisation
           </NuxtLink>
           <NuxtLink
-            to="/settings/privacy"
+            to="/privacy"
             class="block text-sm text-primary dark:text-primary-light hover:underline"
           >
             Politique de confidentialité

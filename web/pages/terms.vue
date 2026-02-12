@@ -7,16 +7,16 @@ useSeoMeta({
 })
 
 definePageMeta({
-  layout: 'default',
+  layout: 'landing',
 })
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto">
+  <div class="max-w-2xl mx-auto px-4 py-12">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
       <NuxtLink
-        to="/settings/about"
+        to="/"
         class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
       >
         <ArrowLeftIcon class="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -45,7 +45,7 @@ definePageMeta({
       <p>
         Monasafe est une application de gestion de finances personnelles permettant de
         suivre vos comptes, transactions, récurrences et budgets. L'application est fournie
-        "en l'état" à titre gratuit.
+        "en l'état".
       </p>
 
       <h2 class="text-base font-semibold text-gray-900 dark:text-white">
