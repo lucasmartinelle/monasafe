@@ -99,7 +99,7 @@ class _BudgetDetailModalState extends ConsumerState<BudgetDetailModal> {
       ),
     );
 
-    if (confirmed == true) {
+    if (confirmed ?? false) {
       final success =
           await ref.read(budgetFormNotifierProvider.notifier).delete();
       if (success && mounted) {
@@ -156,7 +156,6 @@ class _BudgetDetailModalState extends ConsumerState<BudgetDetailModal> {
                   CategoryIcon.fromHex(
                     icon: IconMapper.getIcon(category.iconKey),
                     colorHex: category.color,
-                    size: CategoryIconSize.medium,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -270,7 +269,7 @@ class _BudgetDetailModalState extends ConsumerState<BudgetDetailModal> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: formState?.isValid == true &&
+                      onPressed: (formState?.isValid ?? false) &&
                               formState?.isLoading != true
                           ? _handleUpdate
                           : null,
@@ -285,7 +284,7 @@ class _BudgetDetailModalState extends ConsumerState<BudgetDetailModal> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: formState?.isLoading == true
+                      child: formState?.isLoading ?? false
                           ? const SizedBox(
                               width: 20,
                               height: 20,
@@ -311,7 +310,7 @@ class _BudgetDetailModalState extends ConsumerState<BudgetDetailModal> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         side: BorderSide(
-                          color: formState?.isDeleting == true
+                          color: formState?.isDeleting ?? false
                               ? (isDark
                                   ? AppColors.dividerDark
                                   : AppColors.dividerLight)
@@ -322,7 +321,7 @@ class _BudgetDetailModalState extends ConsumerState<BudgetDetailModal> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: formState?.isDeleting == true
+                      child: formState?.isDeleting ?? false
                           ? const SizedBox(
                               width: 18,
                               height: 18,

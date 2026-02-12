@@ -116,7 +116,7 @@ class RecurringListScreen extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.info_outline,
                         color: AppColors.primary,
                         size: 20,

@@ -1,9 +1,8 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/stats/presentation/budget_form_state.dart';
 import 'package:monasafe/src/features/stats/presentation/stats_providers.dart';
 import 'package:monasafe/src/features/stats/presentation/stats_state.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'budget_form_provider.g.dart';
 

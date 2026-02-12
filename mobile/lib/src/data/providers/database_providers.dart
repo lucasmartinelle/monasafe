@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:monasafe/src/core/middleware/vault_middleware.dart';
 import 'package:monasafe/src/core/services/recurrence_date_service.dart';
 import 'package:monasafe/src/core/services/recurrence_generator_service.dart';
@@ -11,6 +10,7 @@ import 'package:monasafe/src/data/repositories/transaction_repository.dart';
 import 'package:monasafe/src/data/services/recurring_transaction_service.dart';
 import 'package:monasafe/src/data/services/services.dart';
 import 'package:monasafe/src/features/vault/presentation/vault_providers.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'database_providers.g.dart';

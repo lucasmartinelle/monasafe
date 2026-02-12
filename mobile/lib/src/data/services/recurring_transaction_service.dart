@@ -132,14 +132,13 @@ class RecurringTransactionService {
     required String accountId,
     required String categoryId,
     required double amount,
-    String? note,
-    required DateTime startDate,
+    required DateTime startDate, String? note,
     DateTime? endDate,
   }) async {
     // Preparer les donnees (chiffrement si actif)
     String amountStr;
     String? noteStr;
-    bool isEncrypted = false;
+    var isEncrypted = false;
 
     if (_vaultMiddleware != null) {
       final encrypted = await _vaultMiddleware.encryptTransactionData(

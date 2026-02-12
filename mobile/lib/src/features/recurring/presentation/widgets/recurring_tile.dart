@@ -54,7 +54,6 @@ class RecurringTile extends StatelessWidget {
                     ? CategoryIcon.fromHex(
                         icon: IconMapper.getIcon(category.iconKey),
                         colorHex: category.color,
-                        size: CategoryIconSize.medium,
                       )
                     : Container(
                         width: 44,

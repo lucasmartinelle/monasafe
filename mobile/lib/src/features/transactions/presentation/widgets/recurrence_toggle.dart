@@ -50,7 +50,7 @@ class RecurrenceToggle extends ConsumerWidget {
             iconColor: AppColors.primary,
             label: label,
             subtitle: 'Lié à une récurrence',
-            trailing: Switch.adaptive(
+            trailing: const Switch.adaptive(
               value: true,
               onChanged: null,
               activeColor: AppColors.primary,

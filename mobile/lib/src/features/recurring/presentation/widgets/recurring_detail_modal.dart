@@ -94,7 +94,6 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      useRootNavigator: true,
       builder: (dialogContext) => AlertDialog(
         title: Text(isCurrentlyActive ? 'Desactiver' : 'Reactiver'),
         content: Text(
@@ -115,7 +114,7 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
       ),
     );
 
-    if (confirmed == true) {
+    if (confirmed ?? false) {
       final success =
           await ref.read(recurringFormNotifierProvider.notifier).toggleActive();
       if (success && mounted) {
@@ -127,7 +126,6 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
   Future<void> _handleDelete() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      useRootNavigator: true,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Supprimer la recurrence'),
         content: Text(
@@ -147,7 +145,7 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
       ),
     );
 
-    if (confirmed == true) {
+    if (confirmed ?? false) {
       final success =
           await ref.read(recurringFormNotifierProvider.notifier).delete();
       if (success && mounted) {
@@ -169,7 +167,6 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
       initialDate: initialDate,
       firstDate: now,
       lastDate: DateTime(now.year + 10),
-      useRootNavigator: true,
     );
 
     if (picked != null) {
@@ -237,7 +234,6 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                     CategoryIcon.fromHex(
                       icon: IconMapper.getIcon(category.iconKey),
                       colorHex: category.color,
-                      size: CategoryIconSize.medium,
                     )
                   else
                     Container(
@@ -507,7 +503,7 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: formState?.isValid == true &&
+                      onPressed: (formState?.isValid ?? false) &&
                               formState?.isBusy != true
                           ? _handleUpdate
                           : null,
@@ -522,7 +518,7 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: formState?.isLoading == true
+                      child: formState?.isLoading ?? false
                           ? const SizedBox(
                               width: 20,
                               height: 20,
@@ -546,15 +542,15 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                       onPressed:
                           formState?.isBusy != true ? _handleToggle : null,
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: formState?.isActive == true
+                        foregroundColor: formState?.isActive ?? false
                             ? AppColors.warning
                             : AppColors.success,
                         side: BorderSide(
-                          color: formState?.isBusy == true
+                          color: formState?.isBusy ?? false
                               ? (isDark
                                   ? AppColors.dividerDark
                                   : AppColors.dividerLight)
-                              : (formState?.isActive == true
+                              : (formState?.isActive ?? false
                                   ? AppColors.warning
                                   : AppColors.success),
                         ),
@@ -563,13 +559,13 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: formState?.isToggling == true
+                      child: formState?.isToggling ?? false
                           ? SizedBox(
                               width: 18,
                               height: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: formState?.isActive == true
+                                color: formState?.isActive ?? false
                                     ? AppColors.warning
                                     : AppColors.success,
                               ),
@@ -578,18 +574,18 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  formState?.isActive == true
+                                  formState?.isActive ?? false
                                       ? Icons.pause_circle_outline
                                       : Icons.play_circle_outline,
                                   size: 18,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  formState?.isActive == true
+                                  formState?.isActive ?? false
                                       ? 'Desactiver'
                                       : 'Reactiver',
                                   style: AppTextStyles.button(
-                                    color: formState?.isActive == true
+                                    color: formState?.isActive ?? false
                                         ? AppColors.warning
                                         : AppColors.success,
                                   ),
@@ -609,7 +605,7 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         side: BorderSide(
-                          color: formState?.isBusy == true
+                          color: formState?.isBusy ?? false
                               ? (isDark
                                   ? AppColors.dividerDark
                                   : AppColors.dividerLight)
@@ -620,7 +616,7 @@ class _RecurringDetailModalState extends ConsumerState<RecurringDetailModal> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: formState?.isDeleting == true
+                      child: formState?.isDeleting ?? false
                           ? const SizedBox(
                               width: 18,
                               height: 18,
