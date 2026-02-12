@@ -1,5 +1,5 @@
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/data/services/services.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/data/services/services.dart';
 
 /// Repository pour la gestion des paramètres utilisateur
 class SettingsRepository {

@@ -36,7 +36,7 @@ class AuthService {
   Future<void> signInWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: 'io.supabase.simpleflow://login-callback/',
+      redirectTo: 'io.supabase.monasafe://login-callback/',
     );
   }
 
@@ -73,7 +73,7 @@ class AuthService {
 
     await _client.auth.linkIdentity(
       OAuthProvider.google,
-      redirectTo: 'io.supabase.simpleflow://login-callback/',
+      redirectTo: 'io.supabase.monasafe://login-callback/',
     );
   }
 

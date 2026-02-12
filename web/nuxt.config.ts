@@ -21,7 +21,7 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/auth',
       callback: '/auth/callback',
-      exclude: ['/auth/*', '/'],
+      exclude: ['/auth/*', '/', '/terms', '/privacy'],
     },
   },
 
@@ -34,7 +34,7 @@ export default defineNuxtConfig({
   },
 
   site: {
-    url: 'https://open-simpleflow.vercel.app',
+    url: 'https://monasafe.com',
   },
 
   sitemap: {
@@ -53,26 +53,26 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       htmlAttrs: { lang: 'fr' },
-      title: 'SimpleFlow — Gestion de finances personnelles',
+      title: 'Monasafe — Gestion de finances personnelles',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Gérez vos finances personnelles simplement avec SimpleFlow : suivi de comptes, transactions, budgets, récurrences et statistiques.' },
+        { name: 'description', content: 'Gérez vos finances personnelles simplement avec Monasafe : suivi de comptes, transactions, budgets, récurrences et statistiques.' },
         { name: 'theme-color', content: '#1B5E5A' },
         { name: 'author', content: 'Lucas MARTINELLE' },
         // Open Graph
         { property: 'og:type', content: 'website' },
-        { property: 'og:url', content: 'https://open-simpleflow.vercel.app' },
-        { property: 'og:title', content: 'SimpleFlow — Gestion de finances personnelles' },
-        { property: 'og:description', content: 'Gérez vos finances personnelles simplement avec SimpleFlow : suivi de comptes, transactions, budgets, récurrences et statistiques.' },
-        { property: 'og:image', content: 'https://open-simpleflow.vercel.app/og.png' },
+        { property: 'og:url', content: 'https://monasafe.com' },
+        { property: 'og:title', content: 'Monasafe — Gestion de finances personnelles' },
+        { property: 'og:description', content: 'Gérez vos finances personnelles simplement avec Monasafe : suivi de comptes, transactions, budgets, récurrences et statistiques.' },
+        { property: 'og:image', content: 'https://monasafe.com/og.png' },
         { property: 'og:locale', content: 'fr_FR' },
-        { property: 'og:site_name', content: 'SimpleFlow' },
+        { property: 'og:site_name', content: 'Monasafe' },
         // Twitter Card
         { name: 'twitter:card', content: 'summary' },
-        { name: 'twitter:title', content: 'SimpleFlow — Gestion de finances personnelles' },
-        { name: 'twitter:description', content: 'Gérez vos finances personnelles simplement avec SimpleFlow.' },
-        { name: 'twitter:image', content: 'https://open-simpleflow.vercel.app/og.png' },
+        { name: 'twitter:title', content: 'Monasafe — Gestion de finances personnelles' },
+        { name: 'twitter:description', content: 'Gérez vos finances personnelles simplement avec Monasafe.' },
+        { name: 'twitter:image', content: 'https://monasafe.com/og.png' },
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

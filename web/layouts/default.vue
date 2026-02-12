@@ -36,7 +36,7 @@ const showLockScreen = computed(() => vault.isEnabled.value && vault.isLocked.va
       <!-- Logo -->
       <div class="flex items-center h-16 px-6 border-b border-gray-200 dark:border-gray-700">
         <h1 class="text-xl font-heading font-bold text-primary dark:text-primary-light">
-          SimpleFlow
+          Monasafe
         </h1>
       </div>
 

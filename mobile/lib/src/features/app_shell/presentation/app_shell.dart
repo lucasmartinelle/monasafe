@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/features/app_shell/presentation/app_navigation_bar.dart';
-import 'package:simpleflow/src/features/dashboard/presentation/dashboard_providers.dart';
-import 'package:simpleflow/src/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:simpleflow/src/features/recurring/recurring.dart';
-import 'package:simpleflow/src/features/settings/presentation/screens/settings_screen.dart';
-import 'package:simpleflow/src/features/stats/presentation/screens/stats_screen.dart';
-import 'package:simpleflow/src/features/transactions/presentation/screens/add_transaction_screen.dart';
-import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/features/app_shell/presentation/app_navigation_bar.dart';
+import 'package:monasafe/src/features/dashboard/presentation/dashboard_providers.dart';
+import 'package:monasafe/src/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:monasafe/src/features/recurring/recurring.dart';
+import 'package:monasafe/src/features/settings/presentation/screens/settings_screen.dart';
+import 'package:monasafe/src/features/stats/presentation/screens/stats_screen.dart';
+import 'package:monasafe/src/features/transactions/presentation/screens/add_transaction_screen.dart';
+import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
 
 /// Main app shell with bottom navigation and FAB.
 ///

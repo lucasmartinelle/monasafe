@@ -1,7 +1,7 @@
-name: simpleflow
+name: monasafe
 description: "A Flutter application with Clean Architecture."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.10.7
@@ -45,6 +45,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   path: any
+  flutter_native_splash: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -60,8 +61,6 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.3
 
   # Native Splash Screen
-  flutter_native_splash: ^2.4.4
-
   drift: any
 flutter:
   uses-material-design: true
@@ -107,10 +106,10 @@ flutter_launcher_icons:
 flutter_native_splash:
   color: "#E8E8E8"
   color_dark: "#121212"
-  image: assets/images/full_logo.png
-  image_dark: assets/images/full_logo.png
+  image: assets/images/logo.png
+  image_dark: assets/images/logo.png
   android_12:
     color: "#E8E8E8"
     color_dark: "#121212"
-    image: assets/images/full_logo.png
-    image_dark: assets/images/full_logo.png
+    image: assets/images/logo.png
+    image_dark: assets/images/logo.png

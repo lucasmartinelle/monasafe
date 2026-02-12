@@ -2,13 +2,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/async_state_handler.dart';
-import 'package:simpleflow/src/common_widgets/glass_card.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/core/utils/currency_formatter.dart';
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/features/dashboard/presentation/dashboard_providers.dart';
+import 'package:monasafe/src/common_widgets/async_state_handler.dart';
+import 'package:monasafe/src/common_widgets/glass_card.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/core/utils/currency_formatter.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/features/dashboard/presentation/dashboard_providers.dart';
 
 /// Card displaying monthly expenses breakdown as a PieChart with legend.
 class ExpenseBreakdownCard extends ConsumerWidget {

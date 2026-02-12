@@ -1,6 +1,6 @@
 # API des Composables
 
-Reference de tous les composables de SimpleFlow Web.
+Reference de tous les composables de Monasafe Web.
 
 Convention : les composables portent la logique metier et les appels Supabase. Les stores ne contiennent que l'etat reactif pur.
 

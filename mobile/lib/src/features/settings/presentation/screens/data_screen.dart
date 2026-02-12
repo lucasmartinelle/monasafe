@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/common_widgets.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
-import 'package:simpleflow/src/features/recurring/presentation/recurring_providers.dart';
-import 'package:simpleflow/src/features/settings/presentation/widgets/settings_section_tile.dart';
-import 'package:simpleflow/src/features/stats/presentation/stats_providers.dart';
+import 'package:monasafe/src/common_widgets/common_widgets.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/features/recurring/presentation/recurring_providers.dart';
+import 'package:monasafe/src/features/settings/presentation/widgets/settings_section_tile.dart';
+import 'package:monasafe/src/features/stats/presentation/stats_providers.dart';
 
 /// Écran de gestion des données utilisateur.
 class DataScreen extends ConsumerStatefulWidget {

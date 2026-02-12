@@ -6,7 +6,7 @@ import { getMonthRange, toISODateString, formatMonthYear, formatRelativeDate } f
 import { colorStyle } from '~/utils/colors'
 
 useSeoMeta({
-  title: 'Dashboard — SimpleFlow',
+  title: 'Dashboard — Monasafe',
   description: 'Tableau de bord de vos finances : solde, transactions récentes et répartition des dépenses.',
 })
 

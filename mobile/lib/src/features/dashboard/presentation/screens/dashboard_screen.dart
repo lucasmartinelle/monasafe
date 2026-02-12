@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/core/theme/theme_helper.dart';
-import 'package:simpleflow/src/features/accounts/accounts.dart';
-import 'package:simpleflow/src/features/dashboard/presentation/widgets/account_selector.dart';
-import 'package:simpleflow/src/features/dashboard/presentation/widgets/expense_breakdown_card.dart';
-import 'package:simpleflow/src/features/dashboard/presentation/widgets/net_worth_card.dart';
-import 'package:simpleflow/src/features/dashboard/presentation/widgets/recent_transactions_card.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/core/theme/theme_helper.dart';
+import 'package:monasafe/src/features/accounts/accounts.dart';
+import 'package:monasafe/src/features/dashboard/presentation/widgets/account_selector.dart';
+import 'package:monasafe/src/features/dashboard/presentation/widgets/expense_breakdown_card.dart';
+import 'package:monasafe/src/features/dashboard/presentation/widgets/net_worth_card.dart';
+import 'package:monasafe/src/features/dashboard/presentation/widgets/recent_transactions_card.dart';
 
 /// Main dashboard screen displaying financial overview.
 class DashboardScreen extends StatelessWidget {
@@ -34,7 +34,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'SimpleFlow',
+                      'Monasafe',
                       style: AppTextStyles.h2(color: context.textPrimary),
                     ),
                   ],

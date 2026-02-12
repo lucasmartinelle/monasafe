@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/core/theme/theme_helper.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/core/theme/theme_helper.dart';
 
 /// Variantes disponibles pour AppButton
 enum AppButtonVariant {

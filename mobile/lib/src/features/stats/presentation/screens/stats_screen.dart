@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/features/stats/presentation/widgets/budget_list.dart';
-import 'package:simpleflow/src/features/stats/presentation/widgets/cashflow_chart.dart';
-import 'package:simpleflow/src/features/stats/presentation/widgets/period_selector.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/features/stats/presentation/widgets/budget_list.dart';
+import 'package:monasafe/src/features/stats/presentation/widgets/cashflow_chart.dart';
+import 'package:monasafe/src/features/stats/presentation/widgets/period_selector.dart';
 
 /// Écran des statistiques et budgets.
 ///

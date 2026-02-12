@@ -1,6 +1,6 @@
 {
-  "name": "SimpleFlow - Gestion de finances personnelles",
-  "short_name": "SimpleFlow",
+  "name": "Monasafe - Gestion de finances personnelles",
+  "short_name": "Monasafe",
   "description": "Gérez vos finances personnelles simplement : comptes, transactions, budgets et statistiques.",
   "start_url": "/",
   "display": "standalone",

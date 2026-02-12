@@ -3,7 +3,7 @@
 /// Accueille l'utilisateur et configure son premier compte.
 ///
 /// ```dart
-/// import 'package:simpleflow/src/features/onboarding/onboarding.dart';
+/// import 'package:monasafe/src/features/onboarding/onboarding.dart';
 /// ```
 library;
 

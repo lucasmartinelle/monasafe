@@ -4,14 +4,85 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4919bb25-5d1f-4d23-a9f2-b563ec686ac4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/web-ci-cd.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/web-ci-cd.yml" afterDir="false" />
+    <list default="true" id="4919bb25-5d1f-4d23-a9f2-b563ec686ac4" name="Changes" comment="feat: renommage de l'appli">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/lib/src/core/services/seed_service.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/screens/edit_transaction_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/src/features/transactions/presentation/screens/edit_transaction_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-hdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-hdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-hdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-hdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-mdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-mdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-mdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-mdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-hdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-hdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-hdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-hdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-mdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-mdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-mdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-mdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xhdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xhdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xhdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xhdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xxhdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xxhdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xxhdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xxhdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xxxhdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xxxhdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xxxhdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-night-xxxhdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xhdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xhdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xhdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xhdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxhdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxhdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxhdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxhdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxxhdpi/android12splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxxhdpi/android12splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxxhdpi/splash.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/drawable-xxxhdpi/splash.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/assets/images/full_logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/assets/images/logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/assets/images/logo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-50x50@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-57x57@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImageDark.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImageDark.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImageDark@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImageDark@2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImageDark@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImageDark@3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/ios/Runner/Base.lproj/LaunchScreen.storyboard" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/ios/Runner/Base.lproj/LaunchScreen.storyboard" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/splash/img/dark-1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/splash/img/dark-1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/splash/img/dark-2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/splash/img/dark-2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/splash/img/dark-3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/splash/img/dark-3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/splash/img/dark-4x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/splash/img/dark-4x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/splash/img/light-1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/splash/img/light-1x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/splash/img/light-2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/splash/img/light-2x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/splash/img/light-3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/splash/img/light-3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/web/splash/img/light-4x.png" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/web/splash/img/light-4x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/apple-touch-icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/apple-touch-icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/favicon-96x96.png" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/favicon-96x96.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/favicon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/favicon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/og.png" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/og.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/web-app-manifest-192x192.png" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/web-app-manifest-192x192.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/web-app-manifest-512x512.png" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/web-app-manifest-512x512.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,9 +116,9 @@
     "cidr.known.project.marker": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feature/ajustements__mobile",
+    "git-widget-placeholder": "feature/preparation__ouverture",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/wks/projets-perso/simple-flow/simpleflow",
+    "last_opened_file_path": "/wks/projets-perso/simple-flow/simpleflow/web/public",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -55,9 +126,19 @@
     "nodejs_package_manager_path": "npm",
     "show.migrate.to.gradle.popup": "false",
     "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "/wks/projets-perso/simple-flow/simpleflow/web/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/web/public" />
+      <recent name="$PROJECT_DIR$/mobile" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/mobile/assets/images" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -74,9 +155,22 @@
       <updated>1770410735405</updated>
       <workItem from="1770834715588" duration="788000" />
     </task>
+    <task id="LOCAL-00001" summary="feat: renommage de l'appli">
+      <option name="closed" value="true" />
+      <created>1770922124051</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1770922124051</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: renommage de l'appli" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: renommage de l'appli" />
   </component>
 </project>

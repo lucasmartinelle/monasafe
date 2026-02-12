@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
 
 abstract final class AppTheme {
   static const String _fontFamilyPoppins = 'Poppins';

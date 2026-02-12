@@ -95,7 +95,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Alias to stable preview URL
-        run: npx vercel alias set ${{ steps.deploy.outputs.url }} staging-open-simpleflow.vercel.app --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel alias set ${{ steps.deploy.outputs.url }} staging.monasafe.com --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

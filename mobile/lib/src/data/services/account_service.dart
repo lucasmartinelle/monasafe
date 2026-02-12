@@ -1,4 +1,4 @@
-import 'package:simpleflow/src/data/models/models.dart';
+import 'package:monasafe/src/data/models/models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service Supabase pour la gestion des comptes

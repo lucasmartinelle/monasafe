@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/features/onboarding/presentation/onboarding_controller.dart';
-import 'package:simpleflow/src/features/onboarding/presentation/screens/auth_choice_screen.dart';
-import 'package:simpleflow/src/features/onboarding/presentation/screens/setup_account_screen.dart';
-import 'package:simpleflow/src/features/onboarding/presentation/screens/welcome_screen.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/features/onboarding/presentation/onboarding_controller.dart';
+import 'package:monasafe/src/features/onboarding/presentation/screens/auth_choice_screen.dart';
+import 'package:monasafe/src/features/onboarding/presentation/screens/setup_account_screen.dart';
+import 'package:monasafe/src/features/onboarding/presentation/screens/welcome_screen.dart';
 
 /// Widget principal qui gère le flow d'onboarding
 class OnboardingFlow extends ConsumerWidget {

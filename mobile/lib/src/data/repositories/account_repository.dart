@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/data/services/services.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/data/services/services.dart';
 
 /// Erreurs possibles lors des opérations sur les comptes
 sealed class AccountError {

@@ -1,6 +1,6 @@
-import 'package:simpleflow/src/data/models/account.dart';
-import 'package:simpleflow/src/data/models/category.dart';
-import 'package:simpleflow/src/data/models/recurring_transaction.dart';
+import 'package:monasafe/src/data/models/account.dart';
+import 'package:monasafe/src/data/models/category.dart';
+import 'package:monasafe/src/data/models/recurring_transaction.dart';
 
 /// Agregat d'une transaction recurrente avec ses details (compte et categorie)
 class RecurringTransactionWithDetails {

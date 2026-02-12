@@ -1,7 +1,7 @@
-import 'package:simpleflow/src/core/services/recurrence_date_service.dart';
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/data/services/recurring_transaction_service.dart';
-import 'package:simpleflow/src/data/services/transaction_service.dart';
+import 'package:monasafe/src/core/services/recurrence_date_service.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/data/services/recurring_transaction_service.dart';
+import 'package:monasafe/src/data/services/transaction_service.dart';
 
 /// Service de generation automatique des transactions recurrentes.
 ///

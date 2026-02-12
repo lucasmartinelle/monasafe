@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
-import 'package:simpleflow/src/features/transactions/presentation/widgets/transaction_form.dart';
+import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
+import 'package:monasafe/src/features/transactions/presentation/widgets/transaction_form.dart';
 
 /// Modal bottom sheet for adding a new transaction.
 class AddTransactionScreen extends ConsumerWidget {

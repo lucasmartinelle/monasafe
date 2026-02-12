@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="simpleflow"
+        android:label="Monasafe"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -32,7 +32,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                    android:scheme="io.supabase.simpleflow"
+                    android:scheme="io.supabase.monasafe"
                     android:host="login-callback"/>
             </intent-filter>
         </activity>
