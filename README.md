@@ -1,67 +1,57 @@
 # Monasafe
 
-Application de gestion de finances personnelles multi-plateforme avec **Supabase** comme backend.
+Application open-source de gestion de finances personnelles. Multi-plateforme (Android + Web), backend Supabase.
+
+**Web** : [monasafe.com](https://monasafe.com) | **Android** : Play Store (bientot)
 
 ## Fonctionnalites
 
-- **Comptes** : CRUD, types (courant/epargne/especes), couleurs, soldes calcules
-- **Transactions** : CRUD, categorisation, notes avec autocompletion intelligente
-- **Recurrences** : Transactions mensuelles auto-generees, activation/desactivation
-- **Budgets** : Limite par categorie, suivi progression, vue mensuelle/annuelle
-- **Statistiques** : Graphiques cashflow, repartition depenses, selecteur de periode
-- **Vault** : Chiffrement E2E optionnel, verrouillage par biometrie/PIN (mobile) ou mot de passe maitre (web)
-- **Dark mode** : Clair / Sombre / Systeme
-- **Authentification** : Anonyme (local only) ou Google OAuth avec synchronisation cloud
+- **Comptes** — Courant, epargne, especes. Soldes calcules en temps reel.
+- **Transactions** — Categorisation, notes avec autocompletion intelligente.
+- **Recurrences** — Paiements mensuels automatiques (loyer, abonnements...).
+- **Budgets** — Limite par categorie, suivi de progression.
+- **Statistiques** — Graphiques cashflow, repartition des depenses par categorie.
+- **Vault** — Chiffrement E2E optionnel (AES-256-GCM). Verrouillage biometrie/PIN (mobile) ou mot de passe maitre (web).
+- **Authentification** — Mode anonyme (local) ou Google OAuth avec synchronisation cloud.
+- **Dark mode** — Clair / Sombre / Systeme.
 
 ## Architecture
 
 ```
 monasafe/
-├── mobile/     # Application Flutter (iOS, Android)
-├── web/        # Application Nuxt 3 (navigateur)
+├── mobile/          # Flutter (Android, iOS)
+├── web/             # Nuxt 3 (Vue 3 + TypeScript)
+├── CONTRIBUTING.md
 └── README.md
 ```
 
 Les deux clients partagent le meme backend **Supabase** (PostgreSQL, Auth, Row Level Security).
 
-## Plateformes
+### Stack
 
-### Mobile (Flutter)
-
-| Outil | Usage |
-|-------|-------|
-| **Flutter** | Framework UI cross-platform |
-| **Riverpod** | State management reactif |
-| **go_router** | Navigation declarative |
-| **Supabase Flutter** | Backend (Auth, DB, Realtime) |
-| **fl_chart** | Graphiques |
-| **cryptography + flutter_secure_storage + local_auth** | Vault (E2EE, biometrie) |
-
-> Documentation complete : [`mobile/README.md`](mobile/README.md)
-
-### Web (Nuxt 3)
-
-| Outil | Usage |
-|-------|-------|
-| **Nuxt 3** | Framework (Vue 3 + Vite + Nitro) |
-| **TypeScript** | Typage strict |
-| **Pinia** | State management |
-| **Supabase** | Backend (Auth, DB, Realtime) |
-| **Tailwind CSS** | Styling utility-first |
-| **Chart.js** | Graphiques |
-| **Web Crypto API** | Vault (AES-256-GCM, PBKDF2) |
-
-> Documentation complete : [`web/README.md`](web/README.md)
+| | Mobile | Web |
+|---|---|---|
+| **Framework** | Flutter 3.38 | Nuxt 3 (Vue 3) |
+| **State** | Riverpod + code generation | Pinia + composables |
+| **Backend** | Supabase Flutter | @nuxtjs/supabase |
+| **Graphiques** | fl_chart | Chart.js |
+| **Vault** | cryptography + flutter_secure_storage + local_auth | Web Crypto API (AES-256-GCM, PBKDF2) |
+| **Styling** | Material Design custom | Tailwind CSS |
 
 ## Demarrage rapide
+
+### Prerequis
+
+- Un projet [Supabase](https://supabase.com) avec les tables configurees (voir [schema](#base-de-donnees))
+- **Mobile** : Flutter SDK >= 3.10.7
+- **Web** : Node.js >= 18
 
 ### Mobile
 
 ```bash
 cd mobile
 flutter pub get
-cp .env.example .env
-# Remplir les variables Supabase dans .env
+cp .env.example .env          # Remplir SUPABASE_URL et SUPABASE_ANON_KEY
 flutter packages pub run build_runner build --delete-conflicting-outputs
 flutter run
 ```
@@ -71,28 +61,38 @@ flutter run
 ```bash
 cd web
 npm install
-cp .env.example .env
-# Remplir SUPABASE_URL et SUPABASE_ANON_KEY dans .env
+cp .env.example .env          # Remplir SUPABASE_URL et SUPABASE_ANON_KEY
 npm run dev
 ```
 
-## Backend (Supabase)
+> Documentation detaillee : [`mobile/README.md`](mobile/README.md) | [`web/README.md`](web/README.md)
 
-Les deux clients se connectent au meme projet Supabase. Le schema inclut les tables suivantes :
+## Base de donnees
+
+Les deux clients se connectent au meme projet Supabase. Toutes les tables ont **Row Level Security** active.
 
 | Table | Description |
 |-------|-------------|
-| `accounts` | Comptes bancaires de l'utilisateur |
-| `categories` | Categories de transactions (defaut + custom) |
-| `transactions` | Transactions financieres |
-| `recurring_transactions` | Paiements recurrents |
-| `user_budgets` | Budgets par categorie |
-| `user_settings` | Parametres utilisateur (cle-valeur) |
+| `accounts` | Comptes bancaires (type, devise, couleur, solde) |
+| `categories` | Categories de transactions (defaut + custom, type income/expense) |
+| `transactions` | Transactions financieres (montant chiffre si Vault actif) |
+| `recurring_transactions` | Paiements recurrents mensuels |
+| `user_budgets` | Budgets par categorie (`UNIQUE(user_id, category_id)`) |
+| `user_settings` | Parametres utilisateur (cle-valeur : devise, onboarding, etc.) |
 
-Toutes les tables ont **Row Level Security** active : chaque utilisateur ne voit que ses propres donnees.
+Chaque table a les colonnes `user_id`, `created_at`, `updated_at`. Les politiques RLS garantissent que chaque utilisateur ne voit que ses propres donnees :
 
-> Schema complet et migrations SQL : [`mobile/README.md`](mobile/README.md#base-de-données-supabase-postgresql)
+```sql
+CREATE POLICY "Users can view own data" ON table_name
+  FOR SELECT USING (auth.uid() = user_id);
+```
+
+> Schema complet avec index et migrations SQL : [`mobile/README.md`](mobile/README.md#base-de-donnees)
 
 ## Contribution
 
-Voir [`CONTRIBUTING.md`](CONTRIBUTING.md) pour les conventions, le workflow et les instructions par plateforme.
+Voir [`CONTRIBUTING.md`](CONTRIBUTING.md) pour les conventions, le workflow de developpement et les instructions par plateforme.
+
+## Licence
+
+[MIT](LICENSE)
