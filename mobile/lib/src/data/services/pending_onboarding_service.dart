@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import 'package:simpleflow/src/data/models/models.dart';
+import 'package:monasafe/src/data/models/models.dart';
 
 /// Service pour gérer les données d'onboarding en attente
 /// pendant le flux OAuth (qui peut tuer/relancer l'app).

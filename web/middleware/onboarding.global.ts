@@ -13,7 +13,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Routes exclues du check onboarding
   const isExcluded =
     to.path === '/' ||
-    to.path.startsWith('/auth')
+    to.path.startsWith('/auth') ||
+    to.path === '/terms' ||
+    to.path === '/privacy'
 
   if (isExcluded) return
 

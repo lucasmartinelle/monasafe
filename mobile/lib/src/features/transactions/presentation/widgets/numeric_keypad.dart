@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
 
 /// Custom numeric keypad for amount input (cents mode).
 ///

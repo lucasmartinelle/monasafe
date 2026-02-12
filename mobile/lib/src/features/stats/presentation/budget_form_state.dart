@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart' hide Category;
 
-import 'package:simpleflow/src/data/models/models.dart' show Category;
+import 'package:monasafe/src/data/models/models.dart' show Category;
 
 /// État immutable du formulaire de modification de budget.
 @immutable

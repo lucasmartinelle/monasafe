@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
-import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
-import 'package:simpleflow/src/features/transactions/presentation/transaction_form_state.dart';
-import 'package:simpleflow/src/features/transactions/presentation/widgets/category_grid.dart';
-import 'package:simpleflow/src/features/transactions/presentation/widgets/numeric_keypad.dart';
-import 'package:simpleflow/src/features/transactions/presentation/widgets/recurrence_toggle.dart';
-import 'package:simpleflow/src/features/transactions/presentation/widgets/smart_note_field.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
+import 'package:monasafe/src/features/transactions/presentation/transaction_form_state.dart';
+import 'package:monasafe/src/features/transactions/presentation/widgets/category_grid.dart';
+import 'package:monasafe/src/features/transactions/presentation/widgets/numeric_keypad.dart';
+import 'package:monasafe/src/features/transactions/presentation/widgets/recurrence_toggle.dart';
+import 'package:monasafe/src/features/transactions/presentation/widgets/smart_note_field.dart';
 
 /// Reusable transaction form content widget.
 /// Used by both add and edit transaction screens.

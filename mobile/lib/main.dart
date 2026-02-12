@@ -5,14 +5,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:simpleflow/src/core/config/supabase_config.dart';
-import 'package:simpleflow/src/core/services/seed_service.dart';
-import 'package:simpleflow/src/core/theme/theme.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
-import 'package:simpleflow/src/data/services/services.dart';
-import 'package:simpleflow/src/features/app_shell/app_shell.dart';
-import 'package:simpleflow/src/features/onboarding/onboarding.dart';
-import 'package:simpleflow/src/features/vault/vault.dart';
+import 'package:monasafe/src/core/config/supabase_config.dart';
+import 'package:monasafe/src/core/theme/theme.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/features/app_shell/app_shell.dart';
+import 'package:monasafe/src/features/onboarding/onboarding.dart';
+import 'package:monasafe/src/features/vault/vault.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -35,9 +33,6 @@ void main() async {
     ),
   ]);
 
-  // Injecter les données par défaut si nécessaire (utilise la secret key)
-  await SeedService().runAllSeeds();
-
   // Attendre que les 2 secondes soient écoulées
   await splashTimer;
 
@@ -46,18 +41,18 @@ void main() async {
 
   runApp(
     const ProviderScope(
-      child: SimpleFlowApp(),
+      child: MonasafeApp(),
     ),
   );
 }
 
-class SimpleFlowApp extends StatelessWidget {
-  const SimpleFlowApp({super.key});
+class MonasafeApp extends StatelessWidget {
+  const MonasafeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SimpleFlow',
+      title: 'Monasafe',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,

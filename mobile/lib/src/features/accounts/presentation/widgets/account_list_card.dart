@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/account_type_badge.dart';
-import 'package:simpleflow/src/common_widgets/glass_card.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/core/utils/currency_formatter.dart';
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/data/providers/database_providers.dart';
-import 'package:simpleflow/src/features/accounts/presentation/screens/add_account_screen.dart';
+import 'package:monasafe/src/common_widgets/account_type_badge.dart';
+import 'package:monasafe/src/common_widgets/glass_card.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/core/utils/currency_formatter.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/features/accounts/presentation/screens/add_account_screen.dart';
 
 /// Card affichant la liste des comptes avec leur solde.
 class AccountListCard extends ConsumerWidget {

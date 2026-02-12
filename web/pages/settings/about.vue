@@ -2,8 +2,8 @@
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 useSeoMeta({
-  title: 'À propos — SimpleFlow',
-  description: 'Informations sur SimpleFlow : version, développeur et technologies utilisées.',
+  title: 'À propos — Monasafe',
+  description: 'Informations sur Monasafe : version, développeur et technologies utilisées.',
 })
 
 definePageMeta({
@@ -31,7 +31,7 @@ const version = '1.0.0'
     <!-- Logo & Version -->
     <div class="bg-white dark:bg-card-dark rounded-xl p-6 text-center mb-6">
       <h2 class="text-2xl font-heading font-bold text-primary dark:text-primary-light">
-        SimpleFlow
+        Monasafe
       </h2>
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
         Gestion de finances personnelles
@@ -82,13 +82,13 @@ const version = '1.0.0'
         </p>
         <div class="space-y-2">
           <NuxtLink
-            to="/settings/terms"
+            to="/terms"
             class="block text-sm text-primary dark:text-primary-light hover:underline"
           >
             Conditions d'utilisation
           </NuxtLink>
           <NuxtLink
-            to="/settings/privacy"
+            to="/privacy"
             class="block text-sm text-primary dark:text-primary-light hover:underline"
           >
             Politique de confidentialité

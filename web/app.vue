@@ -6,9 +6,9 @@ useHead({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        'name': 'SimpleFlow',
-        'description': 'Gérez vos finances personnelles simplement avec SimpleFlow : suivi de comptes, transactions, budgets, récurrences et statistiques.',
-        'url': 'https://open-simpleflow.vercel.app',
+        'name': 'Monasafe',
+        'description': 'Gérez vos finances personnelles simplement avec Monasafe : suivi de comptes, transactions, budgets, récurrences et statistiques.',
+        'url': 'https://monasafe.com',
         'applicationCategory': 'FinanceApplication',
         'operatingSystem': 'Web',
         'offers': {

@@ -5,7 +5,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>Simpleflow</string>
+		<string>Monasafe</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
-		<string>simpleflow</string>
+		<string>monasafe</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>
@@ -52,10 +52,10 @@
 				<key>CFBundleTypeRole</key>
 				<string>Editor</string>
 				<key>CFBundleURLName</key>
-				<string>io.supabase.simpleflow</string>
+				<string>io.supabase.monasafe</string>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<string>io.supabase.simpleflow</string>
+					<string>io.supabase.monasafe</string>
 				</array>
 			</dict>
 		</array>

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/icon_label_tile.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/data/models/models.dart';
-import 'package:simpleflow/src/features/transactions/presentation/transaction_form_provider.dart';
+import 'package:monasafe/src/common_widgets/icon_label_tile.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
 
 /// Toggle switch for recurring payment option.
 ///
@@ -50,7 +50,7 @@ class RecurrenceToggle extends ConsumerWidget {
             iconColor: AppColors.primary,
             label: label,
             subtitle: 'Lié à une récurrence',
-            trailing: Switch.adaptive(
+            trailing: const Switch.adaptive(
               value: true,
               onChanged: null,
               activeColor: AppColors.primary,

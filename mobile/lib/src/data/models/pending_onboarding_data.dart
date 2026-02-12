@@ -1,4 +1,4 @@
-import 'package:simpleflow/src/data/models/enums.dart';
+import 'package:monasafe/src/data/models/enums.dart';
 
 /// Données d'onboarding en attente de complétion après OAuth
 class PendingOnboardingData {

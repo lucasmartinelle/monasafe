@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:simpleflow/src/common_widgets/common_widgets.dart';
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/features/onboarding/presentation/onboarding_controller.dart';
+import 'package:monasafe/src/common_widgets/common_widgets.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/features/onboarding/presentation/onboarding_controller.dart';
 
 /// Écran 3 : Auth Choice
 /// Choix entre Google Auth ou Local Only

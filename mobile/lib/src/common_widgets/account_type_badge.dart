@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
-import 'package:simpleflow/src/core/theme/app_text_styles.dart';
-import 'package:simpleflow/src/core/theme/theme_helper.dart';
-import 'package:simpleflow/src/core/utils/currency_formatter.dart';
-import 'package:simpleflow/src/data/models/models.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/core/theme/theme_helper.dart';
+import 'package:monasafe/src/core/utils/currency_formatter.dart';
+import 'package:monasafe/src/data/models/models.dart';
 
 /// Badge affichant le type de compte avec son solde.
 class AccountTypeBadge extends StatelessWidget {

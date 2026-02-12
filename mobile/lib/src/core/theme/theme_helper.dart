@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:simpleflow/src/core/theme/app_colors.dart';
+import 'package:monasafe/src/core/theme/app_colors.dart';
 
 /// Extension pour simplifier l'accès aux couleurs du thème selon le mode.
 extension ThemeHelper on BuildContext {

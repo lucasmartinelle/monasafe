@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:simpleflow/src/core/services/encryption_service.dart';
+import 'package:monasafe/src/core/services/encryption_service.dart';
 
 /// Middleware de chiffrement pour les transactions.
 ///

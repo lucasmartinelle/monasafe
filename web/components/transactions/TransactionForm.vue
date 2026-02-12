@@ -132,7 +132,7 @@ watch(sortedAccounts, (accounts) => {
 function validate(): boolean {
   const result = schema.safeParse({
     accountId: accountId.value,
-    categoryId: categoryId.value,
+    categoryId: categoryId.value ?? '',
     amount: amount.value,
     date: date.value,
   })

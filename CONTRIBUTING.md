@@ -1,6 +1,6 @@
-# Contribuer a SimpleFlow
+# Contribuer a Monasafe
 
-Merci de votre interet pour SimpleFlow ! Ce guide explique comment contribuer au projet (mobile et web).
+Merci de votre interet pour Monasafe ! Ce guide explique comment contribuer au projet (mobile et web).
 
 ## Prerequis
 
@@ -20,7 +20,7 @@ Merci de votre interet pour SimpleFlow ! Ce guide explique comment contribuer au
 
 ```bash
 git clone <repo-url>
-cd simpleflow
+cd monasafe
 ```
 
 ### Mobile
