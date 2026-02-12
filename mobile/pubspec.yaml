@@ -107,10 +107,10 @@ flutter_launcher_icons:
 flutter_native_splash:
   color: "#E8E8E8"
   color_dark: "#121212"
-  image: assets/images/full_logo.png
-  image_dark: assets/images/full_logo.png
+  image: assets/images/logo.png
+  image_dark: assets/images/logo.png
   android_12:
     color: "#E8E8E8"
     color_dark: "#121212"
-    image: assets/images/full_logo.png
-    image_dark: assets/images/full_logo.png
+    image: assets/images/logo.png
+    image_dark: assets/images/logo.png
