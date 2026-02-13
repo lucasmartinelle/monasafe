@@ -60,12 +60,33 @@ definePageMeta({
       </p>
 
       <h2 class="text-base font-semibold text-gray-900 dark:text-white">
-        4. Authentification
+        4. Authentification et données Google
       </h2>
       <p>
-        L'authentification est gérée par Supabase Auth. Si vous choisissez la connexion Google,
-        seuls votre adresse e-mail et votre nom sont récupérés pour identifier votre compte.
-        Aucune donnée Google supplémentaire n'est accédée.
+        L'authentification est gérée par Supabase Auth. Si vous choisissez de vous connecter
+        via Google, les données suivantes sont accédées depuis votre compte Google :
+      </p>
+      <ul class="list-disc list-inside space-y-1 pl-2">
+        <li>
+          <strong>Adresse e-mail</strong> — utilisée pour créer et identifier votre compte
+          Monasafe.
+        </li>
+        <li>
+          <strong>Nom d'affichage</strong> — utilisé pour personnaliser votre profil dans
+          l'application.
+        </li>
+      </ul>
+      <p>
+        <strong>Utilisation et traitement :</strong> ces données sont utilisées exclusivement
+        pour l'authentification et l'identification de votre compte. Elles sont stockées sur
+        les serveurs Supabase, protégées par des politiques de sécurité au niveau des lignes
+        (RLS). Elles ne sont ni partagées, ni vendues, ni transmises à des tiers. Aucun service
+        d'analyse, de publicité ou de tracking n'a accès à ces données.
+      </p>
+      <p>
+        Aucune autre donnée de votre compte Google n'est accédée, stockée ou traitée par
+        Monasafe. Aucun scope Google supplémentaire au-delà de l'authentification de base n'est
+        demandé.
       </p>
 
       <h2 class="text-base font-semibold text-gray-900 dark:text-white">
