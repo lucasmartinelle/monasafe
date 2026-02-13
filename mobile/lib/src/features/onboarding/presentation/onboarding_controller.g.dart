@@ -7,7 +7,7 @@ part of 'onboarding_controller.dart';
 // **************************************************************************
 
 String _$onboardingControllerHash() =>
-    r'808efd8e224a868ea264095f9e17d713808a88bc';
+    r'd49174620511de0a308fb9610e6919c2d15ff9a2';
 
 /// Contrôleur pour le flow d'onboarding
 ///

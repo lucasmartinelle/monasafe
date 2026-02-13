@@ -1,31 +1,34 @@
-import 'package:monasafe/src/data/models/enums.dart';
-
 /// Données d'onboarding en attente de complétion après OAuth
 class PendingOnboardingData {
   const PendingOnboardingData({
     required this.currency,
-    required this.initialBalance,
-    required this.accountType,
+    this.wantsCheckingAccount = true,
+    this.checkingBalanceCents = 0,
+    this.wantsSavingsAccount = false,
+    this.savingsBalanceCents = 0,
   });
 
   factory PendingOnboardingData.fromJson(Map<String, dynamic> json) {
     return PendingOnboardingData(
       currency: json['currency'] as String,
-      initialBalance: (json['initialBalance'] as num).toDouble(),
-      accountType: AccountType.values.firstWhere(
-        (e) => e.name == json['accountType'],
-        orElse: () => AccountType.checking,
-      ),
+      wantsCheckingAccount: json['wantsCheckingAccount'] as bool? ?? true,
+      checkingBalanceCents: json['checkingBalanceCents'] as int? ?? 0,
+      wantsSavingsAccount: json['wantsSavingsAccount'] as bool? ?? false,
+      savingsBalanceCents: json['savingsBalanceCents'] as int? ?? 0,
     );
   }
 
   final String currency;
-  final double initialBalance;
-  final AccountType accountType;
+  final bool wantsCheckingAccount;
+  final int checkingBalanceCents;
+  final bool wantsSavingsAccount;
+  final int savingsBalanceCents;
 
   Map<String, dynamic> toJson() => {
         'currency': currency,
-        'initialBalance': initialBalance,
-        'accountType': accountType.name,
+        'wantsCheckingAccount': wantsCheckingAccount,
+        'checkingBalanceCents': checkingBalanceCents,
+        'wantsSavingsAccount': wantsSavingsAccount,
+        'savingsBalanceCents': savingsBalanceCents,
       };
 }
