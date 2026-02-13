@@ -1,0 +1,8 @@
+=> Premier écran :
+    => Connexion google ou création d'un nouveau compte anonyme
+=> Si pas de compte (dans le cas de la synchro google)
+    => On affiche les écrans suivants sous forme de questions qui scroll de haut vers le bas. Il faut qu'il y est des animations et que ce soit pratique / efficace pour l'utilisateur
+    => 1e question => devise du compte (choix actuelles)
+    => 2e question => voulez-vous initialiser un compte courrant => indique le montant
+    => 3e question => un compte épargne ? => indique le montant si c'est le cas
+=> dernier écran, remercie pour l'installation et après 2s redirige sur le dashboard de manière fluide et toujours avec transition

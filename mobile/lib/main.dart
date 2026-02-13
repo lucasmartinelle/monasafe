@@ -71,7 +71,6 @@ class _AppRoot extends ConsumerStatefulWidget {
 
 class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver {
   StreamSubscription<AuthState>? _authSubscription;
-  bool _isCompletingPendingOnboarding = false;
 
   @override
   void initState() {
@@ -90,91 +89,28 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    // Quand l'app revient au premier plan (après OAuth), vérifier les données pending
     if (state == AppLifecycleState.resumed) {
-      debugPrint('[OAuth] App resumed, checking pending onboarding...');
-      _checkAndCompletePendingOnboarding();
+      debugPrint('[OAuth] App resumed');
+      // Le OnboardingFlow gérera la détection de l'auth via _checkExistingAuth
+      ref.invalidate(onboardingCompletedStreamProvider);
     }
   }
 
   /// Écoute les changements d'authentification pour détecter
-  /// le retour du callback OAuth et compléter l'onboarding.
+  /// le retour du callback OAuth.
   void _listenToAuthChanges() {
     final authService = ref.read(authServiceProvider);
     _authSubscription = authService.authStateChanges.listen((authState) async {
       debugPrint('[OAuth] Auth state changed: ${authState.event}');
 
-      // Ignorer si on est déjà en train de compléter l'onboarding
-      if (_isCompletingPendingOnboarding) return;
-
-      // Vérifier si c'est un événement de connexion avec un user
       if ((authState.event == AuthChangeEvent.signedIn ||
               authState.event == AuthChangeEvent.tokenRefreshed) &&
           authState.session?.user != null) {
-        debugPrint('[OAuth] User signed in, checking pending onboarding...');
-        await _checkAndCompletePendingOnboarding();
+        debugPrint('[OAuth] User signed in, refreshing state...');
+        // Invalider pour que l'OnboardingFlow re-vérifie l'état
+        ref.invalidate(onboardingCompletedStreamProvider);
       }
     });
-
-    // Vérifier aussi au démarrage (cas où l'app a été tuée pendant OAuth)
-    // Avec un petit délai pour laisser Supabase restaurer la session
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        debugPrint('[OAuth] Initial check for pending onboarding...');
-        _checkAndCompletePendingOnboarding();
-      }
-    });
-  }
-
-  /// Vérifie s'il y a des données d'onboarding pending et les complète.
-  Future<void> _checkAndCompletePendingOnboarding() async {
-    final authService = ref.read(authServiceProvider);
-    final pendingService = ref.read(pendingOnboardingServiceProvider);
-
-    debugPrint('[OAuth] Checking: isAuthenticated=${authService.isAuthenticated}, '
-        'isAnonymous=${authService.isAnonymous}, '
-        'userId=${authService.currentUserId}');
-
-    // Vérifier qu'on a un user authentifié
-    if (!authService.isAuthenticated) {
-      debugPrint('[OAuth] Not authenticated, skipping');
-      return;
-    }
-
-    // Vérifier que l'utilisateur N'EST PAS anonyme
-    // (les données pending sont pour un compte Google, pas anonyme)
-    if (authService.isAnonymous) {
-      debugPrint('[OAuth] User is anonymous, skipping');
-      return;
-    }
-
-    // Vérifier qu'il y a des données pending
-    final pendingData = await pendingService.getPendingData();
-    if (pendingData == null) {
-      debugPrint('[OAuth] No pending data, skipping');
-      return;
-    }
-
-    debugPrint('[OAuth] Found pending data, completing onboarding...');
-
-    // Compléter l'onboarding
-    setState(() => _isCompletingPendingOnboarding = true);
-
-    try {
-      final controller = ref.read(onboardingControllerProvider.notifier);
-      await controller.completePendingOnboarding(pendingData);
-
-      debugPrint('[OAuth] Onboarding completed successfully!');
-
-      // Forcer le refresh pour naviguer vers home
-      ref.invalidate(onboardingCompletedStreamProvider);
-    } catch (e) {
-      debugPrint('[OAuth] Error completing onboarding: $e');
-    } finally {
-      if (mounted) {
-        setState(() => _isCompletingPendingOnboarding = false);
-      }
-    }
   }
 
   @override
@@ -187,33 +123,21 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
 
     final onboardingCompleted = ref.watch(onboardingCompletedStreamProvider);
 
-    // Afficher un loader pendant la complétion de l'onboarding pending
-    if (_isCompletingPendingOnboarding) {
-      return Scaffold(
-        backgroundColor: backgroundColor,
-        body: const Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(color: AppColors.primary),
-              SizedBox(height: 16),
-              Text('Configuration de votre compte...'),
-            ],
-          ),
-        ),
-      );
-    }
-
     return onboardingCompleted.when(
       data: (completed) {
-        if (completed) {
-          return const _VaultAwareShell();
-        }
-        return OnboardingFlow(
-          onComplete: () {
-            // Force le refresh du provider pour naviguer vers home
-            ref.invalidate(onboardingCompletedStreamProvider);
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(opacity: animation, child: child);
           },
+          child: completed
+              ? const _VaultAwareShell(key: ValueKey('home'))
+              : OnboardingFlow(
+                  key: const ValueKey('onboarding'),
+                  onComplete: () {
+                    ref.invalidate(onboardingCompletedStreamProvider);
+                  },
+                ),
         );
       },
       loading: () => Scaffold(
@@ -234,7 +158,7 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
 
 /// Shell qui gère le Vault et le lifecycle de l'application.
 class _VaultAwareShell extends ConsumerStatefulWidget {
-  const _VaultAwareShell();
+  const _VaultAwareShell({super.key});
 
   @override
   ConsumerState<_VaultAwareShell> createState() => _VaultAwareShellState();

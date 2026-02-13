@@ -4,29 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:monasafe/src/common_widgets/common_widgets.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/core/theme/theme_helper.dart';
 import 'package:monasafe/src/features/onboarding/presentation/onboarding_controller.dart';
 
-/// Écran 3 : Auth Choice
+/// Écran 1 : Auth Choice (premier écran de l'onboarding)
 /// Choix entre Google Auth ou Local Only
 class AuthChoiceScreen extends ConsumerWidget {
-  const AuthChoiceScreen({
-    required this.onComplete, super.key,
-  });
-
-  final VoidCallback onComplete;
+  const AuthChoiceScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(onboardingControllerProvider);
     final controller = ref.read(onboardingControllerProvider.notifier);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final textPrimary =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final textSecondary =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-    final dividerColor =
-        isDark ? AppColors.dividerDark : AppColors.dividerLight;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -37,30 +26,32 @@ class AuthChoiceScreen extends ConsumerWidget {
             child: IntrinsicHeight(
               child: Column(
                 children: [
-                  const SizedBox(height: 24),
-                  // Icône
+                  const Spacer(flex: 2),
+                  // Logo
                   const IconContainer(
-                    icon: Icons.security,
-                    color: AppColors.primary,
+                    icon: Icons.account_balance_wallet,
+                    color: Colors.white,
+                    backgroundColor: AppColors.primary,
                     size: IconContainerSize.extraLarge,
-                    shape: IconContainerShape.circle,
+                    customSize: 80,
+                    customIconSize: 40,
+                    customBorderRadius: 20,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   // Titre
                   Text(
-                    'Comment souhaitez-vous\ncontinuer ?',
-                    style: AppTextStyles.h2(color: textPrimary),
+                    'Bienvenue sur Monasafe.',
+                    style: AppTextStyles.h2(color: context.textPrimary),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Choisissez votre méthode préférée',
-                    style: AppTextStyles.bodySmall(color: textSecondary),
+                    'Votre argent, vos données.\nSimple, sécurisé et entièrement vôtre.',
+                    style: AppTextStyles.bodySmall(color: context.textSecondary),
                     textAlign: TextAlign.center,
                   ),
                   const Spacer(),
-                  const SizedBox(height: 24),
-                  // Option 1: Google (Simplicité)
+                  // Option 1: Google
                   _AuthOptionCard(
                     icon: Icons.cloud_outlined,
                     iconColor: Colors.blue,
@@ -71,12 +62,7 @@ class AuthChoiceScreen extends ConsumerWidget {
                     buttonColor: AppColors.process,
                     isLoading: state.isLoading,
                     onPressed: () async {
-                      // Lance OAuth - l'onboarding sera complété après le callback
-                      // dans _AppRoot._checkAndCompletePendingOnboarding()
                       await controller.completeWithGoogle();
-                      // Note: Ne pas appeler onComplete() ici car l'OAuth
-                      // redirige vers un navigateur externe. L'app reprendra
-                      // après le callback et complétera l'onboarding automatiquement.
                     },
                     features: const [
                       'Sauvegarde automatique',
@@ -88,19 +74,21 @@ class AuthChoiceScreen extends ConsumerWidget {
                   // Séparateur
                   Row(
                     children: [
-                      Expanded(child: Divider(color: dividerColor)),
+                      Expanded(child: Divider(color: context.dividerColor)),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           'ou',
-                          style: AppTextStyles.bodySmall(color: textSecondary),
+                          style: AppTextStyles.bodySmall(
+                            color: context.textSecondary,
+                          ),
                         ),
                       ),
-                      Expanded(child: Divider(color: dividerColor)),
+                      Expanded(child: Divider(color: context.dividerColor)),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Option 2: Local Only (Privé)
+                  // Option 2: Local
                   _AuthOptionCard(
                     icon: Icons.smartphone,
                     iconColor: AppColors.primary,
@@ -111,10 +99,7 @@ class AuthChoiceScreen extends ConsumerWidget {
                     buttonVariant: AppButtonVariant.secondary,
                     isLoading: state.isLoading,
                     onPressed: () async {
-                      final success = await controller.completeLocalOnly();
-                      if (success && context.mounted) {
-                        onComplete();
-                      }
+                      await controller.completeLocalOnly();
                     },
                     features: const [
                       'Confidentialité totale',
@@ -123,14 +108,6 @@ class AuthChoiceScreen extends ConsumerWidget {
                     ],
                   ),
                   const Spacer(),
-                  const SizedBox(height: 24),
-                  // Bouton retour
-                  AppButton(
-                    label: 'Retour',
-                    variant: AppButtonVariant.ghost,
-                    icon: Icons.arrow_back,
-                    onPressed: state.isLoading ? null : controller.previousStep,
-                  ),
                   const SizedBox(height: 48),
                 ],
               ),
@@ -171,10 +148,6 @@ class _AuthOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textSecondary =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
     return GlassCard(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -191,7 +164,6 @@ class _AuthOptionCard extends StatelessWidget {
             subtitle: subtitle,
           ),
           const SizedBox(height: 16),
-          // Features
           ...features.map(
             (feature) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
@@ -205,14 +177,15 @@ class _AuthOptionCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     feature,
-                    style: AppTextStyles.bodySmall(color: textSecondary),
+                    style: AppTextStyles.bodySmall(
+                      color: context.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
-          // Bouton
           SizedBox(
             width: double.infinity,
             child: _buildButton(),
@@ -224,7 +197,6 @@ class _AuthOptionCard extends StatelessWidget {
 
   Widget _buildButton() {
     if (buttonVariant == AppButtonVariant.primary && buttonColor != null) {
-      // Bouton custom avec couleur spécifique
       return ElevatedButton.icon(
         onPressed: isLoading ? null : onPressed,
         icon: isLoading
