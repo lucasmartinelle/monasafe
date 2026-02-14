@@ -1,0 +1,45 @@
+name: 🎨 UI / UX issue
+description: Signaler un problème d'interface ou d'expérience utilisateur
+title: "[UI/UX]: "
+labels: ["ui", "ux"]
+
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Plateforme
+      options:
+        - Mobile - Android
+        - Mobile - iOS
+        - Web
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description du problème
+      placeholder: |
+        Exemple : Le bouton est mal aligné sur petit écran...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportement attendu
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Captures d'écran / maquettes
+      description: Ajoutez des images si possible
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Gravité
+      options:
+        - Mineur (cosmétique)
+        - Moyen (gêne utilisateur)
+        - Critique (bloquant)
