@@ -9,7 +9,7 @@ import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
 import 'package:monasafe/src/features/transactions/presentation/transaction_form_state.dart';
 import 'package:monasafe/src/features/transactions/presentation/widgets/category_grid.dart';
-import 'package:monasafe/src/features/transactions/presentation/widgets/numeric_keypad.dart';
+import 'package:monasafe/src/common_widgets/numeric_keypad.dart';
 import 'package:monasafe/src/features/transactions/presentation/widgets/recurrence_toggle.dart';
 import 'package:monasafe/src/features/transactions/presentation/widgets/smart_note_field.dart';
 

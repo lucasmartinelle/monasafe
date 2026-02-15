@@ -4,7 +4,6 @@ export 'presentation/transaction_form_provider.dart';
 export 'presentation/transaction_form_state.dart';
 export 'presentation/widgets/amount_display.dart';
 export 'presentation/widgets/category_grid.dart';
-export 'presentation/widgets/numeric_keypad.dart';
 export 'presentation/widgets/recurrence_toggle.dart';
 export 'presentation/widgets/smart_note_field.dart';
 export 'presentation/widgets/transaction_form.dart';

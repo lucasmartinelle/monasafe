@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:monasafe/src/core/theme/app_colors.dart';
-import 'package:monasafe/src/features/transactions/presentation/transaction_form_provider.dart';
 
 /// Custom numeric keypad for amount input (cents mode).
-///
-/// Can be used in two modes:
-/// 1. Connected to transactionFormNotifierProvider (default)
-/// 2. Standalone with explicit onDigit, onDelete, and onClear callbacks
 ///
 /// In cents mode, digits are appended from the right:
 /// - Tap 1 → 0,01€
@@ -17,20 +11,20 @@ import 'package:monasafe/src/features/transactions/presentation/transaction_form
 /// - Tap 0 → 1,50€
 class NumericKeypad extends StatelessWidget {
   const NumericKeypad({
+    required this.onDigit,
+    required this.onDelete,
+    required this.onClear,
     super.key,
-    this.onDigit,
-    this.onDelete,
-    this.onClear,
   });
 
-  /// Callback when a digit is pressed. If null, uses provider.
-  final ValueChanged<String>? onDigit;
+  /// Callback when a digit is pressed.
+  final ValueChanged<String> onDigit;
 
-  /// Callback when delete is pressed. If null, uses provider.
-  final VoidCallback? onDelete;
+  /// Callback when delete is pressed.
+  final VoidCallback onDelete;
 
-  /// Callback when clear (long press delete) is pressed. If null, uses provider.
-  final VoidCallback? onClear;
+  /// Callback when clear (long press delete) is pressed.
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +64,17 @@ class NumericKeypad extends StatelessWidget {
   }
 }
 
-class _KeypadButton extends ConsumerWidget {
+class _KeypadButton extends StatelessWidget {
   const _KeypadButton({
     required this.digit,
-    this.onDigit,
+    required this.onDigit,
   });
 
   final String digit;
-  final ValueChanged<String>? onDigit;
+  final ValueChanged<String> onDigit;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
 
@@ -94,13 +88,7 @@ class _KeypadButton extends ConsumerWidget {
             child: InkWell(
               onTap: () {
                 HapticFeedback.lightImpact();
-                if (onDigit != null) {
-                  onDigit!(digit);
-                } else {
-                  ref
-                      .read(transactionFormNotifierProvider.notifier)
-                      .appendDigit(digit);
-                }
+                onDigit(digit);
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(
@@ -131,13 +119,13 @@ class _KeypadButton extends ConsumerWidget {
 }
 
 /// Button that adds "00" (useful for entering whole euro amounts quickly).
-class _DoubleZeroButton extends ConsumerWidget {
-  const _DoubleZeroButton({this.onDigit});
+class _DoubleZeroButton extends StatelessWidget {
+  const _DoubleZeroButton({required this.onDigit});
 
-  final ValueChanged<String>? onDigit;
+  final ValueChanged<String> onDigit;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
 
@@ -151,15 +139,8 @@ class _DoubleZeroButton extends ConsumerWidget {
             child: InkWell(
               onTap: () {
                 HapticFeedback.lightImpact();
-                // Add two zeros
-                if (onDigit != null) {
-                  onDigit!('0');
-                  onDigit!('0');
-                } else {
-                  final notifier = ref.read(transactionFormNotifierProvider.notifier);
-                  notifier.appendDigit('0');
-                  notifier.appendDigit('0');
-                }
+                onDigit('0');
+                onDigit('0');
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(
@@ -189,17 +170,17 @@ class _DoubleZeroButton extends ConsumerWidget {
   }
 }
 
-class _BackspaceButton extends ConsumerWidget {
+class _BackspaceButton extends StatelessWidget {
   const _BackspaceButton({
-    this.onDelete,
-    this.onClear,
+    required this.onDelete,
+    required this.onClear,
   });
 
-  final VoidCallback? onDelete;
-  final VoidCallback? onClear;
+  final VoidCallback onDelete;
+  final VoidCallback onClear;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final iconColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
 
@@ -213,19 +194,11 @@ class _BackspaceButton extends ConsumerWidget {
             child: InkWell(
               onTap: () {
                 HapticFeedback.lightImpact();
-                if (onDelete != null) {
-                  onDelete!();
-                } else {
-                  ref.read(transactionFormNotifierProvider.notifier).deleteDigit();
-                }
+                onDelete();
               },
               onLongPress: () {
                 HapticFeedback.mediumImpact();
-                if (onClear != null) {
-                  onClear!();
-                } else {
-                  ref.read(transactionFormNotifierProvider.notifier).clearAmount();
-                }
+                onClear();
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(

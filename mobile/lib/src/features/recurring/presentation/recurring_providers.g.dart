@@ -7,7 +7,7 @@ part of 'recurring_providers.dart';
 // **************************************************************************
 
 String _$recurringWithDetailsHash() =>
-    r'd6c5d362a304c41a23574fe80426c25488a16bb6';
+    r'de63ae021a97db5cee8d24319695b4239613658c';
 
 /// Provider pour recuperer toutes les transactions recurrentes avec details.
 ///
@@ -29,7 +29,7 @@ final recurringWithDetailsProvider =
 typedef RecurringWithDetailsRef =
     AutoDisposeFutureProviderRef<List<RecurringTransactionWithDetails>>;
 String _$activeRecurringWithDetailsHash() =>
-    r'cb4b21835b5b5a411211d1073992a191efcfe64d';
+    r'0d0efe8007fdf5f1c12f4a3e33d26553346d3764';
 
 /// Provider pour recuperer uniquement les recurrences actives avec details.
 ///

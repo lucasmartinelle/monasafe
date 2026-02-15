@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
-import 'package:monasafe/src/features/recurring/presentation/recurring_providers.dart';
 import 'package:monasafe/src/features/transactions/presentation/transaction_form_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -189,9 +189,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
 
   /// Rafraîchit les providers de récurrence
   void _refreshRecurringProviders() {
-    ref.invalidate(recurringWithDetailsProvider);
-    ref.invalidate(activeRecurringWithDetailsProvider);
-    ref.invalidate(activeRecurringCountProvider);
+    InvalidationService.onRecurringCreatedFromTransaction(ref);
   }
 
   /// Update an existing transaction
@@ -263,7 +261,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
 
   /// Déclenche le rafraîchissement de tous les providers liés aux transactions
   void _triggerRefresh() {
-    ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
+    InvalidationService.onTransactionChanged(ref);
   }
 
   /// Re-emit: create a new transaction with the current form data

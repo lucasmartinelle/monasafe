@@ -77,8 +77,9 @@ Stream<CashflowData> cashflowDataStream(Ref ref) async* {
 /// Uses client-side calculations (amount is TEXT in DB).
 @riverpod
 Future<List<BudgetProgress>> budgetProgressList(Ref ref) async {
-  // Refresh when transactions change
+  // Refresh when transactions or budgets change
   ref.watch(transactionsRefreshTriggerProvider);
+  ref.watch(budgetRefreshTriggerProvider);
 
   final period = ref.watch(selectedPeriodProvider);
   final budgetService = ref.watch(budgetServiceProvider);
@@ -121,8 +122,9 @@ Future<List<BudgetProgress>> budgetProgressList(Ref ref) async {
 /// Uses client-side calculations (amount is TEXT in DB).
 @riverpod
 Stream<List<BudgetProgress>> budgetProgressStream(Ref ref) async* {
-  // Refresh when transactions change
+  // Refresh when transactions or budgets change
   ref.watch(transactionsRefreshTriggerProvider);
+  ref.watch(budgetRefreshTriggerProvider);
 
   final period = ref.watch(selectedPeriodProvider);
   final budgetService = ref.watch(budgetServiceProvider);

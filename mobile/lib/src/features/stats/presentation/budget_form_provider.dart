@@ -1,6 +1,6 @@
+import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/stats/presentation/budget_form_state.dart';
-import 'package:monasafe/src/features/stats/presentation/stats_providers.dart';
 import 'package:monasafe/src/features/stats/presentation/stats_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -63,8 +63,7 @@ class BudgetFormNotifier extends _$BudgetFormNotifier {
       );
 
       // Rafraîchir la liste des budgets
-      ref.invalidate(budgetProgressStreamProvider);
-      ref.invalidate(budgetProgressListProvider);
+      InvalidationService.onBudgetChanged(ref);
 
       return true;
     } catch (e) {
@@ -85,8 +84,7 @@ class BudgetFormNotifier extends _$BudgetFormNotifier {
       await budgetService.deleteBudget(state!.budgetId);
 
       // Rafraîchir la liste des budgets
-      ref.invalidate(budgetProgressStreamProvider);
-      ref.invalidate(budgetProgressListProvider);
+      InvalidationService.onBudgetChanged(ref);
 
       return true;
     } catch (e) {

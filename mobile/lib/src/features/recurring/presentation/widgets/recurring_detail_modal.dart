@@ -9,7 +9,6 @@ import 'package:monasafe/src/core/utils/icon_mapper.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/features/recurring/presentation/recurring_form_provider.dart';
 import 'package:monasafe/src/features/recurring/presentation/recurring_providers.dart';
-import 'package:monasafe/src/features/transactions/transactions.dart';
 
 /// Resultat de l'action effectuee dans la modal.
 enum RecurringDetailResult { updated, deleted, toggled }

@@ -8,6 +8,7 @@ part 'recurring_providers.g.dart';
 /// Provider pour recuperer toutes les transactions recurrentes avec details.
 @riverpod
 Future<List<RecurringTransactionWithDetails>> recurringWithDetails(Ref ref) {
+  ref.watch(recurringRefreshTriggerProvider);
   final service = ref.watch(recurringTransactionServiceProvider);
   return service.getAllWithDetails();
 }
@@ -17,6 +18,7 @@ Future<List<RecurringTransactionWithDetails>> recurringWithDetails(Ref ref) {
 Future<List<RecurringTransactionWithDetails>> activeRecurringWithDetails(
   Ref ref,
 ) {
+  ref.watch(recurringRefreshTriggerProvider);
   final service = ref.watch(recurringTransactionServiceProvider);
   return service.getActiveWithDetails();
 }

@@ -8,7 +8,7 @@ import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/core/theme/theme_helper.dart';
 import 'package:monasafe/src/core/utils/currency_formatter.dart';
 import 'package:monasafe/src/features/onboarding/presentation/onboarding_controller.dart';
-import 'package:monasafe/src/features/transactions/presentation/widgets/numeric_keypad.dart';
+import 'package:monasafe/src/common_widgets/numeric_keypad.dart';
 
 /// Flow de questions en PageView vertical
 /// Q1: Devise, Q2: Compte courant, Q3: Compte épargne

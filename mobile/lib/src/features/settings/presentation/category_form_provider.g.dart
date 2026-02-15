@@ -7,7 +7,7 @@ part of 'category_form_provider.dart';
 // **************************************************************************
 
 String _$categoryFormNotifierHash() =>
-    r'd87955fb05c7748925f1a9049b30b8e47dff4aad';
+    r'6b2ec3a834efca550f46d6235b09ac21d28c1e5a';
 
 /// Provider pour la gestion du formulaire de catégorie.
 ///

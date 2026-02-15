@@ -23,7 +23,7 @@ void main() async {
   await dotenv.load();
 
   // Timer pour garantir 2 secondes minimum de splash
-  final splashTimer = Future.delayed(const Duration(seconds: 2));
+  final splashTimer = Future<void>.delayed(const Duration(seconds: 2));
 
   await Future.wait([
     initializeDateFormatting('fr_FR'),

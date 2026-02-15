@@ -1,15 +1,10 @@
+import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/settings/presentation/category_form_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'category_form_provider.g.dart';
-
-void _invalidateCategoryProviders(AutoDisposeNotifierProviderRef<CategoryFormState> ref) {
-  ref.invalidate(categoriesStreamProvider);
-  ref.invalidate(expenseCategoriesStreamProvider);
-  ref.invalidate(incomeCategoriesStreamProvider);
-}
 
 /// Provider pour la gestion du formulaire de catégorie.
 @riverpod
@@ -79,7 +74,7 @@ class CategoryFormNotifier extends _$CategoryFormNotifier {
       },
       (_) {
         state = state.copyWith(isSubmitting: false);
-        _invalidateCategoryProviders(ref);
+        InvalidationService.onCategoryChanged(ref);
         return true;
       },
     );
@@ -114,7 +109,7 @@ class CategoryFormNotifier extends _$CategoryFormNotifier {
       },
       (_) {
         state = state.copyWith(isSubmitting: false);
-        _invalidateCategoryProviders(ref);
+        InvalidationService.onCategoryChanged(ref);
         return true;
       },
     );

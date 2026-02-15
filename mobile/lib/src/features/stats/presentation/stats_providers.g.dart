@@ -30,7 +30,7 @@ final cashflowDataStreamProvider =
 // ignore: unused_element
 typedef CashflowDataStreamRef = AutoDisposeStreamProviderRef<CashflowData>;
 String _$budgetProgressListHash() =>
-    r'49ec62851926fcd08b67467a5fb3fbead9e58d14';
+    r'b7463a361b2cf4ab9bb50774f6bddf7fef3e0af7';
 
 /// Future provider for budget progress list.
 /// Combines user budgets with their spending for the selected period.
@@ -54,7 +54,7 @@ final budgetProgressListProvider =
 typedef BudgetProgressListRef =
     AutoDisposeFutureProviderRef<List<BudgetProgress>>;
 String _$budgetProgressStreamHash() =>
-    r'a5cf9c1c836dc3915b7caa3ea7d16ecf20ff1251';
+    r'214f22dfd713979e207b5c81545ebf51bce4b67a';
 
 /// Stream version of budget progress for real-time updates.
 /// Uses client-side calculations (amount is TEXT in DB).

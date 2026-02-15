@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:monasafe/src/common_widgets/common_widgets.dart';
+import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
-import 'package:monasafe/src/features/recurring/presentation/recurring_providers.dart';
 import 'package:monasafe/src/features/settings/presentation/widgets/settings_section_tile.dart';
-import 'package:monasafe/src/features/stats/presentation/stats_providers.dart';
 
 /// Écran de gestion des données utilisateur.
 class DataScreen extends ConsumerStatefulWidget {
@@ -22,16 +21,7 @@ class _DataScreenState extends ConsumerState<DataScreen> {
 
   /// Rafraîchit tous les providers après une suppression de données.
   void _refreshProviders() {
-    // Rafraîchir les transactions, dashboard et stats
-    ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
-
-    // Invalider les providers des récurrences et budgets
-    ref
-      ..invalidate(recurringWithDetailsProvider)
-      ..invalidate(activeRecurringWithDetailsProvider)
-      ..invalidate(activeRecurringCountProvider)
-      ..invalidate(budgetProgressListProvider)
-      ..invalidate(budgetProgressStreamProvider);
+    InvalidationService.onAllDataDeletedFromWidget(ref);
   }
 
   Future<void> _deleteAllData() async {

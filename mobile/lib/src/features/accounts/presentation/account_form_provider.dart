@@ -1,3 +1,4 @@
+import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/accounts/presentation/account_form_state.dart';
@@ -84,8 +85,7 @@ class AccountFormNotifier extends _$AccountFormNotifier {
         },
         (account) {
           state = state.copyWith(isSubmitting: false);
-          // Déclencher le rafraîchissement des comptes
-          ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
+          InvalidationService.onAccountCreated(ref);
           return true;
         },
       );

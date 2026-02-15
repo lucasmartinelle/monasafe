@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:monasafe/src/common_widgets/async_state_handler.dart';
 import 'package:monasafe/src/common_widgets/selectable_badge.dart';
+import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/settings/presentation/widgets/category_form_modal.dart';
 import 'package:monasafe/src/features/settings/presentation/widgets/category_list_tile.dart';
-import 'package:monasafe/src/features/stats/presentation/stats_providers.dart';
 
 /// Écran de gestion des catégories.
 class CategoriesScreen extends ConsumerStatefulWidget {
@@ -62,11 +62,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
     if ((confirmed ?? false) && mounted) {
       final repository = ref.read(categoryRepositoryProvider);
       await repository.deleteCategory(category.id);
-      ref
-        ..invalidate(categoriesStreamProvider)
-        ..invalidate(expenseCategoriesStreamProvider)
-        ..invalidate(incomeCategoriesStreamProvider)
-        ..invalidate(budgetProgressStreamProvider);
+      InvalidationService.onCategoryDeletedFromWidget(ref);
     }
   }
 

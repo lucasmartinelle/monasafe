@@ -7,9 +7,8 @@ import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/core/utils/icon_mapper.dart';
 import 'package:monasafe/src/data/models/models.dart';
+import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
-import 'package:monasafe/src/features/stats/presentation/stats_providers.dart';
-import 'package:monasafe/src/features/transactions/transactions.dart';
 
 /// Modal bottom sheet pour créer ou modifier un budget.
 class CreateBudgetModal extends ConsumerStatefulWidget {
@@ -89,7 +88,7 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
       );
 
       // Refresh budget list
-      ref.invalidate(budgetProgressStreamProvider);
+      InvalidationService.onBudgetChangedFromWidget(ref);
 
       if (mounted) {
         Navigator.of(context).pop(true);

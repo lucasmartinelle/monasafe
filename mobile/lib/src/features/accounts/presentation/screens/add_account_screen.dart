@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:monasafe/src/common_widgets/account_type_badge.dart';
+import 'package:monasafe/src/common_widgets/numeric_keypad.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/accounts/presentation/account_form_provider.dart';
-import 'package:monasafe/src/features/transactions/presentation/widgets/numeric_keypad.dart';
 
 /// Modal bottom sheet pour créer un nouveau compte.
 class AddAccountScreen extends ConsumerWidget {

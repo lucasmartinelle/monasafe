@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:monasafe/src/core/middleware/vault_middleware.dart';
 import 'package:monasafe/src/core/services/encryption_service.dart';
+import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/data/services/transaction_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -165,7 +166,7 @@ class VaultNotifier extends _$VaultNotifier {
       await transactionService.encryptAllTransactions();
 
       // Forcer le rafraîchissement des données
-      ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
+      InvalidationService.onVaultToggled(ref);
 
       state = state.copyWith(
         isEnabled: true,
@@ -464,7 +465,7 @@ class VaultNotifier extends _$VaultNotifier {
       ref.read(dekInMemoryProvider.notifier).clear();
 
       // Forcer le rafraîchissement des données
-      ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
+      InvalidationService.onVaultToggled(ref);
 
       state = const VaultState();
       return true;

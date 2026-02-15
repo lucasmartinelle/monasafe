@@ -7,7 +7,7 @@ part of 'account_form_provider.dart';
 // **************************************************************************
 
 String _$accountFormNotifierHash() =>
-    r'2e4f0ad8627313cf3a2e3090f65e031ccc485769';
+    r'9926c7e113b54a15dde114ba34ac40b17c5f250f';
 
 /// Provider pour le formulaire de création de compte.
 ///
