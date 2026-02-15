@@ -6,7 +6,7 @@ on:
     paths:
       - 'mobile/**'
   pull_request:
-    branches: [main]
+    branches: [main, develop]
     paths:
       - 'mobile/**'
 

@@ -9,7 +9,7 @@ import 'package:monasafe/src/data/repositories/settings_repository.dart';
 import 'package:monasafe/src/data/repositories/transaction_repository.dart';
 import 'package:monasafe/src/data/services/recurring_transaction_service.dart';
 import 'package:monasafe/src/data/services/services.dart';
-import 'package:monasafe/src/features/vault/presentation/vault_providers.dart';
+import 'package:monasafe/src/features/domain/vault/presentation/vault_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -61,7 +61,7 @@ TransactionService transactionService(Ref ref) {
 /// Provider pour le service des statistiques
 @Riverpod(keepAlive: true)
 StatisticsService statisticsService(Ref ref) {
-  return StatisticsService(ref.watch(supabaseClientProvider));
+  return StatisticsService();
 }
 
 /// Provider pour le service des paramètres
@@ -132,8 +132,7 @@ DataManagementService dataManagementService(Ref ref) {
 AccountRepository accountRepository(Ref ref) {
   return AccountRepository(
     ref.watch(accountServiceProvider),
-    ref.watch(transactionServiceProvider),
-    ref.watch(statisticsServiceProvider),
+    ref.watch(transactionServiceProvider)
   );
 }
 
@@ -204,6 +203,24 @@ Stream<bool> onboardingCompletedStream(Ref ref) {
 /// Les providers qui watchent ce trigger se recalculent automatiquement.
 @Riverpod(keepAlive: true)
 class TransactionsRefreshTrigger extends _$TransactionsRefreshTrigger {
+  @override
+  int build() => 0;
+
+  void refresh() => state++;
+}
+
+/// Trigger de rafraîchissement pour les données liées aux récurrences.
+@Riverpod(keepAlive: true)
+class RecurringRefreshTrigger extends _$RecurringRefreshTrigger {
+  @override
+  int build() => 0;
+
+  void refresh() => state++;
+}
+
+/// Trigger de rafraîchissement pour les données liées aux budgets.
+@Riverpod(keepAlive: true)
+class BudgetRefreshTrigger extends _$BudgetRefreshTrigger {
   @override
   int build() => 0;
 

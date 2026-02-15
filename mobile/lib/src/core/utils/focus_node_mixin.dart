@@ -50,12 +50,12 @@ mixin FocusNodeMixin<T extends StatefulWidget> on State<T> {
       setState(() {
         _hasFocus = newHasFocus;
       });
-      onFocusChange(newHasFocus);
+      onFocusChange(hasFocus: newHasFocus);
     }
   }
 
   /// Appelé quand le focus change. À surcharger si besoin.
-  void onFocusChange(bool hasFocus) {}
+  void onFocusChange({required bool hasFocus}) {}
 
   /// Dispose le FocusNode.
   /// Passer le même [externalFocusNode] que celui fourni à [initFocusNode].
