@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:monasafe/src/common_widgets/common_widgets.dart';
 import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/features/aggregators/settings/presentation/widgets/delete_all_data_dialog.dart';
+import 'package:monasafe/src/features/aggregators/settings/presentation/widgets/delete_confirm_dialog.dart';
 import 'package:monasafe/src/features/aggregators/settings/presentation/widgets/settings_section_tile.dart';
 
 /// Écran de gestion des données utilisateur.
@@ -27,7 +28,7 @@ class _DataScreenState extends ConsumerState<DataScreen> {
   Future<void> _deleteAllData() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => const _DeleteAllDataDialog(),
+      builder: (context) => const DeleteAllDataDialog(),
     );
 
     if ((confirm ?? false) && mounted) {
@@ -67,7 +68,7 @@ class _DataScreenState extends ConsumerState<DataScreen> {
   Future<void> _deleteTransactions() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => const _DeleteConfirmDialog(
+      builder: (context) => const DeleteConfirmDialog(
         title: 'Supprimer les transactions',
         message:
             'Cette action supprimera toutes vos transactions. Cette action est irréversible.',
@@ -111,7 +112,7 @@ class _DataScreenState extends ConsumerState<DataScreen> {
   Future<void> _deleteRecurringTransactions() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => const _DeleteConfirmDialog(
+      builder: (context) => const DeleteConfirmDialog(
         title: 'Supprimer les récurrences',
         message:
             'Cette action supprimera toutes vos transactions récurrentes. Les transactions déjà générées seront conservées.',
@@ -155,7 +156,7 @@ class _DataScreenState extends ConsumerState<DataScreen> {
   Future<void> _deleteBudgets() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => const _DeleteConfirmDialog(
+      builder: (context) => const DeleteConfirmDialog(
         title: 'Supprimer les budgets',
         message: 'Cette action supprimera tous vos budgets configurés.',
       ),
@@ -227,9 +228,10 @@ class _DataScreenState extends ConsumerState<DataScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Section suppression sélective
-                  Text('Suppression sélective',
-                      style: AppTextStyles.h4(color: textColor)),
+                  Text(
+                    'Suppression sélective',
+                    style: AppTextStyles.h4(color: textColor),
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     'Supprimez certaines catégories de données',
@@ -282,9 +284,10 @@ class _DataScreenState extends ConsumerState<DataScreen> {
 
                   const SizedBox(height: 32),
 
-                  // Section zone de danger
-                  Text('Zone de danger',
-                      style: AppTextStyles.h4(color: AppColors.error)),
+                  Text(
+                    'Zone de danger',
+                    style: AppTextStyles.h4(color: AppColors.error),
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     'Actions irréversibles',
@@ -312,144 +315,6 @@ class _DataScreenState extends ConsumerState<DataScreen> {
                 ],
               ),
             ),
-    );
-  }
-}
-
-/// Dialog de confirmation générique.
-class _DeleteConfirmDialog extends StatelessWidget {
-  const _DeleteConfirmDialog({
-    required this.title,
-    required this.message,
-  });
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
-    final textColor =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final subtitleColor =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
-    return AlertDialog(
-      backgroundColor: backgroundColor,
-      title: Text(title, style: AppTextStyles.h4(color: textColor)),
-      content:
-          Text(message, style: AppTextStyles.bodyMedium(color: subtitleColor)),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: Text('Annuler', style: TextStyle(color: textColor)),
-        ),
-        AppButton(
-          label: 'Supprimer',
-          onPressed: () => Navigator.pop(context, true),
-          size: AppButtonSize.small,
-        ),
-      ],
-    );
-  }
-}
-
-/// Dialog pour supprimer toutes les données.
-class _DeleteAllDataDialog extends StatefulWidget {
-  const _DeleteAllDataDialog();
-
-  @override
-  State<_DeleteAllDataDialog> createState() => _DeleteAllDataDialogState();
-}
-
-class _DeleteAllDataDialogState extends State<_DeleteAllDataDialog> {
-  final _controller = TextEditingController();
-  bool _canDelete = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(() {
-      setState(() {
-        _canDelete = _controller.text == 'SUPPRIMER';
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
-    final textColor =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final subtitleColor =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
-    return AlertDialog(
-      backgroundColor: backgroundColor,
-      title: Row(
-        children: [
-          const Icon(Icons.warning_amber, color: AppColors.error),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text('Supprimer toutes les données',
-                style: AppTextStyles.h4(color: textColor)),
-          ),
-        ],
-      ),
-      contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-      actionsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Cette action est irréversible. Toutes vos données seront définitivement supprimées :',
-              style: AppTextStyles.bodyMedium(color: subtitleColor),
-            ),
-            const SizedBox(height: 12),
-            Text('• Transactions',
-                style: AppTextStyles.bodySmall(color: textColor)),
-            Text('• Comptes', style: AppTextStyles.bodySmall(color: textColor)),
-            Text('• Catégories personnalisées',
-                style: AppTextStyles.bodySmall(color: textColor)),
-            Text('• Budgets', style: AppTextStyles.bodySmall(color: textColor)),
-            Text('• Récurrences',
-                style: AppTextStyles.bodySmall(color: textColor)),
-            const SizedBox(height: 16),
-            Text(
-              'Tapez SUPPRIMER pour confirmer :',
-              style: AppTextStyles.bodySmall(color: subtitleColor),
-            ),
-            const SizedBox(height: 8),
-            AppTextField(
-              controller: _controller,
-              hint: 'SUPPRIMER',
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: Text('Annuler', style: TextStyle(color: textColor)),
-        ),
-        AppButton(
-          label: 'Supprimer tout',
-          onPressed: _canDelete ? () => Navigator.pop(context, true) : null,
-          size: AppButtonSize.small,
-        ),
-      ],
     );
   }
 }

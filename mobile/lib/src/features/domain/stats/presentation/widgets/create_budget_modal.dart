@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:monasafe/src/common_widgets/common_widgets.dart';
 import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
-import 'package:monasafe/src/core/utils/icon_mapper.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
+import 'package:monasafe/src/features/domain/stats/presentation/widgets/create_budget_amount_display.dart';
+import 'package:monasafe/src/features/domain/stats/presentation/widgets/create_budget_category_item.dart';
 
 /// Modal bottom sheet pour créer ou modifier un budget.
 class CreateBudgetModal extends ConsumerStatefulWidget {
@@ -32,23 +34,18 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
   int _amountCents = 0;
   bool _isSubmitting = false;
 
-  /// Display amount formatted with comma (e.g., "1,50")
   String get _displayAmount {
     final euros = _amountCents ~/ 100;
     final cents = _amountCents % 100;
     return '$euros,${cents.toString().padLeft(2, '0')}';
   }
 
-  /// Amount in euros
   double get _amount => _amountCents / 100;
 
-  /// Whether the form is valid
   bool get _isValid => _selectedCategoryId != null && _amountCents > 0;
 
   void _appendDigit(String digit) {
-    // Limit to 999999,99 (8 digits)
     if (_amountCents.toString().length >= 8) return;
-
     setState(() {
       _amountCents = _amountCents * 10 + int.parse(digit);
     });
@@ -86,7 +83,6 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
         budgetLimit: _amount,
       );
 
-      // Refresh budget list
       InvalidationService.onBudgetChangedFromWidget(ref);
 
       if (mounted) {
@@ -108,11 +104,13 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
-    final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final secondaryColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+    final backgroundColor =
+        isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
+    final textColor =
+        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
+    final secondaryColor =
+        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
 
-    // Get expense categories (budgets are only for expenses)
     final categoriesAsync = ref.watch(expenseCategoriesStreamProvider);
 
     return Container(
@@ -158,7 +156,7 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
               ),
             ),
 
-            // Category selection
+            // Category selection label
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
               child: Align(
@@ -189,7 +187,7 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
             const SizedBox(height: 24),
 
             // Amount display
-            _BudgetAmountDisplay(
+            CreateBudgetAmountDisplay(
               displayAmount: _displayAmount,
               amountCents: _amountCents,
             ),
@@ -248,143 +246,13 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
 
           return Padding(
             padding: const EdgeInsets.only(right: 12),
-            child: _CategoryItem(
+            child: CreateBudgetCategoryItem(
               category: category,
               isSelected: isSelected,
               onTap: () => _selectCategory(category.id),
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-/// Affichage du montant du budget.
-class _BudgetAmountDisplay extends StatelessWidget {
-  const _BudgetAmountDisplay({
-    required this.displayAmount,
-    required this.amountCents,
-  });
-
-  final String displayAmount;
-  final int amountCents;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final secondaryColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Limite mensuelle',
-          style: AppTextStyles.labelMedium(color: secondaryColor),
-        ),
-        const SizedBox(height: 8),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 100),
-          transitionBuilder: (child, animation) {
-            return FadeTransition(
-              opacity: animation,
-              child: ScaleTransition(
-                scale: Tween<double>(begin: 0.95, end: 1).animate(animation),
-                child: child,
-              ),
-            );
-          },
-          child: Row(
-            key: ValueKey(displayAmount),
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                displayAmount,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 48,
-                  fontWeight: FontWeight.w700,
-                  color: amountCents == 0
-                      ? textColor.withValues(alpha: 0.3)
-                      : textColor,
-                  height: 1.1,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  '€',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: amountCents == 0
-                        ? textColor.withValues(alpha: 0.3)
-                        : textColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Item de catégorie dans la grille.
-class _CategoryItem extends StatelessWidget {
-  const _CategoryItem({
-    required this.category,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final Category category;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-    final categoryColor = Color(category.color);
-
-    return SizedBox(
-      width: 76,
-      child: SelectableOptionContainer(
-        isSelected: isSelected,
-        onTap: onTap,
-        selectedColor: categoryColor,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-        enableHapticFeedback: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CategoryIcon.fromHex(
-              icon: IconMapper.getIcon(category.iconKey),
-              colorHex: category.color,
-              size: CategoryIconSize.small,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              category.name,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? textColor : subtitleColor,
-                height: 1.2,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
       ),
     );
   }
