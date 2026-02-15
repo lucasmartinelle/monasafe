@@ -1,0 +1,37 @@
+name: 🐛 Bug report
+description: Signaler un bug
+title: "[BUG]: "
+labels: ["bug"]
+
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Plateforme
+      options:
+        - Mobile - Android
+        - Mobile - iOS
+        - Web
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: Décrivez le problème
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportement attendu
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / captures d'écran

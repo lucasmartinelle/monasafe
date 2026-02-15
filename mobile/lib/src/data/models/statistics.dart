@@ -1,6 +1,8 @@
+import 'package:meta/meta.dart';
 import 'package:monasafe/src/data/models/enums.dart';
 
 /// DTO pour les statistiques par catégorie
+@immutable
 class CategoryStatistics {
   const CategoryStatistics({
     required this.categoryId,
@@ -22,6 +24,7 @@ class CategoryStatistics {
 }
 
 /// DTO pour les statistiques mensuelles
+@immutable
 class MonthlyStatistics {
   const MonthlyStatistics({
     required this.year,
@@ -39,6 +42,7 @@ class MonthlyStatistics {
 }
 
 /// DTO pour les statistiques journalières
+@immutable
 class DailyStatistics {
   const DailyStatistics({
     required this.date,
@@ -57,6 +61,7 @@ class DailyStatistics {
 }
 
 /// DTO pour le résumé financier
+@immutable
 class FinancialSummary {
   const FinancialSummary({
     required this.totalBalance,

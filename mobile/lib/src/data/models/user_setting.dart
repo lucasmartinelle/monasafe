@@ -1,4 +1,7 @@
+import 'package:meta/meta.dart';
+
 /// Modèle représentant un paramètre utilisateur (clé-valeur)
+@immutable
 class UserSetting {
   const UserSetting({
     required this.userId,

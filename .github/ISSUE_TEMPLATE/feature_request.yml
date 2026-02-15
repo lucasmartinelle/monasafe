@@ -1,0 +1,35 @@
+name: ✨ Feature request
+description: Proposer une nouvelle fonctionnalité
+title: "[FEATURE]: "
+labels: ["enhancement"]
+
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème à résoudre
+      description: Quel problème cette fonctionnalité résout-elle ?
+      placeholder: |
+        Exemple : Actuellement il est impossible de ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution proposée
+      description: Décrivez la solution que vous aimeriez voir implémentée
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Plateforme concernée
+      options:
+        - Mobile - Android
+        - Mobile - iOS
+        - Web
+        - Toutes
+    validations:
+      required: true

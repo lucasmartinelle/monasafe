@@ -1,6 +1,8 @@
+import 'package:meta/meta.dart';
 import 'package:monasafe/src/data/models/enums.dart';
 
 /// Modèle représentant un compte bancaire/portefeuille
+@immutable
 class Account {
   const Account({
     required this.id,
