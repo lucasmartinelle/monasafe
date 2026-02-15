@@ -11,6 +11,7 @@ import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/aggregators/app_shell/app_shell.dart';
 import 'package:monasafe/src/features/domain/onboarding/presentation/onboarding_flow.dart';
 import 'package:monasafe/src/features/domain/vault/presentation/screens/lock_screen.dart';
+import 'package:monasafe/src/common_widgets/app_error_screen.dart';
 import 'package:monasafe/src/features/domain/vault/presentation/vault_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -91,10 +92,22 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      debugPrint('[OAuth] App resumed');
-      // Le OnboardingFlow gérera la détection de l'auth via _checkExistingAuth
-      ref.invalidate(onboardingCompletedStreamProvider);
+      _handleAppResumed();
     }
+  }
+
+  Future<void> _handleAppResumed() async {
+    debugPrint('[OAuth] App resumed');
+    final client = Supabase.instance.client;
+    if (client.auth.currentSession != null) {
+      try {
+        await client.auth.refreshSession();
+        debugPrint('[Auth] Session refreshed successfully');
+      } catch (e) {
+        debugPrint('[Auth] Session refresh failed: $e');
+      }
+    }
+    ref.invalidate(onboardingCompletedStreamProvider);
   }
 
   /// Écoute les changements d'authentification pour détecter
@@ -119,8 +132,6 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor =
         isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
-    final textColor =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
 
     final onboardingCompleted = ref.watch(onboardingCompletedStreamProvider);
 
@@ -147,11 +158,14 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       ),
-      error: (error, stack) => Scaffold(
-        backgroundColor: backgroundColor,
-        body: Center(
-          child: Text('Erreur: $error', style: TextStyle(color: textColor)),
-        ),
+      error: (error, stack) => AppErrorScreen(
+        error: error,
+        onRetry: () async {
+          try {
+            await Supabase.instance.client.auth.refreshSession();
+          } catch (_) {}
+          ref.invalidate(onboardingCompletedStreamProvider);
+        },
       ),
     );
   }
