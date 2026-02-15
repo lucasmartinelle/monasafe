@@ -21,7 +21,7 @@ class SettingsRepository {
 
   /// Marque l'onboarding comme complété
   Future<void> setOnboardingCompleted() {
-    return _settingsService.setBool(SettingsKeys.onboardingCompleted, true);
+    return _settingsService.setBool(SettingsKeys.onboardingCompleted, value: true);
   }
 
   // ==================== DEVISE ====================
@@ -57,8 +57,8 @@ class SettingsRepository {
   }
 
   /// Définit le mode anonyme
-  Future<void> setIsAnonymous(bool value) {
-    return _settingsService.setBool(SettingsKeys.isAnonymous, value);
+  Future<void> setIsAnonymous({required bool value}) {
+    return _settingsService.setBool(SettingsKeys.isAnonymous, value: value);
   }
 
   // ==================== COMPTE PRINCIPAL ====================

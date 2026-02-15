@@ -28,41 +28,68 @@ flutter run
 
 ## Architecture
 
+Le projet suit une architecture en couches avec une separation nette entre les donnees, le domaine metier et la presentation.
+
+### Structure globale
+
 ```
 lib/
-├── main.dart                    # Entrypoint, MonasafeApp
+├── main.dart
 └── src/
-    ├── core/
-    │   ├── config/              # Supabase init, env
-    │   ├── constants/           # Constantes globales
-    │   ├── services/            # Services metier (encryption, recurrence)
-    │   ├── theme/               # AppColors, AppTextStyles, AppTheme
-    │   └── utils/               # CurrencyFormatter, IconMapper, Logger
-    ├── common_widgets/          # Composants UI reutilisables
-    ├── data/
-    │   ├── models/              # Account, Transaction, Category, enums...
-    │   ├── services/            # CRUD Supabase (un service par table)
-    │   ├── repositories/        # Couche abstraction avec Either (fpdart)
-    │   └── providers/           # Providers Supabase + services
-    └── features/                # Ecrans, organises par domaine
-        ├── app_shell/           # Shell principal (IndexedStack + bottom nav)
-        ├── dashboard/           # Soldes, graphique depenses, transactions recentes
-        ├── transactions/        # Ajout/edition avec clavier numerique custom
-        ├── recurring/           # Paiements recurrents
-        ├── stats/               # Graphiques cashflow, budgets
-        ├── vault/               # Chiffrement E2E, lock screen, biometrie
-        ├── onboarding/          # Flow 3 etapes (devise, compte, auth)
-        ├── accounts/            # CRUD comptes bancaires
-        └── settings/            # Profil, categories, securite, donnees, a propos
+    ├── core/                        # Fondations partagees
+    │   ├── config/                  # Initialisation Supabase, env
+    │   ├── middleware/              # Guards de navigation
+    │   ├── services/               # Services transverses (encryption, invalidation, recurrence)
+    │   ├── theme/                   # AppColors, AppTextStyles, AppTheme
+    │   └── utils/                   # CurrencyFormatter, IconMapper, Logger
+    ├── common_widgets/              # Composants UI reutilisables (AppButton, CategoryIcon, NumericKeypad...)
+    ├── data/                        # Couche donnees
+    │   ├── models/                  # Modeles de donnees (Account, Transaction, Category...)
+    │   ├── remote/                  # Appels Supabase directs (un fichier par table)
+    │   ├── services/                # Logique metier sur les donnees
+    │   ├── repositories/            # Abstraction avec Either<Failure, T> (fpdart)
+    │   └── providers/               # Providers Riverpod pour la couche data
+    └── features/                    # Fonctionnalites, organisees en deux niveaux
+        ├── domain/                  # Features metier autonomes
+        │   ├── accounts/            # CRUD comptes bancaires
+        │   ├── onboarding/          # Flow d'initialisation (devise, compte, auth)
+        │   ├── recurring/           # Paiements recurrents
+        │   ├── stats/               # Graphiques cashflow, budgets
+        │   ├── transactions/        # Ajout/edition de transactions
+        │   └── vault/               # Chiffrement E2E, lock screen, biometrie
+        └── aggregators/             # Features qui composent plusieurs domaines
+            ├── app_shell/           # Shell principal (IndexedStack + bottom nav)
+            ├── dashboard/           # Soldes, graphique depenses, transactions recentes
+            └── settings/            # Profil, categories, securite, donnees, a propos
+```
+
+### Domain vs Aggregators
+
+Les features sont separees en deux categories :
+
+- **`domain/`** : features autonomes qui encapsulent un concept metier unique (comptes, transactions, recurrences...). Elles n'importent pas d'autres features.
+- **`aggregators/`** : features qui composent et orchestrent plusieurs features domain (le dashboard agrege comptes + transactions + stats, les settings accedent au vault + categories...).
+
+### Structure d'une feature
+
+Chaque feature suit la meme organisation interne :
+
+```
+feature_name/
+└── presentation/
+    ├── feature_providers.dart       # Providers Riverpod specifiques
+    ├── feature_state.dart           # State immutable avec copyWith (si necessaire)
+    ├── screens/                     # Ecrans (un widget = un ecran)
+    └── widgets/                     # Sous-widgets extraits des ecrans
 ```
 
 ### Flux de donnees
 
 ```
 Widget (ConsumerWidget)
-  → ref.watch(provider)        # Lecture reactive
-  → Repository                 # Abstraction avec Either<Failure, T>
-    → Service                  # Appels Supabase directs
+  → ref.watch(provider)              # Lecture reactive
+  → Repository                       # Abstraction avec Either<Failure, T>
+    → Service / Remote               # Appels Supabase directs
       → Supabase Client
 ```
 
@@ -101,26 +128,18 @@ MonasafeApp
 | Services | `PascalCase` + suffixe `Service` | `TransactionService`, `AuthService` |
 | Repositories | `PascalCase` + suffixe `Repository` | `AccountRepository` |
 
-### Organisation des features
+### Decoupage des widgets
 
-Chaque feature suit la structure :
-
-```
-feature_name/
-├── data/                  # (optionnel) Services specifiques a la feature
-└── presentation/
-    ├── feature_providers.dart
-    ├── feature_state.dart # (optionnel) State immutable avec copyWith
-    ├── screens/
-    └── widgets/
-```
+- Les fichiers dans `screens/` et `widgets/` ne doivent pas depasser **300 lignes**
+- Quand un widget devient trop grand, extraire les sous-widgets dans le dossier `widgets/` de la feature
+- Chaque fichier widget contient un seul widget public ; les widgets utilitaires internes restent prives (`_InfoRow`, `_AccountTypeOption`)
 
 ### UI
 
 - `AppColors.error` pour les depenses, `AppColors.success` pour les revenus
 - `CurrencyFormatter.format(amount)` pour l'affichage des montants
+- Composants reutilisables dans `common_widgets/` : `AppButton`, `GlassCard`, `CategoryIcon`, `NumericKeypad`, etc.
 - Barrel exports : `import 'package:monasafe/src/data/data.dart'` pour toute la couche data
-- Composants reutilisables dans `common_widgets/` : `AppButton`, `GlassCard`, `CategoryIcon`, etc.
 
 ### Typographie
 
@@ -152,98 +171,4 @@ flutter pub run flutter_launcher_icons
 
 # Regenerer le splash screen
 flutter pub run flutter_native_splash:create
-```
-
-## Base de donnees
-
-Les migrations se font dans le SQL Editor de Supabase. Schema complet ci-dessous.
-
-### Tables
-
-#### `accounts`
-
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID (PK) | Auto-genere |
-| `user_id` | UUID (FK → auth.users) | Proprietaire |
-| `name` | TEXT | Nom du compte |
-| `type` | TEXT | `checking`, `savings`, `cash` |
-| `balance` | DECIMAL(12,2) | Solde initial |
-| `currency` | TEXT(3) | Code ISO 4217 |
-| `color` | INT | Couleur ARGB |
-
-#### `categories`
-
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID (PK) | Auto-genere |
-| `user_id` | UUID (FK) | NULL = categorie par defaut |
-| `name` | TEXT | Nom |
-| `icon_key` | TEXT | Reference icone |
-| `color` | INT | Couleur ARGB |
-| `type` | TEXT | `income`, `expense` |
-| `is_default` | BOOL | Non supprimable si true |
-
-#### `transactions`
-
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID (PK) | Auto-genere |
-| `user_id` | UUID (FK) | Proprietaire |
-| `account_id` | UUID (FK) | Compte associe |
-| `category_id` | UUID (FK) | Categorie |
-| `recurring_id` | UUID (FK, nullable) | Lien vers recurrence |
-| `amount` | TEXT | Montant (chiffre si Vault actif) |
-| `date` | TIMESTAMPTZ | Date |
-| `note` | TEXT | Note (chiffree si Vault actif) |
-| `is_encrypted` | BOOL | Donnees chiffrees ou non |
-| `sync_status` | TEXT | `pending`, `synced` |
-
-#### `recurring_transactions`
-
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID (PK) | Auto-genere |
-| `user_id` | UUID (FK) | Proprietaire |
-| `account_id` | UUID (FK) | Compte associe |
-| `category_id` | UUID (FK) | Categorie |
-| `amount` | DECIMAL(12,2) | Montant |
-| `note` | TEXT | Note |
-| `original_day` | INT | Jour du mois (1-31) |
-| `start_date` | TIMESTAMPTZ | Debut |
-| `end_date` | TIMESTAMPTZ (nullable) | Fin optionnelle |
-| `last_generated_date` | TIMESTAMPTZ | Derniere occurrence generee |
-| `is_active` | BOOL | Active ou suspendue |
-
-#### `user_budgets`
-
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID (PK) | Auto-genere |
-| `user_id` | UUID (FK) | Proprietaire |
-| `category_id` | UUID (FK) | Categorie ciblee |
-| `budget_limit` | DECIMAL(12,2) | Limite mensuelle |
-
-Contrainte : `UNIQUE(user_id, category_id)`.
-
-#### `user_settings`
-
-Table cle-valeur pour les parametres utilisateur.
-
-| Cle | Description |
-|-----|-------------|
-| `onboarding_completed` | Onboarding termine (bool) |
-| `currency` | Devise (EUR, USD, GBP...) |
-| `is_anonymous` | Mode local sans sync (bool) |
-| `primary_account_id` | ID du compte principal |
-
-### Row Level Security
-
-Toutes les tables ont RLS active. Pattern identique sur chaque table :
-
-```sql
-CREATE POLICY "select" ON table FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "insert" ON table FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "update" ON table FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "delete" ON table FOR DELETE USING (auth.uid() = user_id);
 ```

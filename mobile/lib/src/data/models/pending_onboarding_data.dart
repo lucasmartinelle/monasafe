@@ -1,4 +1,7 @@
+import 'package:meta/meta.dart';
+
 /// Données d'onboarding en attente de complétion après OAuth
+@immutable
 class PendingOnboardingData {
   const PendingOnboardingData({
     required this.currency,

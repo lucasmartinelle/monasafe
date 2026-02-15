@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:monasafe/src/data/models/enums.dart';
 
 /// Modèle représentant une transaction financière
@@ -7,6 +8,7 @@ import 'package:monasafe/src/data/models/enums.dart';
 /// et `note` retourne null.
 ///
 /// Utilisez `withDecrypted()` pour injecter les valeurs déchiffrées.
+@immutable
 class Transaction {
   const Transaction({
     required this.id,

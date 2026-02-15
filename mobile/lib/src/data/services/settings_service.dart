@@ -58,7 +58,7 @@ class SettingsService {
   }
 
   /// Définit une valeur booléenne
-  Future<void> setBool(String key, bool value) async {
+  Future<void> setBool(String key, {required bool value}) async {
     await setValue(key, value.toString());
   }
 

@@ -44,11 +44,10 @@ class AccountBalanceError extends AccountError {
 /// - Gestion d'erreurs via Either (fpdart)
 /// - Validation des données
 class AccountRepository {
-  AccountRepository(this._accountService, this._transactionService, this._statisticsService);
+  AccountRepository(this._accountService, this._transactionService);
 
   final AccountService _accountService;
   final TransactionService _transactionService;
-  final StatisticsService _statisticsService;
 
   /// Récupère tous les comptes
   Future<Either<AccountError, List<Account>>> getAllAccounts() async {

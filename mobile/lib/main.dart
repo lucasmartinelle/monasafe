@@ -8,9 +8,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:monasafe/src/core/config/supabase_config.dart';
 import 'package:monasafe/src/core/theme/theme.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
-import 'package:monasafe/src/features/app_shell/app_shell.dart';
-import 'package:monasafe/src/features/onboarding/onboarding.dart';
-import 'package:monasafe/src/features/vault/vault.dart';
+import 'package:monasafe/src/features/aggregators/app_shell/app_shell.dart';
+import 'package:monasafe/src/features/domain/onboarding/presentation/onboarding_flow.dart';
+import 'package:monasafe/src/features/domain/vault/presentation/screens/lock_screen.dart';
+import 'package:monasafe/src/features/domain/vault/presentation/vault_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -23,7 +24,7 @@ void main() async {
   await dotenv.load();
 
   // Timer pour garantir 2 secondes minimum de splash
-  final splashTimer = Future.delayed(const Duration(seconds: 2));
+  final splashTimer = Future<void>.delayed(const Duration(seconds: 2));
 
   await Future.wait([
     initializeDateFormatting('fr_FR'),

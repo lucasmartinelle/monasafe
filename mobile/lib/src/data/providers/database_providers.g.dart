@@ -103,7 +103,7 @@ final transactionServiceProvider = Provider<TransactionService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef TransactionServiceRef = ProviderRef<TransactionService>;
-String _$statisticsServiceHash() => r'd81c23f2834b23c156ce5e248d3a2bdca6ac4786';
+String _$statisticsServiceHash() => r'8a2f67511ca0fb91836827beb73cda93d12ffd90';
 
 /// Provider pour le service des statistiques
 ///
@@ -265,7 +265,7 @@ final dataManagementServiceProvider = Provider<DataManagementService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef DataManagementServiceRef = ProviderRef<DataManagementService>;
-String _$accountRepositoryHash() => r'1c9849d93b8862cba52d2c333ec3d38bb2650022';
+String _$accountRepositoryHash() => r'3cf96ff700d16cdbc6cf97d80991afd64b0e7643';
 
 /// Provider pour le repository des comptes
 ///
@@ -787,5 +787,43 @@ final transactionsRefreshTriggerProvider =
     );
 
 typedef _$TransactionsRefreshTrigger = Notifier<int>;
+String _$recurringRefreshTriggerHash() =>
+    r'64a4317f337a22a9e6c8804c28f73120bbb481ec';
+
+/// Trigger de rafraîchissement pour les données liées aux récurrences.
+///
+/// Copied from [RecurringRefreshTrigger].
+@ProviderFor(RecurringRefreshTrigger)
+final recurringRefreshTriggerProvider =
+    NotifierProvider<RecurringRefreshTrigger, int>.internal(
+      RecurringRefreshTrigger.new,
+      name: r'recurringRefreshTriggerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$recurringRefreshTriggerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$RecurringRefreshTrigger = Notifier<int>;
+String _$budgetRefreshTriggerHash() =>
+    r'57725a2f399aef13afbd4b962bedf2240fc619bb';
+
+/// Trigger de rafraîchissement pour les données liées aux budgets.
+///
+/// Copied from [BudgetRefreshTrigger].
+@ProviderFor(BudgetRefreshTrigger)
+final budgetRefreshTriggerProvider =
+    NotifierProvider<BudgetRefreshTrigger, int>.internal(
+      BudgetRefreshTrigger.new,
+      name: r'budgetRefreshTriggerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$budgetRefreshTriggerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$BudgetRefreshTrigger = Notifier<int>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,7 +1,7 @@
 name: monasafe
 description: "A Flutter application with Clean Architecture."
 publish_to: 'none'
-version: 1.0.1+2
+version: 1.0.3+5
 
 environment:
   sdk: ^3.10.7
@@ -36,6 +36,8 @@ dependencies:
   fpdart: ^1.1.0
   logger: ^2.5.0
   url_launcher: ^6.3.1
+  meta: ^1.9.0
+  package_info_plus: ^8.3.0
 
   # Security - Vault & E2EE
   cryptography: ^2.7.0

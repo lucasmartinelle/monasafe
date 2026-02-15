@@ -1,11 +1,8 @@
 import 'package:monasafe/src/data/models/models.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service Supabase pour les statistiques et agrégations
 class StatisticsService {
-  StatisticsService(this._client);
-
-  final SupabaseClient _client;
+  StatisticsService();
 
   // ==================== CALCULS CÔTÉ CLIENT ====================
 
