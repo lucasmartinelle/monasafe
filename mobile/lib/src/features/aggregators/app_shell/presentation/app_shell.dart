@@ -10,7 +10,6 @@ import 'package:monasafe/src/features/aggregators/settings/presentation/screens/
 import 'package:monasafe/src/features/domain/recurring/presentation/screens/recurring_list_screen.dart';
 import 'package:monasafe/src/features/domain/stats/presentation/screens/stats_screen.dart';
 import 'package:monasafe/src/features/domain/transactions/presentation/screens/add_transaction_screen.dart';
-import 'package:monasafe/src/features/domain/transactions/presentation/transaction_form_provider.dart';
 
 /// Main app shell with bottom navigation and FAB.
 ///
@@ -41,9 +40,8 @@ class _AppShellState extends ConsumerState<AppShell> {
   Future<void> _onFabPressed() async {
     final result = await AddTransactionScreen.show(context);
 
-    // Refresh transaction list and reset form if a transaction was added
+    // Refresh transaction list if a transaction was added
     if ((result ?? false) && mounted) {
-      ref.read(transactionFormNotifierProvider.notifier).reset();
       unawaited(ref.read(paginatedTransactionsProvider.notifier).refresh());
     }
   }
