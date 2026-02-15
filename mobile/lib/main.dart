@@ -5,13 +5,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:monasafe/src/common_widgets/app_error_screen.dart';
 import 'package:monasafe/src/core/config/supabase_config.dart';
 import 'package:monasafe/src/core/theme/theme.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/aggregators/app_shell/app_shell.dart';
 import 'package:monasafe/src/features/domain/onboarding/presentation/onboarding_flow.dart';
 import 'package:monasafe/src/features/domain/vault/presentation/screens/lock_screen.dart';
-import 'package:monasafe/src/common_widgets/app_error_screen.dart';
 import 'package:monasafe/src/features/domain/vault/presentation/vault_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
