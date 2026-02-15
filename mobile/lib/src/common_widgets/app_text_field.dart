@@ -90,7 +90,7 @@ class _AppTextFieldState extends State<AppTextField> with FocusNodeMixin {
   }
 
   @override
-  void onFocusChange(bool hasFocus) {
+  void onFocusChange({required bool hasFocus}) {
     widget.onFocusChanged?.call(hasFocus);
   }
 

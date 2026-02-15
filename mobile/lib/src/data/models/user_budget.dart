@@ -1,4 +1,7 @@
+import 'package:meta/meta.dart';
+
 /// Modèle représentant un budget utilisateur pour une catégorie
+@immutable
 class UserBudget {
   const UserBudget({
     required this.id,

@@ -9,7 +9,7 @@ import 'package:monasafe/src/data/repositories/settings_repository.dart';
 import 'package:monasafe/src/data/repositories/transaction_repository.dart';
 import 'package:monasafe/src/data/services/recurring_transaction_service.dart';
 import 'package:monasafe/src/data/services/services.dart';
-import 'package:monasafe/src/features/vault/presentation/vault_providers.dart';
+import 'package:monasafe/src/features/domain/vault/presentation/vault_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

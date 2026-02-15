@@ -5,7 +5,7 @@
 /// ```
 library;
 
-export 'account_type_badge.dart';
+export '../core/utils/account_type.dart';
 export 'app_button.dart';
 export 'app_text_field.dart';
 export 'async_state_handler.dart';

@@ -101,7 +101,7 @@ class SelectableBadgeGroup<T> extends StatelessWidget {
 /// ```
 class _SelectableBadge extends StatelessWidget {
   const _SelectableBadge({
-    required this.label, super.key,
+    required this.label,
     this.icon,
     this.isSelected = false,
     this.color,

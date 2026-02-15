@@ -1,6 +1,8 @@
+import 'package:meta/meta.dart';
 import 'package:monasafe/src/data/models/enums.dart';
 
 /// Modèle représentant une catégorie de transaction
+@immutable
 class Category {
   const Category({
     required this.id,

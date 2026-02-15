@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 /// Modele representant une transaction recurrente mensuelle
 ///
 /// Quand le vault est actif, `_rawAmount` et `_rawNote` contiennent des valeurs
@@ -5,6 +7,7 @@
 /// et `note` retourne null.
 ///
 /// Utilisez `withDecrypted()` pour injecter les valeurs dechiffrees.
+@immutable
 class RecurringTransaction {
   const RecurringTransaction({
     required this.id,
