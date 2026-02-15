@@ -1,0 +1,20 @@
+name: PR Target Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-source-branch:
+    name: Vérifier branche source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bloquer les PR non autorisées vers main
+        if: github.head_ref != 'develop'
+        run: |
+          echo "::error::Seules les PR depuis 'develop' vers 'main' sont autorisées. Branche source détectée : '${{ github.head_ref }}'."
+          exit 1
+
+      - name: PR autorisée
+        if: github.head_ref == 'develop'
+        run: echo "PR depuis 'develop' vers 'main' — OK."

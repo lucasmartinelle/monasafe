@@ -14,7 +14,7 @@ jobs:
   analyze-and-test:
     name: Analyze & Test
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+    if: github.event_name == 'pull_request'
     defaults:
       run:
         working-directory: mobile
