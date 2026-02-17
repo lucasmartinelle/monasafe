@@ -251,6 +251,9 @@ class _AccountTile extends ConsumerWidget {
     final calculatedBalanceAsync = ref.watch(
       accountCalculatedBalanceStreamProvider(account.id),
     );
+    final realBalanceAsync = ref.watch(
+      accountRealBalanceStreamProvider(account.id),
+    );
 
     return Column(
       children: [
@@ -292,24 +295,10 @@ class _AccountTile extends ConsumerWidget {
                 ),
               ),
 
-              // Balance (calculé avec les transactions)
-              calculatedBalanceAsync.when(
-                data: (balance) => Text(
-                  CurrencyFormatter.format(balance),
-                  style: AppTextStyles.labelLarge(color: textColor),
-                ),
-                loading: () => Container(
-                  width: 60,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: textColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                error: (_, __) => Text(
-                  '--,-- €',
-                  style: AppTextStyles.labelLarge(color: textColor),
-                ),
+              // Balances
+              _buildBalances(
+                calculatedBalanceAsync,
+                realBalanceAsync,
               ),
             ],
           ),
@@ -320,6 +309,45 @@ class _AccountTile extends ConsumerWidget {
             color: isDark ? AppColors.dividerDark : AppColors.dividerLight,
           ),
       ],
+    );
+  }
+
+  Widget _buildBalances(
+    AsyncValue<double> calculatedBalanceAsync,
+    AsyncValue<double> realBalanceAsync,
+  ) {
+    return calculatedBalanceAsync.when(
+      data: (balance) {
+        final realBalance = realBalanceAsync.valueOrNull;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              CurrencyFormatter.format(balance),
+              style: AppTextStyles.labelLarge(color: textColor),
+            ),
+            if (realBalance != null && realBalance != balance) ...[
+              const SizedBox(height: 2),
+              Text(
+                'Réel : ${CurrencyFormatter.format(realBalance)}',
+                style: AppTextStyles.caption(color: subtitleColor),
+              ),
+            ],
+          ],
+        );
+      },
+      loading: () => Container(
+        width: 60,
+        height: 16,
+        decoration: BoxDecoration(
+          color: textColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ),
+      error: (_, __) => Text(
+        '--,-- €',
+        style: AppTextStyles.labelLarge(color: textColor),
+      ),
     );
   }
 }

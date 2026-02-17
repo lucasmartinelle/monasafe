@@ -26,9 +26,21 @@ class NetWorthCard extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           financialSummary.when(
-            data: (summary) => Text(
-              CurrencyFormatter.format(summary.totalBalance),
-              style: AppTextStyles.h1(color: context.textPrimary),
+            data: (summary) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  CurrencyFormatter.format(summary.totalBalance),
+                  style: AppTextStyles.h1(color: context.textPrimary),
+                ),
+                if (summary.realBalance != summary.totalBalance) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Solde réel : ${CurrencyFormatter.format(summary.realBalance)}',
+                    style: AppTextStyles.caption(color: context.textSecondary),
+                  ),
+                ],
+              ],
             ),
             loading: () => _buildBalanceSkeleton(context),
             error: (_, __) => Text(
