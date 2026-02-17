@@ -358,6 +358,45 @@ Stream<double> accountCalculatedBalanceStream(Ref ref, String accountId) {
   );
 }
 
+/// Stream du solde réel d'un compte (transactions jusqu'à aujourd'hui inclus)
+@riverpod
+Stream<double> accountRealBalanceStream(Ref ref, String accountId) {
+  final authService = ref.watch(authServiceProvider);
+  if (!authService.isAuthenticated) {
+    return Stream.value(0);
+  }
+
+  ref.watch(transactionsRefreshTriggerProvider);
+
+  final transactionService = ref.watch(transactionServiceProvider);
+  final accountService = ref.watch(accountServiceProvider);
+
+  return transactionService.watchTransactionsByAccount(accountId).asyncMap(
+    (transactions) async {
+      final account = await accountService.getAccountById(accountId);
+      if (account == null) return 0.0;
+
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+      double income = 0;
+      double expense = 0;
+
+      for (final tx in transactions) {
+        if (tx.transaction.date.isAfter(today)) continue;
+        final amount = tx.transaction.amount;
+        if (tx.category.type == CategoryType.income) {
+          income += amount;
+        } else {
+          expense += amount;
+        }
+      }
+
+      return account.balance + income - expense;
+    },
+  );
+}
+
 /// Provider pour vérifier si l'utilisateur a un compte Google lié.
 /// Fait un appel API pour récupérer les identities à jour.
 @riverpod

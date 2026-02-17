@@ -72,7 +72,7 @@ final selectedAccountIdProvider =
 
 typedef _$SelectedAccountId = AutoDisposeNotifier<String?>;
 String _$paginatedTransactionsHash() =>
-    r'd2e77cfc6157f9006ccc1b40ce76ba6643bc4911';
+    r'5ac818cc201761e2b6f0a7412e742b3f381dfa3b';
 
 /// Notifier for paginated transactions with infinite scroll support.
 ///
