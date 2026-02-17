@@ -11,17 +11,18 @@ import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/transactions/presentation/transaction_form_provider.dart';
 
-/// Horizontal scrolling grid of categories filtered by transaction type.
+/// Searchable grid of categories filtered by transaction type.
 ///
 /// Can be used in two modes:
 /// 1. Connected to transactionFormNotifierProvider (default, when no parameters provided)
 /// 2. Standalone with explicit categories, selectedCategoryId, and onCategorySelected
-class CategoryGrid extends ConsumerWidget {
+class CategoryGrid extends ConsumerStatefulWidget {
   const CategoryGrid({
     super.key,
     this.categories,
     this.selectedCategoryId,
     this.onCategorySelected,
+    this.expand = false,
   });
 
   /// Optional list of categories. If null, loads from provider based on transaction type.
@@ -33,16 +34,38 @@ class CategoryGrid extends ConsumerWidget {
   /// Optional callback when a category is selected. If null, uses provider.
   final ValueChanged<String>? onCategorySelected;
 
+  /// If true, the grid expands to fill available vertical space.
+  final bool expand;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CategoryGrid> createState() => _CategoryGridState();
+}
+
+class _CategoryGridState extends ConsumerState<CategoryGrid> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Category> _filterCategories(List<Category> categories) {
+    if (_searchQuery.isEmpty) return categories;
+    final query = _searchQuery.toLowerCase();
+    return categories.where((c) => c.name.toLowerCase().contains(query)).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // If categories are provided directly, use them
-    if (categories != null) {
-      return _buildGrid(
+    if (widget.categories != null) {
+      return _buildSearchAndGrid(
         context,
-        ref,
-        categories!,
-        selectedCategoryId,
-        onCategorySelected,
+        widget.categories!,
+        widget.selectedCategoryId,
+        widget.onCategorySelected,
       );
     }
 
@@ -74,46 +97,114 @@ class CategoryGrid extends ConsumerWidget {
           padding: EdgeInsets.zero,
         ),
       ),
-      builder: (cats) => _buildGrid(context, ref, cats, state.categoryId, null),
+      builder: (cats) => _buildSearchAndGrid(context, cats, state.categoryId, null),
     );
   }
 
-  Widget _buildGrid(
+  Widget _buildSearchAndGrid(
     BuildContext context,
-    WidgetRef ref,
     List<Category> categoryList,
     String? selectedId,
     ValueChanged<String>? onSelected,
   ) {
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: categoryList.length,
-        itemBuilder: (context, index) {
-          final category = categoryList[index];
-          final isSelected = category.id == selectedId;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+    final surfaceColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+    final filtered = _filterCategories(categoryList);
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: _CategoryItem(
-              category: category,
-              isSelected: isSelected,
-              onTap: () {
-                HapticFeedback.selectionClick();
-                if (onSelected != null) {
-                  onSelected(category.id);
-                } else {
-                  ref
-                      .read(transactionFormNotifierProvider.notifier)
-                      .setCategory(category.id);
-                }
-              },
+    final gridWidget = filtered.isEmpty
+        ? SizedBox(
+            height: 80,
+            child: Center(
+              child: Text(
+                'Aucune catégorie trouvée',
+                style: TextStyle(fontSize: 13, color: secondaryColor),
+              ),
             ),
+          )
+        : GridView.builder(
+            shrinkWrap: !widget.expand,
+            padding: EdgeInsets.zero,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 0.85,
+            ),
+            itemCount: filtered.length,
+            itemBuilder: (context, index) {
+              final category = filtered[index];
+              final isSelected = category.id == selectedId;
+
+              return _CategoryItem(
+                category: category,
+                isSelected: isSelected,
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  if (onSelected != null) {
+                    onSelected(category.id);
+                  } else {
+                    ref
+                        .read(transactionFormNotifierProvider.notifier)
+                        .setCategory(category.id);
+                  }
+                },
+              );
+            },
           );
-        },
-      ),
+
+    return Column(
+      mainAxisSize: widget.expand ? MainAxisSize.max : MainAxisSize.min,
+      children: [
+        // Search bar
+        TextField(
+            controller: _searchController,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Rechercher une catégorie',
+              hintStyle: TextStyle(fontSize: 14, color: secondaryColor),
+              prefixIcon: Icon(Icons.search, size: 20, color: secondaryColor),
+              suffixIcon: _searchQuery.isNotEmpty
+                  ? GestureDetector(
+                      onTap: () {
+                        _searchController.clear();
+                        setState(() => _searchQuery = '');
+                      },
+                      child: Icon(Icons.clear, size: 18, color: secondaryColor),
+                    )
+                  : null,
+              filled: true,
+              fillColor: surfaceColor,
+              contentPadding: const EdgeInsets.symmetric(vertical: 8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppColors.primary),
+              ),
+            ),
+            onChanged: (value) => setState(() => _searchQuery = value),
+          ),
+        const SizedBox(height: 12),
+
+        // Category grid
+        if (widget.expand)
+          Expanded(child: gridWidget)
+        else
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 200),
+            child: gridWidget,
+          ),
+      ],
     );
   }
 }
@@ -136,37 +227,35 @@ class _CategoryItem extends StatelessWidget {
     final subtitleColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
     final categoryColor = Color(category.color);
 
-    return SizedBox(
-      width: 76,
-      child: SelectableOptionContainer(
-        isSelected: isSelected,
-        onTap: onTap,
-        selectedColor: categoryColor,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-        enableHapticFeedback: false, // Already handled above
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CategoryIcon.fromHex(
-              icon: IconMapper.getIcon(category.iconKey),
-              colorHex: category.color,
-              size: CategoryIconSize.small,
+    return SelectableOptionContainer(
+      isSelected: isSelected,
+      onTap: onTap,
+      selectedColor: categoryColor,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      enableHapticFeedback: false,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CategoryIcon.fromHex(
+            icon: IconMapper.getIcon(category.iconKey),
+            colorHex: category.color,
+            size: CategoryIconSize.small,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            category.name,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              color: isSelected ? textColor : subtitleColor,
+              height: 1.2,
             ),
-            const SizedBox(height: 6),
-            Text(
-              category.name,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? textColor : subtitleColor,
-                height: 1.2,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
