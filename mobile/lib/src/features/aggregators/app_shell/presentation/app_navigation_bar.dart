@@ -66,37 +66,44 @@ class AppNavigationBar extends StatelessWidget {
       height: 60,
       padding: EdgeInsets.zero,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(
-            context,
-            destination: AppDestination.dashboard,
-            index: 0,
-            selectedColor: selectedColor,
-            unselectedColor: unselectedColor,
+          Expanded(
+            child: _buildNavItem(
+              context,
+              destination: AppDestination.dashboard,
+              index: 0,
+              selectedColor: selectedColor,
+              unselectedColor: unselectedColor,
+            ),
           ),
-          _buildNavItem(
-            context,
-            destination: AppDestination.stats,
-            index: 1,
-            selectedColor: selectedColor,
-            unselectedColor: unselectedColor,
+          Expanded(
+            child: _buildNavItem(
+              context,
+              destination: AppDestination.stats,
+              index: 1,
+              selectedColor: selectedColor,
+              unselectedColor: unselectedColor,
+            ),
           ),
           // Space for FAB
-          const SizedBox(width: 56),
-          _buildNavItem(
-            context,
-            destination: AppDestination.recurring,
-            index: 2,
-            selectedColor: selectedColor,
-            unselectedColor: unselectedColor,
+          const Expanded(child: SizedBox()),
+          Expanded(
+            child: _buildNavItem(
+              context,
+              destination: AppDestination.recurring,
+              index: 2,
+              selectedColor: selectedColor,
+              unselectedColor: unselectedColor,
+            ),
           ),
-          _buildNavItem(
-            context,
-            destination: AppDestination.settings,
-            index: 3,
-            selectedColor: selectedColor,
-            unselectedColor: unselectedColor,
+          Expanded(
+            child: _buildNavItem(
+              context,
+              destination: AppDestination.settings,
+              index: 3,
+              selectedColor: selectedColor,
+              unselectedColor: unselectedColor,
+            ),
           ),
         ],
       ),
@@ -117,23 +124,21 @@ class AppNavigationBar extends StatelessWidget {
     return InkWell(
       onTap: () => onDestinationSelected(index),
       borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 2),
-            Text(
-              destination.label,
-              style: TextStyle(
-                color: color,
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 26),
+          const SizedBox(height: 4),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: isSelected ? 6 : 0,
+            height: isSelected ? 6 : 0,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: selectedColor,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
