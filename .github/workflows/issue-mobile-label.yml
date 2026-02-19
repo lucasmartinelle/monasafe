@@ -1,0 +1,53 @@
+name: Label issues par plateforme
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Ajouter le label "mobile"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            if (/### Plateforme\s+(Mobile - Android|Mobile - iOS)/.test(body)) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['mobile']
+              });
+            }
+
+      - name: Ajouter le label "web"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            if (/### Plateforme\s+Web/.test(body)) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['web']
+              });
+            }
+
+      - name: Ajouter le label "toutes"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            if (/### Plateforme\s+Toutes/.test(body)) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['toutes plateformes']
+              });
+            }
