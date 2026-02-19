@@ -5,6 +5,7 @@ import 'package:monasafe/src/common_widgets/common_widgets.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/core/theme/theme_helper.dart';
+import 'package:monasafe/src/core/utils/constants.dart';
 import 'package:monasafe/src/core/utils/currency_formatter.dart';
 import 'package:monasafe/src/features/domain/onboarding/presentation/widgets/question_page_layout.dart';
 
@@ -74,9 +75,10 @@ class _AccountQuestionPageState extends State<AccountQuestionPage> {
   }
 
   void _appendDigit(String digit) {
-    if (_cents >= 10000000) return;
+    final newAmount = _cents * 10 + int.parse(digit);
+    if (newAmount > kMaxAmountCents) return;
     setState(() {
-      _cents = _cents * 10 + int.parse(digit);
+      _cents = newAmount;
     });
     widget.onBalanceChanged(_cents);
   }

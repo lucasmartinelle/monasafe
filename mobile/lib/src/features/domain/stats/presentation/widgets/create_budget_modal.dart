@@ -6,6 +6,7 @@ import 'package:monasafe/src/common_widgets/common_widgets.dart';
 import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
+import 'package:monasafe/src/core/utils/constants.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/stats/presentation/widgets/create_budget_amount_display.dart';
 import 'package:monasafe/src/features/domain/transactions/presentation/widgets/category_grid.dart';
@@ -45,9 +46,10 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
   bool get _isValid => _selectedCategoryId != null && _amountCents > 0;
 
   void _appendDigit(String digit) {
-    if (_amountCents.toString().length >= 8) return;
+    final newAmount = _amountCents * 10 + int.parse(digit);
+    if (newAmount > kMaxAmountCents) return;
     setState(() {
-      _amountCents = _amountCents * 10 + int.parse(digit);
+      _amountCents = newAmount;
     });
   }
 
