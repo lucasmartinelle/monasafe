@@ -65,6 +65,7 @@ class DailyStatistics {
 class FinancialSummary {
   const FinancialSummary({
     required this.totalBalance,
+    required this.realBalance,
     required this.totalIncome,
     required this.totalExpense,
     required this.monthlyIncome,
@@ -74,12 +75,17 @@ class FinancialSummary {
   /// Crée un résumé financier vide
   const FinancialSummary.empty()
       : totalBalance = 0,
+        realBalance = 0,
         totalIncome = 0,
         totalExpense = 0,
         monthlyIncome = 0,
         monthlyExpense = 0;
 
   final double totalBalance;
+
+  /// Solde réel : ne compte que les transactions jusqu'à aujourd'hui inclus.
+  final double realBalance;
+
   final double totalIncome;
   final double totalExpense;
   final double monthlyIncome;

@@ -177,7 +177,7 @@ class _NoteSuggestionsProviderElement
 }
 
 String _$transactionFormNotifierHash() =>
-    r'abec80153b197349cb7778d252068362d050b96a';
+    r'a925b70cf71917b5cfc8ffff05aa5a309533eb11';
 
 /// Unified notifier for transaction forms (add/edit).
 ///

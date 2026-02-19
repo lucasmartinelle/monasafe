@@ -112,7 +112,7 @@ final dekInMemoryProvider = NotifierProvider<DekInMemory, Uint8List?>.internal(
 );
 
 typedef _$DekInMemory = Notifier<Uint8List?>;
-String _$vaultNotifierHash() => r'f8e908056f054726ddcca6639e4ca405aa20d943';
+String _$vaultNotifierHash() => r'172bac5af47846f65745152fc0435080c47a5b5c';
 
 /// See also [VaultNotifier].
 @ProviderFor(VaultNotifier)

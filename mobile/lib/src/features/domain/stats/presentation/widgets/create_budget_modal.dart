@@ -6,10 +6,9 @@ import 'package:monasafe/src/common_widgets/common_widgets.dart';
 import 'package:monasafe/src/core/services/invalidation_service.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
-import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/stats/presentation/widgets/create_budget_amount_display.dart';
-import 'package:monasafe/src/features/domain/stats/presentation/widgets/create_budget_category_item.dart';
+import 'package:monasafe/src/features/domain/transactions/presentation/widgets/category_grid.dart';
 
 /// Modal bottom sheet pour créer ou modifier un budget.
 class CreateBudgetModal extends ConsumerStatefulWidget {
@@ -33,6 +32,7 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
   String? _selectedCategoryId;
   int _amountCents = 0;
   bool _isSubmitting = false;
+  bool _showKeypad = false;
 
   String get _displayAmount {
     final euros = _amountCents ~/ 100;
@@ -61,6 +61,20 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
     setState(() {
       _amountCents = 0;
     });
+  }
+
+  void _toggleKeypad() {
+    setState(() {
+      _showKeypad = !_showKeypad;
+    });
+  }
+
+  void _hideKeypad() {
+    if (_showKeypad) {
+      setState(() {
+        _showKeypad = false;
+      });
+    }
   }
 
   void _selectCategory(String categoryId) {
@@ -123,7 +137,6 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
       ),
       child: SafeArea(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             // Handle bar
             Padding(
@@ -156,6 +169,23 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
               ),
             ),
 
+            // Amount display
+            GestureDetector(
+              onTap: _hideKeypad,
+              behavior: HitTestBehavior.translucent,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: CreateBudgetAmountDisplay(
+                  displayAmount: _displayAmount,
+                  amountCents: _amountCents,
+                  showKeypad: _showKeypad,
+                  onTap: _toggleKeypad,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
             // Category selection label
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
@@ -168,47 +198,54 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
               ),
             ),
 
-            // Category grid
-            categoriesAsync.when(
-              data: _buildCategoryGrid,
-              loading: () => const SizedBox(
-                height: 100,
-                child: LoadingStateWidget(padding: EdgeInsets.zero),
-              ),
-              error: (_, __) => const SizedBox(
-                height: 100,
-                child: ErrorStateWidget(
-                  message: 'Erreur de chargement',
-                  padding: EdgeInsets.zero,
+            // Category grid (fills remaining space)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: categoriesAsync.when(
+                  data: (categories) => CategoryGrid(
+                    categories: categories,
+                    selectedCategoryId: _selectedCategoryId,
+                    expand: true,
+                    onCategorySelected: (id) {
+                      _hideKeypad();
+                      _selectCategory(id);
+                    },
+                  ),
+                  loading: () => const SizedBox(
+                    height: 100,
+                    child: LoadingStateWidget(padding: EdgeInsets.zero),
+                  ),
+                  error: (_, __) => const SizedBox(
+                    height: 100,
+                    child: ErrorStateWidget(
+                      message: 'Erreur de chargement',
+                      padding: EdgeInsets.zero,
+                    ),
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 24),
-
-            // Amount display
-            CreateBudgetAmountDisplay(
-              displayAmount: _displayAmount,
-              amountCents: _amountCents,
+            // Numeric keypad (animated)
+            AnimatedSize(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              child: _showKeypad
+                  ? Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: NumericKeypad(
+                        onDigit: _appendDigit,
+                        onDelete: _deleteDigit,
+                        onClear: _clearAmount,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
-
-            const SizedBox(height: 24),
-
-            // Numeric keypad
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: NumericKeypad(
-                onDigit: _appendDigit,
-                onDelete: _deleteDigit,
-                onClear: _clearAmount,
-              ),
-            ),
-
-            const SizedBox(height: 24),
 
             // Submit button
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
               child: AppButton(
                 label: 'Créer le budget',
                 fullWidth: true,
@@ -222,38 +259,4 @@ class _CreateBudgetModalState extends ConsumerState<CreateBudgetModal> {
     );
   }
 
-  Widget _buildCategoryGrid(List<Category> categories) {
-    if (categories.isEmpty) {
-      return const SizedBox(
-        height: 100,
-        child: EmptyStateWidget(
-          message: 'Aucune catégorie',
-          padding: EdgeInsets.zero,
-          iconSize: 32,
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          final isSelected = category.id == _selectedCategoryId;
-
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: CreateBudgetCategoryItem(
-              category: category,
-              isSelected: isSelected,
-              onTap: () => _selectCategory(category.id),
-            ),
-          );
-        },
-      ),
-    );
-  }
 }
