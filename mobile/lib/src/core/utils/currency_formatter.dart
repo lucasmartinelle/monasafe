@@ -134,3 +134,4 @@ abstract final class CurrencyFormatter {
     }
   }
 }
+

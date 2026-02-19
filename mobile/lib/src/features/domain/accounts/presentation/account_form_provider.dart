@@ -1,4 +1,5 @@
 import 'package:monasafe/src/core/services/invalidation_service.dart';
+import 'package:monasafe/src/core/utils/constants.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/accounts/presentation/account_form_state.dart';
@@ -39,10 +40,8 @@ class AccountFormNotifier extends _$AccountFormNotifier {
 
   /// Ajoute un chiffre au montant.
   void appendDigit(String digit) {
-    // Limite à 10 chiffres (99 999 999,99 €)
-    if (state.amountInCents.toString().length >= 10) return;
-
     final newAmount = state.amountInCents * 10 + int.parse(digit);
+    if (newAmount > kMaxAmountCents) return;
     state = state.copyWith(amountInCents: newAmount, clearError: true);
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:monasafe/src/core/services/invalidation_service.dart';
+import 'package:monasafe/src/core/utils/constants.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/transactions/presentation/transaction_form_state.dart';
@@ -88,7 +89,7 @@ class TransactionFormNotifier extends _$TransactionFormNotifier {
     if (digitValue == null) return;
 
     final newAmount = state.amountCents * 10 + digitValue;
-    if (newAmount > 2147483647) return; // Prevent overflow
+    if (newAmount > kMaxAmountCents) return;
 
     state = state.copyWith(amountCents: newAmount);
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:monasafe/src/core/services/invalidation_service.dart';
+import 'package:monasafe/src/core/utils/constants.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/recurring/presentation/recurring_form_state.dart';
@@ -30,12 +31,9 @@ class RecurringFormNotifier extends _$RecurringFormNotifier {
   /// Ajoute un chiffre au montant.
   void appendDigit(String digit) {
     if (state == null || state!.isBusy) return;
-    // Limite a 999999,99 (8 chiffres)
-    if (state!.amountCents.toString().length >= 8) return;
-
-    state = state!.copyWith(
-      amountCents: state!.amountCents * 10 + int.parse(digit),
-    );
+    final newAmount = state!.amountCents * 10 + int.parse(digit);
+    if (newAmount > kMaxAmountCents) return;
+    state = state!.copyWith(amountCents: newAmount);
   }
 
   /// Supprime le dernier chiffre.

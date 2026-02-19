@@ -8,6 +8,7 @@ import 'package:monasafe/src/core/utils/currency_formatter.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/accounts/presentation/screens/add_account_screen.dart';
+import 'package:monasafe/src/features/domain/accounts/presentation/screens/edit_initial_balance_screen.dart';
 
 /// Card affichant la liste des comptes avec leur solde.
 class AccountListCard extends ConsumerWidget {
@@ -257,50 +258,57 @@ class _AccountTile extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: [
-              // Icon container
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Color(account.color).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  getAccountTypeIcon(account.type),
-                  size: 20,
-                  color: Color(account.color),
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // Name and type
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      account.name,
-                      style: AppTextStyles.labelMedium(color: textColor),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => EditInitialBalanceScreen.show(context, account),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  // Icon container
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Color(account.color).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      getAccountTypeLabel(account.type),
-                      style: AppTextStyles.caption(color: subtitleColor),
+                    child: Icon(
+                      getAccountTypeIcon(account.type),
+                      size: 20,
+                      color: Color(account.color),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                  const SizedBox(width: 12),
 
-              // Balances
-              _buildBalances(
-                calculatedBalanceAsync,
-                realBalanceAsync,
+                  // Name and type
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          account.name,
+                          style: AppTextStyles.labelMedium(color: textColor),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          getAccountTypeLabel(account.type),
+                          style: AppTextStyles.caption(color: subtitleColor),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Balances
+                  _buildBalances(
+                    calculatedBalanceAsync,
+                    realBalanceAsync,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
         if (showDivider)
