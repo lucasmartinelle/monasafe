@@ -79,6 +79,12 @@ class InvalidationService {
     ref.read(budgetRefreshTriggerProvider.notifier).refresh();
   }
 
+  /// Compte mis à jour (solde initial modifié, depuis un widget).
+  /// Rafraîchit : comptes, soldes calculés, soldes réels, résumé financier.
+  static void onAccountUpdatedFromWidget(WidgetRef ref) {
+    ref.read(transactionsRefreshTriggerProvider.notifier).refresh();
+  }
+
   /// Toutes les données supprimées (depuis un widget).
   /// Rafraîchit : tout.
   static void onAllDataDeletedFromWidget(WidgetRef ref) {

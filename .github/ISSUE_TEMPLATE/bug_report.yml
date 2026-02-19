@@ -1,7 +1,7 @@
 name: 🐛 Bug report
 description: Signaler un bug
 title: "[BUG]: "
-labels: ["bug"]
+labels: ["bug", "à prévoir"]
 
 body:
   - type: dropdown
@@ -12,6 +12,7 @@ body:
         - Mobile - Android
         - Mobile - iOS
         - Web
+        - Toutes
     validations:
       required: true
 

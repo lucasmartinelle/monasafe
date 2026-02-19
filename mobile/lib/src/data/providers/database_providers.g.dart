@@ -702,6 +702,145 @@ class _AccountCalculatedBalanceStreamProviderElement
       (origin as AccountCalculatedBalanceStreamProvider).accountId;
 }
 
+String _$accountRealBalanceStreamHash() =>
+    r'4610cdff5de03772b498b761d24185b7ca8122c2';
+
+/// Stream du solde réel d'un compte (transactions jusqu'à aujourd'hui inclus)
+///
+/// Copied from [accountRealBalanceStream].
+@ProviderFor(accountRealBalanceStream)
+const accountRealBalanceStreamProvider = AccountRealBalanceStreamFamily();
+
+/// Stream du solde réel d'un compte (transactions jusqu'à aujourd'hui inclus)
+///
+/// Copied from [accountRealBalanceStream].
+class AccountRealBalanceStreamFamily extends Family<AsyncValue<double>> {
+  /// Stream du solde réel d'un compte (transactions jusqu'à aujourd'hui inclus)
+  ///
+  /// Copied from [accountRealBalanceStream].
+  const AccountRealBalanceStreamFamily();
+
+  /// Stream du solde réel d'un compte (transactions jusqu'à aujourd'hui inclus)
+  ///
+  /// Copied from [accountRealBalanceStream].
+  AccountRealBalanceStreamProvider call(String accountId) {
+    return AccountRealBalanceStreamProvider(accountId);
+  }
+
+  @override
+  AccountRealBalanceStreamProvider getProviderOverride(
+    covariant AccountRealBalanceStreamProvider provider,
+  ) {
+    return call(provider.accountId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'accountRealBalanceStreamProvider';
+}
+
+/// Stream du solde réel d'un compte (transactions jusqu'à aujourd'hui inclus)
+///
+/// Copied from [accountRealBalanceStream].
+class AccountRealBalanceStreamProvider
+    extends AutoDisposeStreamProvider<double> {
+  /// Stream du solde réel d'un compte (transactions jusqu'à aujourd'hui inclus)
+  ///
+  /// Copied from [accountRealBalanceStream].
+  AccountRealBalanceStreamProvider(String accountId)
+    : this._internal(
+        (ref) => accountRealBalanceStream(
+          ref as AccountRealBalanceStreamRef,
+          accountId,
+        ),
+        from: accountRealBalanceStreamProvider,
+        name: r'accountRealBalanceStreamProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$accountRealBalanceStreamHash,
+        dependencies: AccountRealBalanceStreamFamily._dependencies,
+        allTransitiveDependencies:
+            AccountRealBalanceStreamFamily._allTransitiveDependencies,
+        accountId: accountId,
+      );
+
+  AccountRealBalanceStreamProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.accountId,
+  }) : super.internal();
+
+  final String accountId;
+
+  @override
+  Override overrideWith(
+    Stream<double> Function(AccountRealBalanceStreamRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: AccountRealBalanceStreamProvider._internal(
+        (ref) => create(ref as AccountRealBalanceStreamRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        accountId: accountId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeStreamProviderElement<double> createElement() {
+    return _AccountRealBalanceStreamProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AccountRealBalanceStreamProvider &&
+        other.accountId == accountId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, accountId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin AccountRealBalanceStreamRef on AutoDisposeStreamProviderRef<double> {
+  /// The parameter `accountId` of this provider.
+  String get accountId;
+}
+
+class _AccountRealBalanceStreamProviderElement
+    extends AutoDisposeStreamProviderElement<double>
+    with AccountRealBalanceStreamRef {
+  _AccountRealBalanceStreamProviderElement(super.provider);
+
+  @override
+  String get accountId =>
+      (origin as AccountRealBalanceStreamProvider).accountId;
+}
+
 String _$hasGoogleIdentityHash() => r'2e01cba58a9a840d8aee0b0cbe7cfd81fa69e40e';
 
 /// Provider pour vérifier si l'utilisateur a un compte Google lié.

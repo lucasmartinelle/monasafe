@@ -16,24 +16,30 @@ class StatisticsService {
   ) {
     double totalIncome = 0;
     double totalExpense = 0;
+    double realIncome = 0;
+    double realExpense = 0;
     double monthlyIncome = 0;
     double monthlyExpense = 0;
 
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day, 23, 59, 59);
     final startOfMonth = DateTime(now.year, now.month);
 
     for (final tx in transactions) {
       final amount = tx.transaction.amount;
       final isIncome = tx.category.type == CategoryType.income;
+      final isPastOrToday = !tx.transaction.date.isAfter(today);
 
       if (isIncome) {
         totalIncome += amount;
+        if (isPastOrToday) realIncome += amount;
         if (tx.transaction.date.isAfter(startOfMonth) ||
             tx.transaction.date.isAtSameMomentAs(startOfMonth)) {
           monthlyIncome += amount;
         }
       } else {
         totalExpense += amount;
+        if (isPastOrToday) realExpense += amount;
         if (tx.transaction.date.isAfter(startOfMonth) ||
             tx.transaction.date.isAtSameMomentAs(startOfMonth)) {
           monthlyExpense += amount;
@@ -44,9 +50,11 @@ class StatisticsService {
     // Total balance = sum(initial balances) + totalIncome - totalExpense
     final totalInitialBalance = accounts.fold(0.0, (sum, a) => sum + a.balance);
     final totalBalance = totalInitialBalance + totalIncome - totalExpense;
+    final realBalance = totalInitialBalance + realIncome - realExpense;
 
     return FinancialSummary(
       totalBalance: totalBalance,
+      realBalance: realBalance,
       totalIncome: totalIncome,
       totalExpense: totalExpense,
       monthlyIncome: monthlyIncome,

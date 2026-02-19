@@ -1,7 +1,7 @@
 name: 🎨 UI / UX issue
 description: Signaler un problème d'interface ou d'expérience utilisateur
 title: "[UI/UX]: "
-labels: ["ui", "ux"]
+labels: ["ui", "ux", "à prévoir"]
 
 body:
   - type: dropdown

@@ -8,6 +8,7 @@ import 'package:monasafe/src/core/utils/currency_formatter.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/accounts/presentation/screens/add_account_screen.dart';
+import 'package:monasafe/src/features/domain/accounts/presentation/screens/edit_initial_balance_screen.dart';
 
 /// Card affichant la liste des comptes avec leur solde.
 class AccountListCard extends ConsumerWidget {
@@ -251,67 +252,63 @@ class _AccountTile extends ConsumerWidget {
     final calculatedBalanceAsync = ref.watch(
       accountCalculatedBalanceStreamProvider(account.id),
     );
+    final realBalanceAsync = ref.watch(
+      accountRealBalanceStreamProvider(account.id),
+    );
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: [
-              // Icon container
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Color(account.color).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  getAccountTypeIcon(account.type),
-                  size: 20,
-                  color: Color(account.color),
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // Name and type
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      account.name,
-                      style: AppTextStyles.labelMedium(color: textColor),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => EditInitialBalanceScreen.show(context, account),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  // Icon container
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Color(account.color).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      getAccountTypeLabel(account.type),
-                      style: AppTextStyles.caption(color: subtitleColor),
+                    child: Icon(
+                      getAccountTypeIcon(account.type),
+                      size: 20,
+                      color: Color(account.color),
                     ),
-                  ],
-                ),
-              ),
-
-              // Balance (calculé avec les transactions)
-              calculatedBalanceAsync.when(
-                data: (balance) => Text(
-                  CurrencyFormatter.format(balance),
-                  style: AppTextStyles.labelLarge(color: textColor),
-                ),
-                loading: () => Container(
-                  width: 60,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: textColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
                   ),
-                ),
-                error: (_, __) => Text(
-                  '--,-- €',
-                  style: AppTextStyles.labelLarge(color: textColor),
-                ),
+                  const SizedBox(width: 12),
+
+                  // Name and type
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          account.name,
+                          style: AppTextStyles.labelMedium(color: textColor),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          getAccountTypeLabel(account.type),
+                          style: AppTextStyles.caption(color: subtitleColor),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Balances
+                  _buildBalances(
+                    calculatedBalanceAsync,
+                    realBalanceAsync,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
         if (showDivider)
@@ -320,6 +317,45 @@ class _AccountTile extends ConsumerWidget {
             color: isDark ? AppColors.dividerDark : AppColors.dividerLight,
           ),
       ],
+    );
+  }
+
+  Widget _buildBalances(
+    AsyncValue<double> calculatedBalanceAsync,
+    AsyncValue<double> realBalanceAsync,
+  ) {
+    return calculatedBalanceAsync.when(
+      data: (balance) {
+        final realBalance = realBalanceAsync.valueOrNull;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              CurrencyFormatter.format(balance),
+              style: AppTextStyles.labelLarge(color: textColor),
+            ),
+            if (realBalance != null && realBalance != balance) ...[
+              const SizedBox(height: 2),
+              Text(
+                'Réel : ${CurrencyFormatter.format(realBalance)}',
+                style: AppTextStyles.caption(color: subtitleColor),
+              ),
+            ],
+          ],
+        );
+      },
+      loading: () => Container(
+        width: 60,
+        height: 16,
+        decoration: BoxDecoration(
+          color: textColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ),
+      error: (_, __) => Text(
+        '--,-- €',
+        style: AppTextStyles.labelLarge(color: textColor),
+      ),
     );
   }
 }

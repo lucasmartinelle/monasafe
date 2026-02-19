@@ -1,7 +1,7 @@
 name: ✨ Feature request
 description: Proposer une nouvelle fonctionnalité
 title: "[FEATURE]: "
-labels: ["enhancement"]
+labels: ["enhancement", "à prévoir"]
 
 body:
   - type: textarea
