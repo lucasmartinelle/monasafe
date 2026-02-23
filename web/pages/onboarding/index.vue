@@ -1,283 +1,319 @@
 <script setup lang="ts">
 import { AccountType } from '~/types/enums'
-import {
-  CurrencyEuroIcon,
-  BanknotesIcon,
-  CheckCircleIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  BuildingLibraryIcon,
-  BanknotesIcon as BanknotesIconSolid,
-} from '@heroicons/vue/24/outline'
 
 definePageMeta({
-  layout: 'auth',
+  layout: 'blank',
 })
 
 const router = useRouter()
 const { updateSetting, completeOnboarding } = useSettings()
 const { createAccount } = useAccounts()
 
-// Étapes
-const currentStep = ref(1)
-const totalSteps = 3
+// Navigation
+const questionIndex = ref(0)
+const direction = ref(1)
+const isCompleting = ref(false)
 const isSubmitting = ref(false)
+const errorMessage = ref<string | null>(null)
 
-// Step 1 — Devise (identique au mobile)
+// Q0 — Devise
+const currency = ref('EUR')
 const currencies = [
-  { code: 'USD', symbol: '$', label: 'U.S. Dollar' },
   { code: 'EUR', symbol: '€', label: 'Euro' },
+  { code: 'USD', symbol: '$', label: 'U.S. Dollar' },
   { code: 'GBP', symbol: '£', label: 'British Pound' },
   { code: 'CHF', symbol: 'Fr', label: 'Swiss Franc' },
 ]
-const selectedCurrency = ref('EUR')
 
-// Step 2 — Premier compte (type + solde uniquement, comme le mobile)
-const accountType = ref<AccountType>(AccountType.CHECKING)
-const accountBalance = ref(0)
+// Q1 — Compte courant
+const wantsChecking = ref<boolean | null>(null)
+const checkingBalance = ref(0)
 
-// Nom auto-assigné selon le type (comme le mobile)
-const accountName = computed(() =>
-  accountType.value === AccountType.CHECKING ? 'Compte courant' : 'Compte épargne',
+// Q2 — Compte épargne
+const wantsSavings = ref<boolean | null>(null)
+const savingsBalance = ref(0)
+
+const transitionName = computed(() =>
+  direction.value > 0 ? 'question-forward' : 'question-backward',
 )
 
-// Couleur hardcodée (comme le mobile)
-const ACCOUNT_COLOR = 0xFF1B5E5A
-
-const accountTypes = [
-  {
-    value: AccountType.CHECKING,
-    label: 'Compte courant',
-    description: 'Dépenses quotidiennes',
-    icon: BuildingLibraryIcon,
-  },
-  {
-    value: AccountType.SAVINGS,
-    label: 'Compte épargne',
-    description: 'Objectifs long terme',
-    icon: BanknotesIconSolid,
-  },
-]
-
-function nextStep() {
-  if (currentStep.value < totalSteps) {
-    currentStep.value++
-  }
+function goNext() {
+  errorMessage.value = null
+  direction.value = 1
+  questionIndex.value++
 }
 
-function prevStep() {
-  if (currentStep.value > 1) {
-    currentStep.value--
-  }
+function goPrev() {
+  errorMessage.value = null
+  direction.value = -1
+  questionIndex.value--
+}
+
+function selectChecking(val: boolean) {
+  wantsChecking.value = val
+  if (!val) checkingBalance.value = 0
+}
+
+function selectSavings(val: boolean) {
+  wantsSavings.value = val
+  if (!val) savingsBalance.value = 0
 }
 
 async function finish() {
+  errorMessage.value = null
+
+  if (!wantsChecking.value && !wantsSavings.value) {
+    errorMessage.value = 'Vous devez créer au moins un compte pour continuer.'
+    return
+  }
+
   isSubmitting.value = true
 
   try {
-    // Sauvegarder la devise
-    await updateSetting('currency', selectedCurrency.value)
+    await updateSetting('currency', currency.value)
 
-    // Créer le premier compte
-    const account = await createAccount({
-      name: accountName.value,
-      type: accountType.value,
-      balance: accountBalance.value,
-      currency: selectedCurrency.value,
-      color: ACCOUNT_COLOR,
-    })
-
-    if (!account) {
-      isSubmitting.value = false
-      return
+    if (wantsChecking.value) {
+      await createAccount({
+        name: 'Compte courant',
+        type: AccountType.CHECKING,
+        balance: checkingBalance.value,
+        currency: currency.value,
+        color: 0xFF1B5E5A,
+      })
     }
 
-    // Compléter l'onboarding
-    await completeOnboarding()
+    if (wantsSavings.value) {
+      await createAccount({
+        name: 'Compte épargne',
+        type: AccountType.SAVINGS,
+        balance: savingsBalance.value,
+        currency: currency.value,
+        color: 0xFF4CAF50,
+      })
+    }
 
-    // Redirect vers le dashboard
-    await router.push('/dashboard')
-  } catch {
+    await completeOnboarding()
+    isCompleting.value = true
+  }
+  catch {
     isSubmitting.value = false
   }
+}
+
+async function onComplete() {
+  await router.push('/dashboard')
 }
 </script>
 
 <template>
-  <CommonAppCard>
-    <div class="space-y-6">
-      <!-- Progress bar -->
-      <div class="flex items-center gap-2">
-        <div
-          v-for="step in totalSteps"
-          :key="step"
-          :class="[
-            'h-1.5 flex-1 rounded-full transition-colors duration-300',
-            step <= currentStep ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700',
-          ]"
-        />
+  <div class="h-screen flex flex-col bg-background-light dark:bg-background-dark overflow-hidden">
+
+    <!-- Écran de complétion -->
+    <OnboardingCompletionScreen
+      v-if="isCompleting"
+      class="flex-1"
+      @complete="onComplete"
+    />
+
+    <template v-else>
+      <!-- Header : logo + progression -->
+      <div class="flex flex-col items-center gap-4 pt-10 pb-2 px-6 shrink-0">
+        <span class="text-h2 text-primary dark:text-primary-light">Monasafe</span>
+        <OnboardingProgress :current-step="questionIndex" :total-steps="3" />
       </div>
 
-      <!-- Step 1 : Devise -->
-      <div v-if="currentStep === 1" class="space-y-5">
-        <div class="text-center">
-          <div class="mx-auto w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-            <CurrencyEuroIcon class="h-6 w-6 text-primary" />
-          </div>
-          <h2 class="text-h3 text-gray-900 dark:text-white">
-            Choisissez votre devise
-          </h2>
-          <p class="text-body-md text-gray-500 dark:text-gray-400 mt-1">
-            Vous pourrez la modifier plus tard dans les paramètres
-          </p>
-        </div>
+      <!-- Zone de question (full height, overflow masqué pour le slide) -->
+      <div class="flex-1 relative overflow-hidden">
+        <Transition :name="transitionName" mode="out-in">
 
-        <div class="grid grid-cols-1 gap-2">
-          <button
-            v-for="curr in currencies"
-            :key="curr.code"
-            type="button"
-            :class="[
-              'flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all duration-150',
-              selectedCurrency === curr.code
-                ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
-            ]"
-            @click="selectedCurrency = curr.code"
-          >
-            <span class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-lg font-semibold text-gray-700 dark:text-gray-300">
-              {{ curr.symbol }}
-            </span>
-            <div>
-              <div class="text-sm font-medium text-gray-900 dark:text-white">
-                {{ curr.label }}
+          <!-- Q0 : Devise -->
+          <div v-if="questionIndex === 0" key="q0" class="absolute inset-0 flex flex-col items-center justify-center px-6">
+            <div class="w-full max-w-sm space-y-6">
+              <div class="text-center space-y-1">
+                <h2 class="text-h3 text-gray-900 dark:text-white">
+                  Quelle est votre devise ?
+                </h2>
+                <p class="text-body-md text-gray-500 dark:text-gray-400">
+                  Vous pourrez la modifier dans les paramètres
+                </p>
               </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">
-                {{ curr.code }}
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
 
-      <!-- Step 2 : Premier compte -->
-      <div v-if="currentStep === 2" class="space-y-5">
-        <div class="text-center">
-          <div class="mx-auto w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-            <BanknotesIcon class="h-6 w-6 text-primary" />
-          </div>
-          <h2 class="text-h3 text-gray-900 dark:text-white">
-            Créez votre premier compte
-          </h2>
-          <p class="text-body-md text-gray-500 dark:text-gray-400 mt-1">
-            Vous pourrez en ajouter d'autres plus tard
-          </p>
-        </div>
-
-        <!-- Type de compte (toggle) -->
-        <div class="grid grid-cols-2 gap-3">
-          <button
-            v-for="at in accountTypes"
-            :key="at.value"
-            type="button"
-            :class="[
-              'flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-all duration-150',
-              accountType === at.value
-                ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
-            ]"
-            @click="accountType = at.value"
-          >
-            <component :is="at.icon" class="h-6 w-6 text-primary" />
-            <div>
-              <div class="text-sm font-medium text-gray-900 dark:text-white">
-                {{ at.label }}
-              </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">
-                {{ at.description }}
+              <div class="grid grid-cols-2 gap-3">
+                <button
+                  v-for="curr in currencies"
+                  :key="curr.code"
+                  type="button"
+                  :class="[
+                    'flex items-center gap-3 px-4 py-4 rounded-2xl border-2 text-left transition-all duration-200',
+                    currency === curr.code
+                      ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-card-dark',
+                  ]"
+                  @click="currency = curr.code"
+                >
+                  <span class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-lg font-bold text-gray-700 dark:text-gray-200 shrink-0">
+                    {{ curr.symbol }}
+                  </span>
+                  <div>
+                    <div class="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
+                      {{ curr.label }}
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      {{ curr.code }}
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
-          </button>
-        </div>
+          </div>
 
-        <!-- Solde initial -->
-        <CommonAppInput
-          v-model="accountBalance"
-          type="number"
-          label="Solde initial"
-          placeholder="0.00"
-        />
+          <!-- Q1 : Compte courant -->
+          <div v-else-if="questionIndex === 1" key="q1" class="absolute inset-0 flex flex-col items-center justify-center px-6">
+            <div class="w-full max-w-sm space-y-8">
+              <div class="text-center space-y-1">
+                <h2 class="text-h3 text-gray-900 dark:text-white">
+                  Un compte courant ?
+                </h2>
+                <p class="text-body-md text-gray-500 dark:text-gray-400">
+                  Pour suivre vos dépenses quotidiennes
+                </p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  :class="[
+                    'py-5 rounded-2xl border-2 text-base font-semibold transition-all duration-200',
+                    wantsChecking === true
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-card-dark hover:border-gray-300 dark:hover:border-gray-600',
+                  ]"
+                  @click="selectChecking(true)"
+                >
+                  Oui
+                </button>
+                <button
+                  type="button"
+                  :class="[
+                    'py-5 rounded-2xl border-2 text-base font-semibold transition-all duration-200',
+                    wantsChecking === false
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-card-dark hover:border-gray-300 dark:hover:border-gray-600',
+                  ]"
+                  @click="selectChecking(false)"
+                >
+                  Non
+                </button>
+              </div>
+
+              <Transition name="amount">
+                <div v-if="wantsChecking === true">
+                  <CommonAppInput
+                    v-model="checkingBalance"
+                    type="number"
+                    label="Solde initial"
+                    placeholder="0.00"
+                  />
+                </div>
+              </Transition>
+            </div>
+          </div>
+
+          <!-- Q2 : Compte épargne -->
+          <div v-else-if="questionIndex === 2" key="q2" class="absolute inset-0 flex flex-col items-center justify-center px-6">
+            <div class="w-full max-w-sm space-y-8">
+              <div class="text-center space-y-1">
+                <h2 class="text-h3 text-gray-900 dark:text-white">
+                  Et un compte épargne ?
+                </h2>
+                <p class="text-body-md text-gray-500 dark:text-gray-400">
+                  Pour vos objectifs à long terme
+                </p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  :class="[
+                    'py-5 rounded-2xl border-2 text-base font-semibold transition-all duration-200',
+                    wantsSavings === true
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-card-dark hover:border-gray-300 dark:hover:border-gray-600',
+                  ]"
+                  @click="selectSavings(true)"
+                >
+                  Oui
+                </button>
+                <button
+                  type="button"
+                  :class="[
+                    'py-5 rounded-2xl border-2 text-base font-semibold transition-all duration-200',
+                    wantsSavings === false
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-card-dark hover:border-gray-300 dark:hover:border-gray-600',
+                  ]"
+                  @click="selectSavings(false)"
+                >
+                  Non
+                </button>
+              </div>
+
+              <Transition name="amount">
+                <div v-if="wantsSavings === true">
+                  <CommonAppInput
+                    v-model="savingsBalance"
+                    type="number"
+                    label="Solde initial"
+                    placeholder="0.00"
+                  />
+                </div>
+              </Transition>
+
+              <Transition name="amount">
+                <p v-if="errorMessage" class="text-sm text-error text-center">
+                  {{ errorMessage }}
+                </p>
+              </Transition>
+            </div>
+          </div>
+
+        </Transition>
       </div>
 
-      <!-- Step 3 : Confirmation -->
-      <div v-if="currentStep === 3" class="space-y-5">
-        <div class="text-center">
-          <div class="mx-auto w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center mb-3">
-            <CheckCircleIcon class="h-6 w-6 text-success" />
-          </div>
-          <h2 class="text-h3 text-gray-900 dark:text-white">
-            Tout est prêt !
-          </h2>
-          <p class="text-body-md text-gray-500 dark:text-gray-400 mt-1">
-            Voici un récapitulatif de votre configuration
-          </p>
-        </div>
+      <!-- Navigation (bas de page fixe) -->
+      <div class="shrink-0 px-6 pb-10 pt-4">
+        <div class="flex gap-3 max-w-sm mx-auto">
+          <CommonAppButton
+            v-if="questionIndex > 0"
+            variant="secondary"
+            class="flex-1"
+            @click="goPrev"
+          >
+            Retour
+          </CommonAppButton>
 
-        <!-- Récap -->
-        <div class="space-y-3">
-          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-            <span class="text-sm text-gray-500 dark:text-gray-400">Devise</span>
-            <span class="text-sm font-medium text-gray-900 dark:text-white">
-              {{ currencies.find(c => c.code === selectedCurrency)?.label }} ({{ selectedCurrency }})
-            </span>
-          </div>
-          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-            <span class="text-sm text-gray-500 dark:text-gray-400">Compte</span>
-            <span class="text-sm font-medium text-gray-900 dark:text-white">
-              {{ accountName }}
-            </span>
-          </div>
-          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-            <span class="text-sm text-gray-500 dark:text-gray-400">Solde initial</span>
-            <span class="text-sm font-medium text-gray-900 dark:text-white">
-              {{ accountBalance.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) }} {{ selectedCurrency }}
-            </span>
-          </div>
+          <CommonAppButton
+            v-if="questionIndex < 2"
+            variant="primary"
+            class="flex-1"
+            :disabled="questionIndex === 1 && wantsChecking === null"
+            @click="goNext"
+          >
+            Suivant
+          </CommonAppButton>
+
+          <CommonAppButton
+            v-if="questionIndex === 2"
+            variant="primary"
+            class="flex-1"
+            :loading="isSubmitting"
+            :disabled="wantsSavings === null"
+            @click="finish"
+          >
+            Terminer
+          </CommonAppButton>
         </div>
       </div>
-
-      <!-- Navigation -->
-      <div class="flex gap-3">
-        <CommonAppButton
-          v-if="currentStep > 1"
-          variant="secondary"
-          class="flex-1"
-          @click="prevStep"
-        >
-          <ArrowLeftIcon class="h-4 w-4 mr-1" />
-          Retour
-        </CommonAppButton>
-
-        <CommonAppButton
-          v-if="currentStep < totalSteps"
-          variant="primary"
-          class="flex-1"
-          @click="nextStep"
-        >
-          Suivant
-          <ArrowRightIcon class="h-4 w-4 ml-1" />
-        </CommonAppButton>
-
-        <CommonAppButton
-          v-if="currentStep === totalSteps"
-          variant="primary"
-          class="flex-1"
-          :loading="isSubmitting"
-          @click="finish"
-        >
-          Commencer
-        </CommonAppButton>
-      </div>
-    </div>
-  </CommonAppCard>
+    </template>
+  </div>
 </template>
