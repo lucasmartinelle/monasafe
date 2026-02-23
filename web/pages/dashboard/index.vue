@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Transaction } from '~/types/models'
-import { CategoryType } from '~/types/enums'
+import { AccountType, CategoryType } from '~/types/enums'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import { getMonthRange, toISODateString, formatMonthYear, formatRelativeDate } from '~/utils/dates'
 import { colorStyle } from '~/utils/colors'
@@ -23,9 +23,38 @@ const {
   computedBalances,
   totalComputedBalance,
   refreshComputedBalances,
+  createAccount,
+  isLoading: accountsLoading,
+  error: accountsError,
+  setError: setAccountsError,
   subscribeRealtime: subscribeAccounts,
   unsubscribeRealtime: unsubscribeAccounts,
 } = useAccounts()
+
+const { currency } = useCurrency()
+
+// Modal création de compte
+const showAccountCreateModal = ref(false)
+const creatingAccountType = ref<AccountType | null>(null)
+
+function openCreateAccount(type: AccountType) {
+  creatingAccountType.value = type
+  showAccountCreateModal.value = true
+}
+
+function closeAccountCreateModal() {
+  showAccountCreateModal.value = false
+  creatingAccountType.value = null
+  setAccountsError(null)
+}
+
+async function handleCreateAccount(data: { name: string; type: AccountType; balance: number; color: number }) {
+  const result = await createAccount({ ...data, currency: currency.value })
+  if (result) {
+    closeAccountCreateModal()
+    refreshComputedBalances()
+  }
+}
 const { fetchCategories, categoryById, subscribeRealtime: subscribeCategories, unsubscribeRealtime: unsubscribeCategories } = useCategories()
 const {
   transactions,
@@ -230,6 +259,7 @@ onUnmounted(() => {
         <DashboardAccountListCard
           :accounts="sortedAccounts"
           :computed-balances="computedBalances"
+          @create-account="openCreateAccount"
         />
 
         <!-- Répartition dépenses (filtrée) -->
@@ -327,6 +357,16 @@ onUnmounted(() => {
         </div>
       </div>
     </template>
+
+    <!-- Modal création de compte -->
+    <DashboardAccountCreateModal
+      :open="showAccountCreateModal"
+      :account-type="creatingAccountType"
+      :error="accountsError"
+      :loading="accountsLoading"
+      @close="closeAccountCreateModal"
+      @submit="handleCreateAccount"
+    />
 
     <!-- Modal confirmation suppression -->
     <CommonAppModal
