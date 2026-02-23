@@ -21,6 +21,8 @@ const {
   setError,
 } = useCategories()
 
+const { upsertBudget, deleteBudget, budgetByCategory } = useBudgets()
+
 // Tabs
 const activeTab = ref<'expense' | 'income'>('expense')
 
@@ -54,10 +56,25 @@ function closeModal() {
 async function handleSubmit(data: { name: string; iconKey: string; color: number; type: CategoryType; budgetLimit: number | null }) {
   if (editingCategory.value) {
     const result = await updateCategory(editingCategory.value.id, data)
-    if (result) closeModal()
+    if (result) {
+      if (data.budgetLimit && data.budgetLimit > 0) {
+        await upsertBudget(result.id, data.budgetLimit)
+      } else {
+        const existingBudget = budgetByCategory.value(result.id)
+        if (existingBudget) {
+          await deleteBudget(existingBudget.id)
+        }
+      }
+      closeModal()
+    }
   } else {
     const result = await createCategory(data)
-    if (result) closeModal()
+    if (result) {
+      if (data.budgetLimit && data.budgetLimit > 0) {
+        await upsertBudget(result.id, data.budgetLimit)
+      }
+      closeModal()
+    }
   }
 }
 
