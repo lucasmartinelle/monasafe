@@ -9,16 +9,22 @@ definePageMeta({
   middleware: ['guest'],
 })
 
-const { signInAnonymous, signInGoogle, isLoading, error, clearError } = useAuth()
+const { signInAnonymous, signInGoogle, error, clearError } = useAuth()
+
+const loadingType = ref<'anonymous' | 'google' | null>(null)
 
 async function handleAnonymous() {
   clearError()
+  loadingType.value = 'anonymous'
   await signInAnonymous()
+  loadingType.value = null
 }
 
 async function handleGoogle() {
   clearError()
+  loadingType.value = 'google'
   await signInGoogle()
+  loadingType.value = null
 }
 </script>
 
@@ -47,7 +53,8 @@ async function handleGoogle() {
         <CommonAppButton
           block
           variant="primary"
-          :loading="isLoading"
+          :loading="loadingType === 'anonymous'"
+          :disabled="loadingType === 'google'"
           @click="handleAnonymous"
         >
           Continuer sans compte
@@ -67,7 +74,8 @@ async function handleGoogle() {
         <CommonAppButton
           block
           variant="secondary"
-          :loading="isLoading"
+          :loading="loadingType === 'google'"
+          :disabled="loadingType === 'anonymous'"
           @click="handleGoogle"
         >
           <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
