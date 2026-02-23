@@ -10,7 +10,7 @@ definePageMeta({
   layout: 'default',
 })
 
-const version = '1.0.0'
+const version = '1.0.5'
 </script>
 
 <template>

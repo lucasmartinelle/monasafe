@@ -1,7 +1,7 @@
 name: monasafe
 description: "A Flutter application with Clean Architecture."
 publish_to: 'none'
-version: 1.0.4+6
+version: 1.0.5+7
 
 environment:
   sdk: ^3.10.7
