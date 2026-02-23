@@ -60,7 +60,8 @@ class AuthChoiceScreen extends ConsumerWidget {
                     buttonLabel: 'Continuer avec Google',
                     buttonIcon: Icons.g_mobiledata,
                     buttonColor: AppColors.process,
-                    isLoading: state.isLoading,
+                    isLoading: state.loadingAction == 'google',
+                    isDisabled: state.isLoading && state.loadingAction != 'google',
                     onPressed: () async {
                       await controller.completeWithGoogle();
                     },
@@ -97,7 +98,8 @@ class AuthChoiceScreen extends ConsumerWidget {
                     buttonLabel: 'Commencer en local',
                     buttonIcon: Icons.lock_outline,
                     buttonVariant: AppButtonVariant.secondary,
-                    isLoading: state.isLoading,
+                    isLoading: state.loadingAction == 'local',
+                    isDisabled: state.isLoading && state.loadingAction != 'local',
                     onPressed: () async {
                       await controller.completeLocalOnly();
                     },
@@ -132,6 +134,7 @@ class _AuthOptionCard extends StatelessWidget {
     this.buttonColor,
     this.buttonVariant = AppButtonVariant.primary,
     this.isLoading = false,
+    this.isDisabled = false,
   });
 
   final IconData icon;
@@ -143,6 +146,7 @@ class _AuthOptionCard extends StatelessWidget {
   final Color? buttonColor;
   final AppButtonVariant buttonVariant;
   final bool isLoading;
+  final bool isDisabled;
   final VoidCallback onPressed;
   final List<String> features;
 
@@ -198,7 +202,7 @@ class _AuthOptionCard extends StatelessWidget {
   Widget _buildButton() {
     if (buttonVariant == AppButtonVariant.primary && buttonColor != null) {
       return ElevatedButton.icon(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: (isLoading || isDisabled) ? null : onPressed,
         icon: isLoading
             ? const SizedBox(
                 width: 20,
@@ -227,7 +231,7 @@ class _AuthOptionCard extends StatelessWidget {
       icon: buttonIcon,
       isLoading: isLoading,
       fullWidth: true,
-      onPressed: onPressed,
+      onPressed: (isLoading || isDisabled) ? null : onPressed,
     );
   }
 }
