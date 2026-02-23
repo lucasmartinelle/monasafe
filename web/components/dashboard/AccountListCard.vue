@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Account } from '~/types/models'
-import { AccountTypeLabels } from '~/types/enums'
+import { AccountType, AccountTypeLabels } from '~/types/enums'
 import { colorStyle } from '~/utils/colors'
+import { PlusIcon } from '@heroicons/vue/24/outline'
 
 interface Props {
   accounts: Account[]
@@ -12,11 +13,18 @@ const props = withDefaults(defineProps<Props>(), {
   computedBalances: () => ({}),
 })
 
+const emit = defineEmits<{
+  'create-account': [type: AccountType]
+}>()
+
 const { format: formatMoney } = useCurrency()
 
 function getBalance(account: Account): number {
   return props.computedBalances[account.id] ?? account.balance
 }
+
+const hasChecking = computed(() => props.accounts.some(a => a.type === AccountType.CHECKING))
+const hasSavings = computed(() => props.accounts.some(a => a.type === AccountType.SAVINGS))
 </script>
 
 <template>
@@ -47,12 +55,27 @@ function getBalance(account: Account): number {
         </p>
       </div>
 
-      <div
-        v-if="props.accounts.length === 0"
-        class="text-center py-4 text-sm text-gray-400 dark:text-gray-500"
+      <!-- Bouton créer compte courant si absent -->
+      <button
+        v-if="!hasChecking"
+        type="button"
+        class="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 text-sm text-gray-500 dark:text-gray-400 hover:border-primary hover:text-primary dark:hover:border-primary dark:hover:text-primary transition-colors"
+        @click="emit('create-account', AccountType.CHECKING)"
       >
-        Aucun compte
-      </div>
+        <PlusIcon class="h-4 w-4 shrink-0" />
+        Ajouter un compte courant
+      </button>
+
+      <!-- Bouton créer compte épargne si absent -->
+      <button
+        v-if="!hasSavings"
+        type="button"
+        class="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 text-sm text-gray-500 dark:text-gray-400 hover:border-primary hover:text-primary dark:hover:border-primary dark:hover:text-primary transition-colors"
+        @click="emit('create-account', AccountType.SAVINGS)"
+      >
+        <PlusIcon class="h-4 w-4 shrink-0" />
+        Ajouter un compte épargne
+      </button>
     </div>
   </CommonAppCard>
 </template>
