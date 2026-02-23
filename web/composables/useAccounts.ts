@@ -48,11 +48,17 @@ export function useAccounts() {
 
   let realtimeChannel: RealtimeChannel | null = null
 
-  // Soldes calculés à partir des transactions
+  // Soldes calculés à partir des transactions (toutes, y compris futures)
   const computedBalances = ref<Record<string, number>>({})
+  // Soldes réels : transactions jusqu'à aujourd'hui inclus uniquement
+  const realComputedBalances = ref<Record<string, number>>({})
 
   const totalComputedBalance = computed(() =>
     Object.values(computedBalances.value).reduce((sum, b) => sum + b, 0),
+  )
+
+  const totalRealComputedBalance = computed(() =>
+    Object.values(realComputedBalances.value).reduce((sum, b) => sum + b, 0),
   )
 
   /**
@@ -66,41 +72,60 @@ export function useAccounts() {
     if (!user.value) return
 
     const vault = useVault()
+    // Date locale (pas UTC) pour ne pas décaler d'un jour selon le fuseau horaire
+    const now = new Date()
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 
     try {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('account_id, amount, category_id, is_encrypted')
-        .eq('user_id', user.value.id)
+      // Deux requêtes en parallèle :
+      // 1. Toutes les transactions → solde prévisionnel
+      // 2. Transactions ≤ aujourd'hui (filtre serveur) → solde réel
+      const [{ data: allData, error: allError }, { data: realData }] = await Promise.all([
+        supabase
+          .from('transactions')
+          .select('account_id, amount, category_id, is_encrypted')
+          .eq('user_id', user.value.id),
+        supabase
+          .from('transactions')
+          .select('account_id, amount, category_id, is_encrypted')
+          .eq('user_id', user.value.id)
+          .lte('date', today),
+      ])
 
-      if (error || !data) return
+      if (allError || !allData) return
 
-      const netByAccount: Record<string, number> = {}
-      for (const row of data) {
-        let amount: number
-
-        if (row.is_encrypted) {
-          if (!vault.isUnlocked.value) continue
-          const decrypted = await vault.decryptTransactionData(
-            String(row.amount),
-            null,
-          )
-          amount = decrypted.amount
-        } else {
-          amount = parseFloat(String(row.amount)) || 0
+      const computeNet = async (rows: typeof allData): Promise<Record<string, number>> => {
+        const net: Record<string, number> = {}
+        for (const row of rows) {
+          let amount: number
+          if (row.is_encrypted) {
+            if (!vault.isUnlocked.value) continue
+            const decrypted = await vault.decryptTransactionData(String(row.amount), null)
+            amount = decrypted.amount
+          } else {
+            amount = parseFloat(String(row.amount)) || 0
+          }
+          const cat = categoriesStore.categoryById(row.category_id)
+          const signed = cat?.type === CategoryType.EXPENSE ? -amount : amount
+          net[row.account_id] = (net[row.account_id] ?? 0) + signed
         }
-
-        const cat = categoriesStore.categoryById(row.category_id)
-        const signed = cat?.type === CategoryType.EXPENSE ? -amount : amount
-        netByAccount[row.account_id] = (netByAccount[row.account_id] ?? 0) + signed
+        return net
       }
 
+      const [netByAccount, realNetByAccount] = await Promise.all([
+        computeNet(allData),
+        computeNet(realData ?? allData),
+      ])
+
       const result: Record<string, number> = {}
+      const realResult: Record<string, number> = {}
       for (const account of store.accounts) {
         result[account.id] = account.balance + (netByAccount[account.id] ?? 0)
+        realResult[account.id] = account.balance + (realNetByAccount[account.id] ?? 0)
       }
 
       computedBalances.value = result
+      realComputedBalances.value = realResult
     } catch {
       // En cas d'erreur, on utilise les soldes bruts
     }
@@ -292,7 +317,9 @@ export function useAccounts() {
     sortedAccounts: computed(() => store.sortedAccounts),
     totalBalance: computed(() => store.totalBalance),
     computedBalances,
+    realComputedBalances,
     totalComputedBalance,
+    totalRealComputedBalance,
     selectedAccountId: computed(() => store.selectedAccountId),
     isLoading: computed(() => store.isLoading),
     error: computed(() => store.error),

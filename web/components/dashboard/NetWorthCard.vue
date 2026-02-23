@@ -1,6 +1,7 @@
 <script setup lang="ts">
 interface Props {
   totalBalance: number
+  realBalance: number
   monthlyIncome: number
   monthlyExpense: number
 }
@@ -19,6 +20,12 @@ const netMonthly = computed(() => props.monthlyIncome - props.monthlyExpense)
     </h3>
     <p class="text-2xl font-heading font-bold text-gray-900 dark:text-white mt-1">
       {{ formatMoney(props.totalBalance) }}
+    </p>
+    <p
+      v-if="props.realBalance !== props.totalBalance"
+      class="text-xs text-gray-500 dark:text-gray-400 mt-0.5"
+    >
+      Solde réel : {{ formatMoney(props.realBalance) }}
     </p>
     <div class="flex items-center gap-4 mt-3">
       <div>
