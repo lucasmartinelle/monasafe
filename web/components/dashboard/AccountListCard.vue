@@ -7,14 +7,17 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 interface Props {
   accounts: Account[]
   computedBalances?: Record<string, number>
+  realComputedBalances?: Record<string, number>
 }
 
 const props = withDefaults(defineProps<Props>(), {
   computedBalances: () => ({}),
+  realComputedBalances: () => ({}),
 })
 
 const emit = defineEmits<{
   'create-account': [type: AccountType]
+  'edit-balance': [account: Account]
 }>()
 
 const { format: formatMoney } = useCurrency()
@@ -33,10 +36,12 @@ const hasSavings = computed(() => props.accounts.some(a => a.type === AccountTyp
       Comptes
     </h3>
     <div class="space-y-3">
-      <div
+      <button
         v-for="account in props.accounts"
         :key="account.id"
-        class="flex items-center gap-3"
+        type="button"
+        class="w-full flex items-center gap-3 rounded-xl px-2 py-1.5 -mx-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left"
+        @click="emit('edit-balance', account)"
       >
         <div
           class="w-3 h-3 rounded-full shrink-0"
@@ -50,10 +55,18 @@ const hasSavings = computed(() => props.accounts.some(a => a.type === AccountTyp
             {{ AccountTypeLabels[account.type] }}
           </p>
         </div>
-        <p class="text-sm font-semibold text-gray-900 dark:text-white shrink-0">
-          {{ formatMoney(getBalance(account)) }}
-        </p>
-      </div>
+        <div class="text-right shrink-0">
+          <p class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ formatMoney(getBalance(account)) }}
+          </p>
+          <p
+            v-if="props.realComputedBalances[account.id] !== undefined && props.realComputedBalances[account.id] !== getBalance(account)"
+            class="text-xs text-gray-400 dark:text-gray-500"
+          >
+            Réel : {{ formatMoney(props.realComputedBalances[account.id]) }}
+          </p>
+        </div>
+      </button>
 
       <!-- Bouton créer compte courant si absent -->
       <button
