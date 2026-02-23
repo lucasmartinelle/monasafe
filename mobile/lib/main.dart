@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:monasafe/src/common_widgets/app_error_screen.dart';
 import 'package:monasafe/src/core/config/supabase_config.dart';
 import 'package:monasafe/src/core/theme/theme.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
@@ -91,10 +92,22 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      debugPrint('[OAuth] App resumed');
-      // Le OnboardingFlow gérera la détection de l'auth via _checkExistingAuth
-      ref.invalidate(onboardingCompletedStreamProvider);
+      _handleAppResumed();
     }
+  }
+
+  Future<void> _handleAppResumed() async {
+    debugPrint('[OAuth] App resumed');
+    final client = Supabase.instance.client;
+    if (client.auth.currentSession != null) {
+      try {
+        await client.auth.refreshSession();
+        debugPrint('[Auth] Session refreshed successfully');
+      } catch (e) {
+        debugPrint('[Auth] Session refresh failed: $e');
+      }
+    }
+    ref.invalidate(onboardingCompletedStreamProvider);
   }
 
   /// Écoute les changements d'authentification pour détecter
@@ -119,8 +132,6 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor =
         isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
-    final textColor =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
 
     final onboardingCompleted = ref.watch(onboardingCompletedStreamProvider);
 
@@ -147,11 +158,14 @@ class _AppRootState extends ConsumerState<_AppRoot> with WidgetsBindingObserver 
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       ),
-      error: (error, stack) => Scaffold(
-        backgroundColor: backgroundColor,
-        body: Center(
-          child: Text('Erreur: $error', style: TextStyle(color: textColor)),
-        ),
+      error: (error, stack) => AppErrorScreen(
+        error: error,
+        onRetry: () async {
+          try {
+            await Supabase.instance.client.auth.refreshSession();
+          } catch (_) {}
+          ref.invalidate(onboardingCompletedStreamProvider);
+        },
       ),
     );
   }
