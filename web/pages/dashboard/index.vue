@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Transaction } from '~/types/models'
-import { CategoryType } from '~/types/enums'
+import type { Account, Transaction } from '~/types/models'
+import { AccountType, CategoryType } from '~/types/enums'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import { getMonthRange, toISODateString, formatMonthYear, formatRelativeDate } from '~/utils/dates'
 import { colorStyle } from '~/utils/colors'
@@ -21,11 +21,68 @@ const {
   fetchAccounts,
   accountById,
   computedBalances,
+  realComputedBalances,
   totalComputedBalance,
+  totalRealComputedBalance,
   refreshComputedBalances,
+  createAccount,
+  updateAccount,
+  isLoading: accountsLoading,
+  error: accountsError,
+  setError: setAccountsError,
   subscribeRealtime: subscribeAccounts,
   unsubscribeRealtime: unsubscribeAccounts,
 } = useAccounts()
+
+const { currency } = useCurrency()
+
+// Modal création de compte
+const showAccountCreateModal = ref(false)
+const creatingAccountType = ref<AccountType | null>(null)
+
+function openCreateAccount(type: AccountType) {
+  creatingAccountType.value = type
+  showAccountCreateModal.value = true
+}
+
+function closeAccountCreateModal() {
+  showAccountCreateModal.value = false
+  creatingAccountType.value = null
+  setAccountsError(null)
+}
+
+async function handleCreateAccount(data: { name: string; type: AccountType; balance: number; color: number }) {
+  const result = await createAccount({ ...data, currency: currency.value })
+  if (result) {
+    closeAccountCreateModal()
+    refreshComputedBalances()
+  }
+}
+
+// Modal modification solde initial
+const showEditBalanceModal = ref(false)
+const editingAccount = ref<Account | null>(null)
+
+function openEditBalance(account: Account) {
+  editingAccount.value = account
+  showEditBalanceModal.value = true
+  setAccountsError(null)
+}
+
+function closeEditBalanceModal() {
+  showEditBalanceModal.value = false
+  editingAccount.value = null
+  setAccountsError(null)
+}
+
+async function handleEditBalance(data: { balance: number }) {
+  if (!editingAccount.value) return
+  const result = await updateAccount(editingAccount.value.id, { balance: data.balance })
+  if (result) {
+    closeEditBalanceModal()
+    refreshComputedBalances()
+  }
+}
 const { fetchCategories, categoryById, subscribeRealtime: subscribeCategories, unsubscribeRealtime: unsubscribeCategories } = useCategories()
 const {
   transactions,
@@ -219,6 +276,7 @@ onUnmounted(() => {
       <div class="mb-6">
         <DashboardNetWorthCard
           :total-balance="totalComputedBalance"
+          :real-balance="totalRealComputedBalance"
           :monthly-income="summary.monthlyIncome"
           :monthly-expense="summary.monthlyExpense"
         />
@@ -230,6 +288,9 @@ onUnmounted(() => {
         <DashboardAccountListCard
           :accounts="sortedAccounts"
           :computed-balances="computedBalances"
+          :real-computed-balances="realComputedBalances"
+          @create-account="openCreateAccount"
+          @edit-balance="openEditBalance"
         />
 
         <!-- Répartition dépenses (filtrée) -->
@@ -327,6 +388,27 @@ onUnmounted(() => {
         </div>
       </div>
     </template>
+
+    <!-- Modal création de compte -->
+    <DashboardAccountCreateModal
+      :open="showAccountCreateModal"
+      :account-type="creatingAccountType"
+      :error="accountsError"
+      :loading="accountsLoading"
+      @close="closeAccountCreateModal"
+      @submit="handleCreateAccount"
+    />
+
+    <!-- Modal modification solde initial -->
+    <DashboardEditInitialBalanceModal
+      :open="showEditBalanceModal"
+      :account="editingAccount"
+      :computed-balance="editingAccount ? (computedBalances[editingAccount.id] ?? null) : null"
+      :error="accountsError"
+      :loading="accountsLoading"
+      @close="closeEditBalanceModal"
+      @submit="handleEditBalance"
+    />
 
     <!-- Modal confirmation suppression -->
     <CommonAppModal

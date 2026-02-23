@@ -14,6 +14,7 @@ class OnboardingState {
     this.wantsSavingsAccount = false,
     this.savingsBalanceCents = 0,
     this.isLoading = false,
+    this.loadingAction,
     this.error,
   });
 
@@ -25,6 +26,8 @@ class OnboardingState {
   final bool wantsSavingsAccount;
   final int savingsBalanceCents;
   final bool isLoading;
+  /// 'google' | 'local' | null — identifie quel bouton est en cours de chargement
+  final String? loadingAction;
   final String? error;
 
   double get checkingBalanceAmount => checkingBalanceCents / 100;
@@ -42,6 +45,7 @@ class OnboardingState {
     bool? wantsSavingsAccount,
     int? savingsBalanceCents,
     bool? isLoading,
+    String? loadingAction,
     String? error,
   }) {
     return OnboardingState(
@@ -56,6 +60,7 @@ class OnboardingState {
       savingsBalanceCents:
           savingsBalanceCents ?? this.savingsBalanceCents,
       isLoading: isLoading ?? this.isLoading,
+      loadingAction: loadingAction,
       error: error,
     );
   }
@@ -115,7 +120,7 @@ class OnboardingController extends _$OnboardingController {
   /// Lance l'authentification Google (OAuth)
   /// Après OAuth, l'app reviendra et OnboardingFlow détectera l'auth.
   Future<bool> completeWithGoogle() async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, loadingAction: 'google');
 
     try {
       final authService = ref.read(authServiceProvider);
@@ -137,7 +142,7 @@ class OnboardingController extends _$OnboardingController {
 
   /// Crée un compte anonyme et passe aux questions
   Future<bool> completeLocalOnly() async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, loadingAction: 'local');
 
     try {
       final authService = ref.read(authServiceProvider);
