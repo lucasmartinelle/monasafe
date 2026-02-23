@@ -62,7 +62,7 @@ const showLockScreen = computed(() => vault.isEnabled.value && vault.isLocked.va
     <!-- Main content -->
     <div class="lg:pl-64">
       <!-- Top bar -->
-      <header class="sticky top-0 z-30 flex items-center h-16 px-4 lg:px-8 bg-white/80 dark:bg-surface-dark/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+      <header class="sticky top-0 z-30 hidden lg:flex items-center h-16 px-4 lg:px-8 bg-white/80 dark:bg-surface-dark/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
         <div class="flex-1" />
       </header>
 
