@@ -2,7 +2,7 @@
 import type { BudgetProgress } from '~/types/models'
 import { getBudgetStatus, getBudgetPercentage } from '~/composables/useStatistics'
 import { intToHex } from '~/utils/colors'
-import { getIcon } from '~/utils/icons'
+import { getLucideIcon } from '~/utils/icons'
 
 interface Props {
   progress: BudgetProgress
@@ -52,11 +52,7 @@ const statusTextColor = computed(() => {
         class="flex items-center justify-center h-9 w-9 rounded-lg shrink-0"
         :style="{ backgroundColor: intToHex(props.progress.category.color) + '20' }"
       >
-        <component
-          :is="getIcon(props.progress.category.iconKey)"
-          class="h-5 w-5"
-          :style="{ color: intToHex(props.progress.category.color) }"
-        />
+        <component :is="getLucideIcon(props.progress.category.iconKey)" :size="20" :style="{ color: intToHex(props.progress.category.color) }" />
       </div>
 
       <!-- Contenu -->

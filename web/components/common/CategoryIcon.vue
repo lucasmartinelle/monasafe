@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { getIcon } from '~/utils/icons'
+import { getLucideIcon } from '~/utils/icons'
 
 interface Props {
   iconKey: string
@@ -13,13 +12,19 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'md',
 })
 
-const iconComponent = computed(() => getIcon(props.iconKey))
+const iconSizes: Record<string, number> = {
+  sm: 16,
+  md: 20,
+  lg: 24,
+}
+
+const iconComponent = computed(() => getLucideIcon(props.iconKey))
 </script>
 
 <template>
   <CommonIconContainer :color="props.color" :size="props.size">
-    <template #default="{ iconClass }">
-      <component :is="iconComponent" :class="iconClass" />
+    <template #default>
+      <component :is="iconComponent" :size="iconSizes[props.size]" class="select-none" />
     </template>
   </CommonIconContainer>
 </template>

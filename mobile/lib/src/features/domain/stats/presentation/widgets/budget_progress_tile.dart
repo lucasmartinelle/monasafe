@@ -4,7 +4,6 @@ import 'package:monasafe/src/common_widgets/common_widgets.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/core/utils/currency_formatter.dart';
-import 'package:monasafe/src/core/utils/icon_mapper.dart';
 import 'package:monasafe/src/features/domain/stats/presentation/stats_state.dart';
 
 /// Tuile affichant la progression d'un budget pour une catégorie.
@@ -46,7 +45,7 @@ class BudgetProgressTile extends StatelessWidget {
           children: [
             // Category icon
             CategoryIcon(
-              icon: IconMapper.getIcon(category.iconKey),
+              iconKey: category.iconKey,
               color: Color(category.color),
             ),
             const SizedBox(width: 12),

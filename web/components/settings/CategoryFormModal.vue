@@ -15,14 +15,14 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   close: []
-  submit: [data: { name: string; iconKey: string; color: number; type: CategoryType; budgetLimit: number | null }]
+  submit: [data: { name: string; iconKey: number; color: number; type: CategoryType; budgetLimit: number | null }]
 }>()
 
 const isEditing = computed(() => !!props.category)
 
 // Form state
 const name = ref('')
-const iconKey = ref('category')
+const iconKey = ref('ellipsis')
 const color = ref(COLOR_PALETTE[0])
 const type = ref<CategoryType>(CategoryType.EXPENSE)
 const budgetLimit = ref(0)
@@ -40,7 +40,7 @@ const errors = ref<Record<string, string>>({})
 
 function resetForm() {
   name.value = ''
-  iconKey.value = 'category'
+  iconKey.value = 'ellipsis'
   color.value = COLOR_PALETTE[0]
   type.value = CategoryType.EXPENSE
   budgetLimit.value = 0
