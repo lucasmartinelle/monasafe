@@ -7,7 +7,7 @@ import 'package:monasafe/src/data/models/enums.dart';
 class CategoryFormState {
   const CategoryFormState({
     this.name = '',
-    this.iconKey = 'other',
+    this.iconKey = 'ellipsis',
     this.color = 0xFF4CAF50,
     this.type = CategoryType.expense,
     this.isSubmitting = false,

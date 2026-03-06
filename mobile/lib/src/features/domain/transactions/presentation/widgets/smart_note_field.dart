@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:monasafe/src/common_widgets/icon_label_tile.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
@@ -304,7 +303,7 @@ class _SuggestionTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              IconMapper.getIcon(category.iconKey),
+              lucideIconFromKey(category.iconKey),
               size: 18,
               color: categoryColor,
             ),
