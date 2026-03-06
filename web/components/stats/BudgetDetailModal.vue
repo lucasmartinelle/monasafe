@@ -3,7 +3,7 @@ import type { BudgetProgress } from '~/types/models'
 import { CategoryType } from '~/types/enums'
 import { getBudgetStatus, getBudgetPercentage } from '~/composables/useStatistics'
 import { intToHex } from '~/utils/colors'
-import { getIcon } from '~/utils/icons'
+import { getLucideIcon } from '~/utils/icons'
 import { formatRelativeDate } from '~/utils/dates'
 
 interface Props {
@@ -143,11 +143,7 @@ watch(() => props.open, (val) => {
             class="flex items-center justify-center h-10 w-10 rounded-xl"
             :style="{ backgroundColor: intToHex(props.progress.category.color) + '20' }"
           >
-            <component
-              :is="getIcon(props.progress.category.iconKey)"
-              class="h-5 w-5"
-              :style="{ color: intToHex(props.progress.category.color) }"
-            />
+            <component :is="getLucideIcon(props.progress.category.iconKey)" :size="20" :style="{ color: intToHex(props.progress.category.color) }" />
           </div>
           <div class="flex-1">
             <p class="text-sm font-medium text-gray-900 dark:text-white">

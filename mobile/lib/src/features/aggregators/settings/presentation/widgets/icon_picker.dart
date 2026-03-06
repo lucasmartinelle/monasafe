@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,10 +7,32 @@ import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/core/utils/icon_mapper.dart';
 
-/// Sélecteur d'icône pour les catégories.
-class IconPicker extends StatelessWidget {
+class _IconEntry {
+  const _IconEntry({
+    required this.name,
+    required this.labelFr,
+    this.tags = const [],
+  });
+
+  final String name;
+  final String labelFr;
+  final List<String> tags;
+
+  bool matches(String query) {
+    if (query.isEmpty) return true;
+    final q = query.toLowerCase();
+    if (name.contains(q)) return true;
+    if (labelFr.toLowerCase().contains(q)) return true;
+    return tags.any((k) => k.toLowerCase().contains(q));
+  }
+}
+
+class IconPicker extends StatefulWidget {
   const IconPicker({
-    required this.selectedIconKey, required this.onIconSelected, required this.selectedColor, super.key,
+    required this.selectedIconKey,
+    required this.onIconSelected,
+    required this.selectedColor,
+    super.key,
   });
 
   final String selectedIconKey;
@@ -16,101 +40,148 @@ class IconPicker extends StatelessWidget {
   final int selectedColor;
 
   @override
+  State<IconPicker> createState() => _IconPickerState();
+}
+
+class _IconPickerState extends State<IconPicker> {
+  List<_IconEntry> _allIcons = [];
+  List<_IconEntry> _filtered = [];
+  final _searchController = TextEditingController();
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadIcons();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadIcons() async {
+    final raw = await rootBundle.loadString('assets/icons.json');
+    final list = (jsonDecode(raw) as List).cast<Map<String, dynamic>>();
+
+    final icons = list.map((e) => _IconEntry(
+      name: e['name'] as String,
+      labelFr: e['fr'] as String,
+      tags: (e['tags'] as List? ?? []).cast<String>(),
+    )).toList();
+
+    if (mounted) {
+      setState(() {
+        _allIcons = icons;
+        _filtered = icons;
+        _loading = false;
+      });
+    }
+  }
+
+  void _onSearch(String query) {
+    setState(() {
+      _filtered = _allIcons.where((e) => e.matches(query)).toList();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final icons = IconMapper.allIcons;
+    final textColor = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
+    final color = Color(widget.selectedColor);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 10),
-          child: Text(
-            'Icône',
-            style: AppTextStyles.labelMedium(color: textColor),
-          ),
+          child: Text('Icône', style: AppTextStyles.labelMedium(color: textColor)),
         ),
-        SizedBox(
-          height: 56,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: icons.length,
-            itemBuilder: (context, index) {
-              final entry = icons.entries.elementAt(index);
-              final isSelected = entry.key == selectedIconKey;
-
-              return Padding(
-                padding: EdgeInsets.only(
-                  left: index == 0 ? 0 : 8,
-                  right: index == icons.length - 1 ? 0 : 0,
-                ),
-                child: _IconItem(
-                  iconKey: entry.key,
-                  icon: entry.value,
-                  isSelected: isSelected,
-                  selectedColor: selectedColor,
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Rechercher (ex: voiture, sport…)',
+            prefixIcon: const Icon(Icons.search, size: 20),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear, size: 18),
+                    onPressed: () {
+                      _searchController.clear();
+                      _onSearch('');
+                    },
+                  )
+                : null,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            isDense: true,
+          ),
+          onChanged: _onSearch,
+        ),
+        const SizedBox(height: 10),
+        if (_loading)
+          const Center(child: Padding(
+            padding: EdgeInsets.all(24),
+            child: CircularProgressIndicator(),
+          ))
+        else if (_filtered.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: Text(
+                'Aucune icône trouvée',
+                style: AppTextStyles.bodyMedium(color: textColor),
+              ),
+            ),
+          )
+        else
+          SizedBox(
+            height: 200,
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 6,
+                crossAxisSpacing: 6,
+                mainAxisSpacing: 6,
+              ),
+              itemCount: _filtered.length,
+              itemBuilder: (context, index) {
+                final entry = _filtered[index];
+                final isSelected = entry.name == widget.selectedIconKey;
+                return GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    onIconSelected(entry.key);
+                    widget.onIconSelected(entry.name);
                   },
-                ),
-              );
-            },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? color.withValues(alpha: 0.15)
+                          : (isDark ? AppColors.surfaceDark : AppColors.surfaceLight),
+                      borderRadius: BorderRadius.circular(10),
+                      border: isSelected
+                          ? Border.all(color: color, width: 2)
+                          : null,
+                    ),
+                    child: Center(
+                      child: Tooltip(
+                        message: entry.labelFr,
+                        child: Icon(
+                          lucideIconFromKey(entry.name),
+                          size: 22,
+                          color: isSelected
+                              ? color
+                              : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
       ],
-    );
-  }
-}
-
-class _IconItem extends StatelessWidget {
-  const _IconItem({
-    required this.iconKey,
-    required this.icon,
-    required this.isSelected,
-    required this.selectedColor,
-    required this.onTap,
-  });
-
-  final String iconKey;
-  final IconData icon;
-  final bool isSelected;
-  final int selectedColor;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final unselectedBg = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
-    final unselectedIconColor =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Color(selectedColor).withValues(alpha: 0.15)
-              : unselectedBg,
-          borderRadius: BorderRadius.circular(12),
-          border: isSelected
-              ? Border.all(
-                  color: Color(selectedColor),
-                  width: 2,
-                )
-              : null,
-        ),
-        child: Icon(
-          icon,
-          color: isSelected ? Color(selectedColor) : unselectedIconColor,
-          size: 24,
-        ),
-      ),
     );
   }
 }
