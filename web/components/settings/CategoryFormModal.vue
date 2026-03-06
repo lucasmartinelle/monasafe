@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   close: []
-  submit: [data: { name: string; iconKey: number; color: number; type: CategoryType; budgetLimit: number | null }]
+  submit: [data: { name: string; iconKey: string; color: number; type: CategoryType; budgetLimit: number | null }]
 }>()
 
 const isEditing = computed(() => !!props.category)
