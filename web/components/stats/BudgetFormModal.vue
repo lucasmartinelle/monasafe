@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CategoryType } from '~/types/enums'
 import { intToHex } from '~/utils/colors'
-import { getIcon } from '~/utils/icons'
+import { getLucideIcon } from '~/utils/icons'
 
 interface Props {
   open: boolean
@@ -83,11 +83,7 @@ watch(() => props.open, (val) => {
               class="flex items-center justify-center h-8 w-8 rounded-lg"
               :style="{ backgroundColor: intToHex(cat.color) + '20' }"
             >
-              <component
-                :is="getIcon(cat.iconKey)"
-                class="h-4 w-4"
-                :style="{ color: intToHex(cat.color) }"
-              />
+              <component :is="getLucideIcon(cat.iconKey)" :size="16" :style="{ color: intToHex(cat.color) }" />
             </div>
             <span class="text-xs text-gray-700 dark:text-gray-300 text-center truncate w-full">
               {{ cat.name }}

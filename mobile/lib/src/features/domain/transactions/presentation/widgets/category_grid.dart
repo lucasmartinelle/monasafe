@@ -6,7 +6,6 @@ import 'package:monasafe/src/common_widgets/async_state_handler.dart';
 import 'package:monasafe/src/common_widgets/category_icon.dart';
 import 'package:monasafe/src/common_widgets/selectable_option_container.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
-import 'package:monasafe/src/core/utils/icon_mapper.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/data/providers/database_providers.dart';
 import 'package:monasafe/src/features/domain/transactions/presentation/transaction_form_provider.dart';
@@ -238,7 +237,7 @@ class _CategoryItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CategoryIcon.fromHex(
-            icon: IconMapper.getIcon(category.iconKey),
+            iconKey: category.iconKey,
             colorHex: category.color,
             size: CategoryIconSize.small,
           ),

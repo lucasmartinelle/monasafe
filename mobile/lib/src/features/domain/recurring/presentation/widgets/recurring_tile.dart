@@ -5,7 +5,6 @@ import 'package:monasafe/src/common_widgets/common_widgets.dart';
 import 'package:monasafe/src/core/theme/app_colors.dart';
 import 'package:monasafe/src/core/theme/app_text_styles.dart';
 import 'package:monasafe/src/core/utils/currency_formatter.dart';
-import 'package:monasafe/src/core/utils/icon_mapper.dart';
 import 'package:monasafe/src/data/models/models.dart';
 import 'package:monasafe/src/features/domain/recurring/presentation/recurring_providers.dart';
 
@@ -52,7 +51,7 @@ class RecurringTile extends StatelessWidget {
                 opacity: isActive ? 1.0 : 0.5,
                 child: category != null
                     ? CategoryIcon.fromHex(
-                        icon: IconMapper.getIcon(category.iconKey),
+                        iconKey: category.iconKey,
                         colorHex: category.color,
                       )
                     : Container(

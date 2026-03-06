@@ -16,7 +16,7 @@ class Category {
       id: json['id'] as String,
       userId: json['user_id'] as String?,
       name: json['name'] as String,
-      iconKey: json['icon_key'] as String,
+      iconKey: json['icon_key'] as String? ?? 'ellipsis',
       color: json['color'] as int,
       type: CategoryType.fromString(json['type'] as String),
       budgetLimit: (json['budget_limit'] as num?)?.toDouble(),

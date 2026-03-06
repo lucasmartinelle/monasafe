@@ -26,7 +26,7 @@ function mapCategory(row: any): Category {
     id: row.id,
     userId: row.user_id,
     name: row.name,
-    iconKey: row.icon_key,
+    iconKey: row.icon_key ?? 'ellipsis',
     color: row.color,
     type: row.type,
     budgetLimit: row.budget_limit,
