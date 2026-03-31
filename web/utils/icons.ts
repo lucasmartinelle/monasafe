@@ -6,7 +6,7 @@ import type { Component } from 'vue'
  * Ex: "credit-card" → CreditCard
  */
 export function getLucideIcon(name: string): Component {
-  const key = name.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join('')
+  const key = name.split('-').map(w => (w[0] ?? '').toUpperCase() + w.slice(1)).join('')
   return ((LucideIcons as Record<string, unknown>)[key] as Component) ?? LucideIcons.Ellipsis
 }
 

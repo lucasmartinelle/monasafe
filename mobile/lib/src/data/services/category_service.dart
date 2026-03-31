@@ -148,4 +148,23 @@ class CategoryService {
         .eq('user_id', _userId)
         .eq('is_default', false);
   }
+
+  /// Retourne la catégorie "Virement" du type donné, en la créant si nécessaire.
+  ///
+  /// Utilisé lors de la création d'un virement entre comptes.
+  Future<Category> getOrCreateVirementCategory(CategoryType type) async {
+    final categories = await getAllCategories();
+    final existing = categories
+        .where((c) => c.name == 'Virement' && c.type == type)
+        .firstOrNull;
+
+    if (existing != null) return existing;
+
+    return createCategory(
+      name: 'Virement',
+      iconKey: 'arrow-left-right',
+      color: 0xFF607D8B,
+      type: type,
+    );
+  }
 }

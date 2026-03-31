@@ -294,7 +294,7 @@ export function useAccounts() {
             const account = mapAccount(payload.new)
             store.updateAccount(account.id, account)
           } else if (payload.eventType === 'DELETE') {
-            store.removeAccount((payload.old as Record<string, string>).id)
+            store.removeAccount((payload.old as Record<string, string>).id as string)
           }
         },
       )

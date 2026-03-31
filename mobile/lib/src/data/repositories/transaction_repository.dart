@@ -291,6 +291,54 @@ class TransactionRepository {
     }
   }
 
+  /// Crée un virement entre deux comptes.
+  ///
+  /// Génère deux transactions liées :
+  /// - une dépense sur le compte source
+  /// - un revenu sur le compte destination
+  Future<Either<TransactionError, Unit>> createTransfer({
+    required String fromAccountId,
+    required String toAccountId,
+    required double amount,
+    required DateTime date,
+    String? note,
+  }) async {
+    try {
+      final fromAccount = await _accountService.getAccountById(fromAccountId);
+      if (fromAccount == null) return const Left(InvalidAccountError());
+
+      final toAccount = await _accountService.getAccountById(toAccountId);
+      if (toAccount == null) return const Left(InvalidAccountError());
+
+      final expenseCategory = await _categoryService
+          .getOrCreateVirementCategory(CategoryType.expense);
+      final incomeCategory = await _categoryService
+          .getOrCreateVirementCategory(CategoryType.income);
+
+      final baseNote = note != null && note.isNotEmpty ? ' - $note' : '';
+
+      await _transactionService.createTransaction(
+        accountId: fromAccountId,
+        categoryId: expenseCategory.id,
+        amount: amount,
+        date: date,
+        note: 'Virement vers ${toAccount.name}$baseNote',
+      );
+
+      await _transactionService.createTransaction(
+        accountId: toAccountId,
+        categoryId: incomeCategory.id,
+        amount: amount,
+        date: date,
+        note: 'Virement depuis ${fromAccount.name}$baseNote',
+      );
+
+      return const Right(unit);
+    } catch (e) {
+      return Left(TransactionCreationError('Erreur lors du virement: $e'));
+    }
+  }
+
   /// Récupère les transactions d'un compte avec pagination
   Future<Either<TransactionError, List<TransactionWithDetails>>>
       getTransactionsByAccountPaginated(
