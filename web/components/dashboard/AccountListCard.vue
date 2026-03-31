@@ -63,7 +63,7 @@ const hasSavings = computed(() => props.accounts.some(a => a.type === AccountTyp
             v-if="props.realComputedBalances[account.id] !== undefined && props.realComputedBalances[account.id] !== getBalance(account)"
             class="text-xs text-gray-400 dark:text-gray-500"
           >
-            Réel : {{ formatMoney(props.realComputedBalances[account.id]) }}
+            Réel : {{ formatMoney(props.realComputedBalances[account.id] ?? 0) }}
           </p>
         </div>
       </button>

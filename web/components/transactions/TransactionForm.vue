@@ -125,7 +125,7 @@ watch(() => props.transaction, (tx) => {
 // Auto-select premier compte si pas déjà sélectionné
 watch(sortedAccounts, (accounts) => {
   if (!accountId.value && accounts.length > 0) {
-    accountId.value = accounts[0].id
+    accountId.value = accounts[0]?.id ?? ''
   }
 }, { immediate: true })
 

@@ -95,7 +95,7 @@ watch(() => props.open, (isOpen) => {
 // Auto-select premier compte
 watch(sortedAccounts, (accounts) => {
   if (!accountId.value && accounts.length > 0) {
-    accountId.value = accounts[0].id
+    accountId.value = accounts[0]?.id ?? ''
   }
 }, { immediate: true })
 

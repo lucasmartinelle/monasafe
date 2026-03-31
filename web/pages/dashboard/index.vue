@@ -151,7 +151,7 @@ const groupedTransactions = computed(() => {
     if (!groups[tx.date]) {
       groups[tx.date] = []
     }
-    groups[tx.date].push(tx)
+    groups[tx.date]!.push(tx)
   }
 
   return Object.entries(groups).map(([date, items]) => ({
@@ -200,7 +200,7 @@ function setupInfiniteScroll() {
 
   observer = new IntersectionObserver(
     (entries) => {
-      if (entries[0].isIntersecting && hasMore.value && !txLoading.value) {
+      if (entries[0]?.isIntersecting && hasMore.value && !txLoading.value) {
         fetchNextPage({
           accountId: selectedAccountId.value,
           pageSize: PAGE_SIZE,
