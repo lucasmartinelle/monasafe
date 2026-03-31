@@ -221,7 +221,7 @@ export function useCategories() {
             const category = mapCategory(payload.new)
             store.updateCategory(category.id, category)
           } else if (payload.eventType === 'DELETE') {
-            store.removeCategory((payload.old as Record<string, string>).id)
+            store.removeCategory((payload.old as Record<string, string>).id as string)
           }
         },
       )

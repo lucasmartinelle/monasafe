@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Account, Transaction } from '~/types/models'
 import { AccountType, CategoryType } from '~/types/enums'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import { ArrowsRightLeftIcon, PlusIcon } from '@heroicons/vue/24/outline'
 import { getMonthRange, toISODateString, formatMonthYear, formatRelativeDate } from '~/utils/dates'
 import { colorStyle } from '~/utils/colors'
 
@@ -151,7 +151,7 @@ const groupedTransactions = computed(() => {
     if (!groups[tx.date]) {
       groups[tx.date] = []
     }
-    groups[tx.date].push(tx)
+    groups[tx.date]!.push(tx)
   }
 
   return Object.entries(groups).map(([date, items]) => ({
@@ -200,7 +200,7 @@ function setupInfiniteScroll() {
 
   observer = new IntersectionObserver(
     (entries) => {
-      if (entries[0].isIntersecting && hasMore.value && !txLoading.value) {
+      if (entries[0]?.isIntersecting && hasMore.value && !txLoading.value) {
         fetchNextPage({
           accountId: selectedAccountId.value,
           pageSize: PAGE_SIZE,
@@ -260,12 +260,20 @@ onUnmounted(() => {
           {{ currentMonthLabel }}
         </p>
       </div>
-      <NuxtLink to="/transactions/add">
-        <CommonAppButton variant="primary" size="sm">
-          <PlusIcon class="h-5 w-5 mr-1" />
-          Transaction
-        </CommonAppButton>
-      </NuxtLink>
+      <div class="flex items-center gap-2">
+        <NuxtLink v-if="sortedAccounts.length >= 2" to="/transactions/transfer">
+          <CommonAppButton variant="secondary" size="sm">
+            <ArrowsRightLeftIcon class="h-5 w-5 mr-1" />
+            Virement
+          </CommonAppButton>
+        </NuxtLink>
+        <NuxtLink to="/transactions/add">
+          <CommonAppButton variant="primary" size="sm">
+            <PlusIcon class="h-5 w-5 mr-1" />
+            Transaction
+          </CommonAppButton>
+        </NuxtLink>
+      </div>
     </div>
 
     <!-- Loading -->

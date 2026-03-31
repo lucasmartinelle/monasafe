@@ -23,7 +23,7 @@ const isEditing = computed(() => !!props.account)
 const name = ref(props.account?.name ?? '')
 const type = ref<AccountType>(props.account?.type ?? AccountType.CHECKING)
 const balance = ref(props.account?.balance ?? 0)
-const color = ref(props.account?.color ?? COLOR_PALETTE[0])
+const color = ref<number>(props.account?.color ?? COLOR_PALETTE[0] ?? 0)
 
 // Validation
 const schema = z.object({
@@ -63,7 +63,7 @@ function handleSubmit() {
     name: name.value.trim(),
     type: type.value,
     balance: balance.value,
-    color: color.value,
+    color: color.value ?? 0,
   })
 }
 

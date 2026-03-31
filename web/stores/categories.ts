@@ -39,7 +39,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   function updateCategory(id: string, data: Partial<Category>) {
     const index = categories.value.findIndex(c => c.id === id)
     if (index !== -1) {
-      categories.value[index] = { ...categories.value[index], ...data }
+      categories.value[index] = { ...categories.value[index]!, ...data } as Category
     }
   }
 

@@ -38,7 +38,7 @@ export const useRecurringStore = defineStore('recurring', () => {
   function updateRecurring(id: string, data: Partial<RecurringTransaction>) {
     const index = recurrings.value.findIndex(r => r.id === id)
     if (index !== -1) {
-      recurrings.value[index] = { ...recurrings.value[index], ...data }
+      recurrings.value[index] = { ...recurrings.value[index]!, ...data } as RecurringTransaction
     }
   }
 

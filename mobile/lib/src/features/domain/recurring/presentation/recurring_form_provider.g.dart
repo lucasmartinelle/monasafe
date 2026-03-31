@@ -7,7 +7,7 @@ part of 'recurring_form_provider.dart';
 // **************************************************************************
 
 String _$recurringFormNotifierHash() =>
-    r'0e43934f4a0af0abe8cc092e30e2122ffd6df0fe';
+    r'b1d5f67d56a66b71fb853c1484472447705c4839';
 
 /// Provider pour gerer le formulaire de modification d'une transaction recurrente.
 ///

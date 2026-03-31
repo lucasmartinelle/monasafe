@@ -407,7 +407,7 @@ export function useRecurring() {
             const rec = await decryptRecurringIfNeeded(mapRecurring(payload.new), vault)
             store.updateRecurring(rec.id, rec)
           } else if (payload.eventType === 'DELETE') {
-            store.removeRecurring((payload.old as Record<string, string>).id)
+            store.removeRecurring((payload.old as Record<string, string>).id as string)
           }
         },
       )

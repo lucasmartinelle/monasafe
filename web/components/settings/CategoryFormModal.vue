@@ -23,7 +23,7 @@ const isEditing = computed(() => !!props.category)
 // Form state
 const name = ref('')
 const iconKey = ref('ellipsis')
-const color = ref(COLOR_PALETTE[0])
+const color = ref<number>(COLOR_PALETTE[0] ?? 0)
 const type = ref<CategoryType>(CategoryType.EXPENSE)
 const budgetLimit = ref(0)
 const hasBudget = ref(false)
@@ -41,7 +41,7 @@ const errors = ref<Record<string, string>>({})
 function resetForm() {
   name.value = ''
   iconKey.value = 'ellipsis'
-  color.value = COLOR_PALETTE[0]
+  color.value = COLOR_PALETTE[0] ?? 0
   type.value = CategoryType.EXPENSE
   budgetLimit.value = 0
   hasBudget.value = false
@@ -95,7 +95,7 @@ function handleSubmit() {
   emit('submit', {
     name: name.value.trim(),
     iconKey: iconKey.value,
-    color: color.value,
+    color: color.value ?? 0,
     type: type.value,
     budgetLimit: hasBudget.value && budgetLimit.value && budgetLimit.value > 0
       ? budgetLimit.value

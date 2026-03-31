@@ -52,7 +52,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   function updateTransaction(id: string, data: Partial<Transaction>) {
     const index = transactions.value.findIndex(t => t.id === id)
     if (index !== -1) {
-      transactions.value[index] = { ...transactions.value[index], ...data }
+      transactions.value[index] = { ...transactions.value[index]!, ...data } as Transaction
     }
   }
 
