@@ -14,7 +14,7 @@ import 'package:monasafe/src/features/domain/stats/presentation/screens/stats_sc
 import 'package:monasafe/src/features/domain/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:monasafe/src/features/domain/transactions/presentation/screens/add_transfer_screen.dart';
 
-/// Main app shell with bottom navigation and expandable FAB.
+/// Main app shell with bottom navigation and FAB.
 ///
 /// Uses IndexedStack to preserve state between navigation tabs.
 class AppShell extends ConsumerStatefulWidget {
@@ -24,12 +24,8 @@ class AppShell extends ConsumerStatefulWidget {
   ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends ConsumerState<AppShell>
-    with SingleTickerProviderStateMixin {
+class _AppShellState extends ConsumerState<AppShell> {
   int _currentIndex = 0;
-  bool _fabExpanded = false;
-  late AnimationController _animationController;
-  late Animation<double> _expandAnimation;
 
   final List<Widget> _screens = const [
     DashboardScreen(),
@@ -38,46 +34,35 @@ class _AppShellState extends ConsumerState<AppShell>
     SettingsScreen(),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _expandAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
   void _onDestinationSelected(int index) {
-    if (_fabExpanded) _closeFab();
     setState(() => _currentIndex = index);
   }
 
-  void _toggleFab() {
-    setState(() => _fabExpanded = !_fabExpanded);
-    if (_fabExpanded) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
+  Future<void> _onFabPressed() async {
+    final accounts = ref.read(accountsStreamProvider).valueOrNull;
+    final hasMultipleAccounts = (accounts?.length ?? 0) >= 2;
+
+    if (!hasMultipleAccounts) {
+      await _openAddTransaction();
+      return;
+    }
+
+    if (!mounted) return;
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const _FabOptionsSheet(),
+    );
+
+    if (!mounted) return;
+    if (choice == 'transaction') {
+      await _openAddTransaction();
+    } else if (choice == 'transfer') {
+      await _openAddTransfer();
     }
   }
 
-  void _closeFab() {
-    setState(() => _fabExpanded = false);
-    _animationController.reverse();
-  }
-
   Future<void> _openAddTransaction() async {
-    _closeFab();
     final result = await AddTransactionScreen.show(context);
     if ((result ?? false) && mounted) {
       unawaited(ref.read(paginatedTransactionsProvider.notifier).refresh());
@@ -85,158 +70,158 @@ class _AppShellState extends ConsumerState<AppShell>
   }
 
   Future<void> _openAddTransfer() async {
-    _closeFab();
     final result = await AddTransferScreen.show(context);
     if ((result ?? false) && mounted) {
       unawaited(ref.read(paginatedTransactionsProvider.notifier).refresh());
     }
   }
 
-  /// Retourne true si l'utilisateur a au moins 2 comptes (virement possible).
-  bool get _hasMultipleAccounts {
-    final accounts = ref.read(accountsStreamProvider).valueOrNull;
-    return (accounts?.length ?? 0) >= 2;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _fabExpanded ? _closeFab : null,
-      child: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: _screens,
-        ),
-        floatingActionButton: _buildFab(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: AppNavigationBar(
-          currentIndex: _currentIndex,
-          onDestinationSelected: _onDestinationSelected,
-        ),
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
       ),
-    );
-  }
-
-  Widget _buildFab() {
-    final hasMultipleAccounts = _hasMultipleAccounts;
-
-    // Si un seul compte : comportement original (ouverture directe)
-    if (!hasMultipleAccounts) {
-      return FloatingActionButton(
-        onPressed: _openAddTransaction,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _onFabPressed,
         backgroundColor: AppColors.process,
         foregroundColor: Colors.white,
         elevation: 4,
         child: const Icon(Icons.add),
-      );
-    }
-
-    // Plusieurs comptes : speed dial
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        // Options du speed dial
-        AnimatedBuilder(
-          animation: _expandAnimation,
-          builder: (context, child) {
-            return FadeTransition(
-              opacity: _expandAnimation,
-              child: SizeTransition(
-                sizeFactor: _expandAnimation,
-                axisAlignment: -1,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _SpeedDialItem(
-                        label: 'Virement',
-                        icon: Icons.swap_horiz,
-                        color: AppColors.primary,
-                        onTap: _openAddTransfer,
-                      ),
-                      const SizedBox(height: 10),
-                      _SpeedDialItem(
-                        label: 'Transaction',
-                        icon: Icons.add,
-                        color: AppColors.process,
-                        onTap: _openAddTransaction,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-
-        // FAB principal
-        FloatingActionButton(
-          onPressed: _toggleFab,
-          backgroundColor: _fabExpanded ? AppColors.primaryDark : AppColors.process,
-          foregroundColor: Colors.white,
-          elevation: 4,
-          child: AnimatedRotation(
-            turns: _fabExpanded ? 0.125 : 0,
-            duration: const Duration(milliseconds: 200),
-            child: const Icon(Icons.add),
-          ),
-        ),
-      ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: AppNavigationBar(
+        currentIndex: _currentIndex,
+        onDestinationSelected: _onDestinationSelected,
+      ),
     );
   }
 }
 
-/// Bouton d'option du speed dial avec label.
-class _SpeedDialItem extends StatelessWidget {
-  const _SpeedDialItem({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
+/// Bottom sheet présentant le choix entre transaction et virement.
+class _FabOptionsSheet extends StatelessWidget {
+  const _FabOptionsSheet();
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Label
-        Material(
-          color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(8),
-          elevation: 2,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Text(
-              label,
-              style: AppTextStyles.labelMedium(
-                color: isDark
-                    ? AppColors.textPrimaryDark
-                    : AppColors.textPrimaryLight,
-              ),
+    final backgroundColor =
+        isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+    final textPrimary =
+        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
+    final textSecondary =
+        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        12,
+        20,
+        20 + MediaQuery.of(context).padding.bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.dividerDark : AppColors.dividerLight,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
+
+          // Option : Nouvelle transaction
+          _OptionTile(
+            icon: Icons.add_circle_outline,
+            iconColor: AppColors.process,
+            title: 'Nouvelle transaction',
+            subtitle: 'Ajouter une dépense ou un revenu',
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+            onTap: () => Navigator.of(context).pop('transaction'),
+          ),
+
+          const SizedBox(height: 4),
+
+          // Option : Virement
+          _OptionTile(
+            icon: Icons.swap_horiz,
+            iconColor: AppColors.primary,
+            title: 'Virement entre comptes',
+            subtitle: "Transférer de l'argent entre vos comptes",
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+            onTap: () => Navigator.of(context).pop('transfer'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OptionTile extends StatelessWidget {
+  const _OptionTile({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final Color textPrimary;
+  final Color textSecondary;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: AppTextStyles.labelMedium(color: textPrimary)),
+                  const SizedBox(height: 2),
+                  Text(subtitle,
+                      style: AppTextStyles.caption(color: textSecondary)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right,
+                color: textSecondary, size: 20),
+          ],
         ),
-        const SizedBox(width: 12),
-        // Mini FAB
-        FloatingActionButton.small(
-          heroTag: label,
-          onPressed: onTap,
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          elevation: 4,
-          child: Icon(icon, size: 20),
-        ),
-      ],
+      ),
     );
   }
 }
