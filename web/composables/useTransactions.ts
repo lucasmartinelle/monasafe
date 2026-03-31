@@ -448,7 +448,7 @@ export function useTransactions() {
             const tx = await decryptIfNeeded(mapTransaction(payload.new), vault)
             store.updateTransaction(tx.id, tx)
           } else if (payload.eventType === 'DELETE') {
-            store.removeTransaction((payload.old as Record<string, string>).id)
+            store.removeTransaction((payload.old as Record<string, string>).id as string)
           }
         },
       )
