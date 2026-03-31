@@ -1,5 +1,5 @@
 import type { Transaction } from '~/types/models'
-import { SyncStatus } from '~/types/enums'
+import { CategoryType, SyncStatus } from '~/types/enums'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
 interface CreateTransactionData {
@@ -309,6 +309,122 @@ export function useTransactions() {
   }
 
   /**
+   * Retourne la catégorie "Virement" du type donné, en la créant si nécessaire.
+   */
+  async function getOrCreateVirementCategory(type: CategoryType): Promise<string> {
+    if (!user.value) throw new Error('Non authentifié')
+
+    const { data: existing } = await supabase
+      .from('categories')
+      .select('id')
+      .or(`user_id.eq.${user.value.id},user_id.is.null`)
+      .eq('name', 'Virement')
+      .eq('type', type)
+      .maybeSingle()
+
+    if (existing) return existing.id
+
+    const { data: created, error } = await supabase
+      .from('categories')
+      .insert({
+        user_id: user.value.id,
+        name: 'Virement',
+        icon_key: 'arrow-left-right',
+        color: 0xFF607D8B,
+        type,
+        is_default: false,
+      })
+      .select('id')
+      .single()
+
+    if (error) throw error
+    return created.id
+  }
+
+  /**
+   * Crée un virement entre deux comptes.
+   *
+   * Génère deux transactions :
+   * - une dépense sur le compte source
+   * - un revenu sur le compte destination
+   */
+  async function createTransfer(data: {
+    fromAccountId: string
+    toAccountId: string
+    fromAccountName: string
+    toAccountName: string
+    amount: number
+    date: string
+    note?: string | null
+  }): Promise<boolean> {
+    if (!user.value) return false
+
+    store.setLoading(true)
+    store.setError(null)
+
+    try {
+      const [expenseCategoryId, incomeCategoryId] = await Promise.all([
+        getOrCreateVirementCategory(CategoryType.EXPENSE),
+        getOrCreateVirementCategory(CategoryType.INCOME),
+      ])
+
+      const baseNote = data.note?.trim() ? ` - ${data.note.trim()}` : ''
+
+      const encryptedExpense = await vault.encryptTransactionData(
+        data.amount,
+        `Virement vers ${data.toAccountName}${baseNote}`,
+      )
+      const encryptedIncome = await vault.encryptTransactionData(
+        data.amount,
+        `Virement depuis ${data.fromAccountName}${baseNote}`,
+      )
+
+      const { data: rows, error } = await supabase
+        .from('transactions')
+        .insert([
+          {
+            user_id: user.value.id,
+            account_id: data.fromAccountId,
+            category_id: expenseCategoryId,
+            amount: encryptedExpense.isEncrypted ? encryptedExpense.rawAmount : String(data.amount),
+            date: data.date,
+            note: encryptedExpense.isEncrypted
+              ? encryptedExpense.rawNote
+              : `Virement vers ${data.toAccountName}${baseNote}`,
+            is_encrypted: encryptedExpense.isEncrypted,
+            sync_status: SyncStatus.SYNCED,
+          },
+          {
+            user_id: user.value.id,
+            account_id: data.toAccountId,
+            category_id: incomeCategoryId,
+            amount: encryptedIncome.isEncrypted ? encryptedIncome.rawAmount : String(data.amount),
+            date: data.date,
+            note: encryptedIncome.isEncrypted
+              ? encryptedIncome.rawNote
+              : `Virement depuis ${data.fromAccountName}${baseNote}`,
+            is_encrypted: encryptedIncome.isEncrypted,
+            sync_status: SyncStatus.SYNCED,
+          },
+        ])
+        .select()
+
+      if (error) throw error
+
+      const mapped = await Promise.all(
+        (rows ?? []).map(mapTransaction).map(tx => decryptIfNeeded(tx, vault)),
+      )
+      mapped.forEach(tx => store.addTransaction(tx))
+      return true
+    } catch (e: unknown) {
+      store.setError(e instanceof Error ? e.message : 'Erreur lors du virement')
+      return false
+    } finally {
+      store.setLoading(false)
+    }
+  }
+
+  /**
    * Souscrit aux changements temps réel sur la table transactions
    */
   function subscribeRealtime(): void {
@@ -365,6 +481,7 @@ export function useTransactions() {
     fetchAllTransactions,
     fetchNextPage,
     createTransaction,
+    createTransfer,
     updateTransaction,
     deleteTransaction,
     subscribeRealtime,

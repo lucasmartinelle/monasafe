@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Account, Transaction } from '~/types/models'
 import { AccountType, CategoryType } from '~/types/enums'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import { ArrowsRightLeftIcon, PlusIcon } from '@heroicons/vue/24/outline'
 import { getMonthRange, toISODateString, formatMonthYear, formatRelativeDate } from '~/utils/dates'
 import { colorStyle } from '~/utils/colors'
 
@@ -260,12 +260,20 @@ onUnmounted(() => {
           {{ currentMonthLabel }}
         </p>
       </div>
-      <NuxtLink to="/transactions/add">
-        <CommonAppButton variant="primary" size="sm">
-          <PlusIcon class="h-5 w-5 mr-1" />
-          Transaction
-        </CommonAppButton>
-      </NuxtLink>
+      <div class="flex items-center gap-2">
+        <NuxtLink v-if="sortedAccounts.length >= 2" to="/transactions/transfer">
+          <CommonAppButton variant="secondary" size="sm">
+            <ArrowsRightLeftIcon class="h-5 w-5 mr-1" />
+            Virement
+          </CommonAppButton>
+        </NuxtLink>
+        <NuxtLink to="/transactions/add">
+          <CommonAppButton variant="primary" size="sm">
+            <PlusIcon class="h-5 w-5 mr-1" />
+            Transaction
+          </CommonAppButton>
+        </NuxtLink>
+      </div>
     </div>
 
     <!-- Loading -->

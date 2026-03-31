@@ -7,7 +7,7 @@ part of 'budget_form_provider.dart';
 // **************************************************************************
 
 String _$budgetFormNotifierHash() =>
-    r'471566d436be5ebdd031871936528e371cb204ea';
+    r'06330408f818528f88fe51924b3f7b88567f62a5';
 
 /// Provider pour gérer le formulaire de modification/suppression de budget.
 ///
