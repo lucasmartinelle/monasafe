@@ -28,13 +28,10 @@ const emit = defineEmits<{
       <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
         {{ props.category.name }}
       </p>
-      <p v-if="props.category.isDefault" class="text-xs text-gray-500 dark:text-gray-400">
-        Par défaut
-      </p>
     </div>
 
-    <!-- Actions (uniquement si non default) -->
-    <div v-if="!props.category.isDefault" class="flex items-center gap-1">
+    <!-- Actions -->
+    <div class="flex items-center gap-1">
       <button
         type="button"
         class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"

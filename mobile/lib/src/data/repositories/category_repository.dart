@@ -25,11 +25,6 @@ class CategoryDeletionError extends CategoryError {
   const CategoryDeletionError(super.message);
 }
 
-class CategoryIsDefaultError extends CategoryError {
-  const CategoryIsDefaultError()
-      : super('Les catégories par défaut ne peuvent pas être supprimées');
-}
-
 class CategoryFetchError extends CategoryError {
   const CategoryFetchError(super.message);
 }
@@ -127,17 +122,12 @@ class CategoryRepository {
     }
   }
 
-  /// Supprime une catégorie personnalisée
+  /// Supprime une catégorie de l'utilisateur
   Future<Either<CategoryError, Unit>> deleteCategory(String id) async {
     try {
       final existing = await _categoryService.getCategoryById(id);
       if (existing == null) {
         return const Left(CategoryNotFoundError());
-      }
-
-      // Vérifie si c'est une catégorie par défaut
-      if (existing.isDefault) {
-        return const Left(CategoryIsDefaultError());
       }
 
       await _categoryService.deleteCategory(id);
@@ -147,9 +137,23 @@ class CategoryRepository {
     }
   }
 
-  /// Vérifie si une catégorie est une catégorie par défaut
-  Future<bool> isDefaultCategory(String id) async {
-    final category = await _categoryService.getCategoryById(id);
-    return category?.isDefault ?? false;
+  /// Injecte le set de catégories par défaut (idempotent)
+  Future<Either<CategoryError, Unit>> seedDefaultCategories() async {
+    try {
+      await _categoryService.seedDefaultCategories();
+      return const Right(unit);
+    } catch (e) {
+      return Left(CategoryCreationError('Erreur seed catégories: $e'));
+    }
+  }
+
+  /// Migre les catégories globales vers le scope perso de l'utilisateur
+  Future<Either<CategoryError, Unit>> migrateGlobalCategories() async {
+    try {
+      await _categoryService.migrateGlobalCategories();
+      return const Right(unit);
+    } catch (e) {
+      return Left(CategoryUpdateError('Erreur migration catégories: $e'));
+    }
   }
 }

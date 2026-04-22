@@ -182,6 +182,7 @@ class _VaultAwareShell extends ConsumerStatefulWidget {
 class _VaultAwareShellState extends ConsumerState<_VaultAwareShell>
     with WidgetsBindingObserver {
   bool _recurringGenerated = false;
+  bool _categoriesMigrationChecked = false;
 
   @override
   void initState() {
@@ -226,6 +227,27 @@ class _VaultAwareShellState extends ConsumerState<_VaultAwareShell>
     });
   }
 
+  /// Migre les catégories globales vers le scope perso (one-shot par utilisateur).
+  /// Idempotent : marqué via le setting `categories_migrated`.
+  Future<void> _migrateCategoriesIfNeeded() async {
+    try {
+      final settingsRepo = ref.read(settingsRepositoryProvider);
+      if (await settingsRepo.isCategoriesMigrated()) return;
+
+      final categoryRepo = ref.read(categoryRepositoryProvider);
+      final result = await categoryRepo.migrateGlobalCategories();
+      result.fold(
+        (err) => debugPrint('[Categories] Migration failed: ${err.message}'),
+        (_) async {
+          await settingsRepo.setCategoriesMigrated();
+          debugPrint('[Categories] Migration done');
+        },
+      );
+    } catch (e) {
+      debugPrint('[Categories] Migration error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final vaultState = ref.watch(vaultNotifierProvider);
@@ -247,6 +269,14 @@ class _VaultAwareShellState extends ConsumerState<_VaultAwareShell>
       _recurringGenerated = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _generateRecurringTransactions();
+      });
+    }
+
+    // Migration one-shot des catégories globales vers le scope perso
+    if (!_categoriesMigrationChecked) {
+      _categoriesMigrationChecked = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _migrateCategoriesIfNeeded();
       });
     }
 
