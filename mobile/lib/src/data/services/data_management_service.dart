@@ -51,7 +51,10 @@ class DataManagementService {
     // 4. Comptes
     await accountService.deleteAllAccounts();
 
-    // 5. Catégories personnalisées
-    await categoryService.deleteAllCustomCategories();
+    // 5. Catégories
+    await categoryService.deleteAllCategories();
+
+    // 6. Ré-injecte le set par défaut pour donner un point de départ
+    await categoryService.seedDefaultCategories();
   }
 }

@@ -15,6 +15,7 @@ export function useDataManagement() {
   const recurringStore = useRecurringStore()
   const accountsStore = useAccountsStore()
   const categoriesStore = useCategoriesStore()
+  const { seedDefaultCategories } = useCategories()
 
   /**
    * Supprime toutes les transactions de l'utilisateur
@@ -142,7 +143,7 @@ export function useDataManagement() {
         .eq('user_id', user.value.id)
       if (e4) throw e4
 
-      // 5. Catégories personnalisées (pas les default)
+      // 5. Catégories
       const { error: e5 } = await supabase
         .from('categories')
         .delete()
@@ -153,9 +154,10 @@ export function useDataManagement() {
       transactionsStore.reset()
       recurringStore.setRecurrings([])
       accountsStore.setAccounts([])
-      categoriesStore.setCategories(
-        categoriesStore.categories.filter(c => c.isDefault),
-      )
+      categoriesStore.setCategories([])
+
+      // Ré-injecte le set par défaut pour que l'utilisateur ait un point de départ
+      await seedDefaultCategories()
 
       return true
     } catch (e: unknown) {
