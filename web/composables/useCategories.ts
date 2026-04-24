@@ -1,6 +1,7 @@
 import type { Category } from '~/types/models'
 import type { CategoryType } from '~/types/enums'
 import type { RealtimeChannel } from '@supabase/supabase-js'
+import { DEFAULT_CATEGORIES } from '~/utils/defaultCategories'
 
 interface CreateCategoryData {
   name: string
@@ -62,7 +63,7 @@ export function useCategories() {
       const { data, error } = await supabase
         .from('categories')
         .select('*')
-        .or(`user_id.eq.${user.value.id},user_id.is.null`)
+        .eq('user_id', user.value.id)
         .order('name')
 
       if (error) throw error
@@ -160,13 +161,6 @@ export function useCategories() {
     store.setError(null)
 
     try {
-      // Vérifier si c'est une catégorie par défaut
-      const category = store.categoryById(id)
-      if (category?.isDefault) {
-        store.setError('Les catégories par défaut ne peuvent pas être supprimées.')
-        return false
-      }
-
       // Vérifier s'il y a des transactions liées
       const { count, error: countError } = await supabase
         .from('transactions')
@@ -195,6 +189,49 @@ export function useCategories() {
       return false
     } finally {
       store.setLoading(false)
+    }
+  }
+
+  /**
+   * Injecte le set de catégories par défaut dans le compte de l'utilisateur.
+   * Idempotent : ne fait rien si l'utilisateur a déjà au moins une catégorie.
+   */
+  async function seedDefaultCategories(): Promise<void> {
+    if (!user.value) return
+
+    const { count, error: countError } = await supabase
+      .from('categories')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.value.id)
+
+    if (countError) {
+      store.setError(countError.message)
+      return
+    }
+    if (count && count > 0) return
+
+    const rows = DEFAULT_CATEGORIES.map(c => ({
+      user_id: user.value!.id,
+      name: c.name,
+      icon_key: c.iconKey,
+      color: c.color,
+      type: c.type,
+      budget_limit: null,
+      is_default: true,
+    }))
+
+    const { data, error } = await supabase
+      .from('categories')
+      .insert(rows)
+      .select()
+
+    if (error) {
+      store.setError(error.message)
+      return
+    }
+
+    for (const row of data ?? []) {
+      store.addCategory(mapCategory(row))
     }
   }
 
@@ -252,6 +289,7 @@ export function useCategories() {
     createCategory,
     updateCategory,
     deleteCategory,
+    seedDefaultCategories,
     subscribeRealtime,
     unsubscribeRealtime,
     setError: store.setError,

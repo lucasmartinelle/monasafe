@@ -59,53 +59,34 @@ class CategoryListTile extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category.name,
-                      style: AppTextStyles.bodyLarge(color: textColor),
-                    ),
-                    if (category.isDefault) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        'Catégorie par défaut',
-                        style: AppTextStyles.caption(color: subtitleColor),
-                      ),
-                    ],
-                  ],
+                child: Text(
+                  category.name,
+                  style: AppTextStyles.bodyLarge(color: textColor),
                 ),
               ),
-              if (!category.isDefault) ...[
-                if (onEdit != null)
-                  IconButton(
-                    icon: Icon(
-                      Icons.edit_outlined,
-                      color: subtitleColor,
-                      size: 20,
-                    ),
-                    onPressed: onEdit,
-                    tooltip: 'Modifier',
+              if (onEdit != null)
+                IconButton(
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    color: subtitleColor,
+                    size: 20,
                   ),
-                if (onDelete != null)
-                  IconButton(
-                    icon: Icon(
-                      Icons.delete_outline,
-                      color: hasTransactions
-                          ? subtitleColor.withValues(alpha: 0.4)
-                          : AppColors.error,
-                      size: 20,
-                    ),
-                    onPressed: hasTransactions
-                        ? () => _showCannotDeleteMessage(context)
-                        : onDelete,
-                    tooltip: 'Supprimer',
+                  onPressed: onEdit,
+                  tooltip: 'Modifier',
+                ),
+              if (onDelete != null)
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: hasTransactions
+                        ? subtitleColor.withValues(alpha: 0.4)
+                        : AppColors.error,
+                    size: 20,
                   ),
-              ] else
-                Icon(
-                  Icons.lock_outline,
-                  color: subtitleColor,
-                  size: 20,
+                  onPressed: hasTransactions
+                      ? () => _showCannotDeleteMessage(context)
+                      : onDelete,
+                  tooltip: 'Supprimer',
                 ),
             ],
           ),

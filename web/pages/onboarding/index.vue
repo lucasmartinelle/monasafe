@@ -8,6 +8,7 @@ definePageMeta({
 const router = useRouter()
 const { updateSetting, completeOnboarding } = useSettings()
 const { createAccount } = useAccounts()
+const { seedDefaultCategories } = useCategories()
 
 // Navigation
 const questionIndex = ref(0)
@@ -71,6 +72,7 @@ async function finish() {
 
   try {
     await updateSetting('currency', currency.value)
+    await seedDefaultCategories()
 
     if (wantsChecking.value) {
       await createAccount({

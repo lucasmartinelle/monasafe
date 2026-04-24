@@ -255,6 +255,13 @@ class OnboardingController extends _$OnboardingController {
         await settingsRepo.setPrimaryAccountId(primaryAccountId!);
       }
 
+      // Injecte les catégories par défaut dans le scope de l'utilisateur
+      final categoryRepo = ref.read(categoryRepositoryProvider);
+      await categoryRepo.seedDefaultCategories();
+
+      // Pas de migration à faire pour un nouvel utilisateur
+      await settingsRepo.setCategoriesMigrated();
+
       // Marque l'onboarding comme complété
       await settingsRepo.setOnboardingCompleted();
 

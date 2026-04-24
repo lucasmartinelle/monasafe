@@ -128,28 +128,25 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
                         color: cardColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: category.isDefault
-                          ? CategoryListTile(category: category)
-                          : FutureBuilder<int>(
-                              future: _getTransactionCount(category.id),
-                              builder: (context, snapshot) {
-                                final hasTransactions =
-                                    (snapshot.data ?? 0) > 0;
-                                return CategoryListTile(
-                                  category: category,
-                                  hasTransactions: hasTransactions,
-                                  onEdit: () async {
-                                    await CategoryFormModal.show(
-                                      context,
-                                      category: category,
-                                      categoryType: _selectedType,
-                                    );
-                                  },
-                                  onDelete: () =>
-                                      _showDeleteConfirmation(category),
-                                );
-                              },
-                            ),
+                      child: FutureBuilder<int>(
+                        future: _getTransactionCount(category.id),
+                        builder: (context, snapshot) {
+                          final hasTransactions = (snapshot.data ?? 0) > 0;
+                          return CategoryListTile(
+                            category: category,
+                            hasTransactions: hasTransactions,
+                            onEdit: () async {
+                              await CategoryFormModal.show(
+                                context,
+                                category: category,
+                                categoryType: _selectedType,
+                              );
+                            },
+                            onDelete: () =>
+                                _showDeleteConfirmation(category),
+                          );
+                        },
+                      ),
                     );
                   },
                 );

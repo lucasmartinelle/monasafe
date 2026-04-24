@@ -78,6 +78,18 @@ class SettingsRepository {
     return _settingsService.setValue(SettingsKeys.primaryAccountId, accountId);
   }
 
+  // ==================== MIGRATION CATÉGORIES ====================
+
+  /// Indique si la migration des catégories globales a été effectuée
+  Future<bool> isCategoriesMigrated() {
+    return _settingsService.getBool(SettingsKeys.categoriesMigrated);
+  }
+
+  /// Marque la migration des catégories comme effectuée
+  Future<void> setCategoriesMigrated() {
+    return _settingsService.setBool(SettingsKeys.categoriesMigrated, value: true);
+  }
+
   // ==================== UTILS ====================
 
   /// Réinitialise tous les paramètres (pour debug)
@@ -86,5 +98,6 @@ class SettingsRepository {
     await _settingsService.deleteValue(SettingsKeys.currency);
     await _settingsService.deleteValue(SettingsKeys.isAnonymous);
     await _settingsService.deleteValue(SettingsKeys.primaryAccountId);
+    await _settingsService.deleteValue(SettingsKeys.categoriesMigrated);
   }
 }

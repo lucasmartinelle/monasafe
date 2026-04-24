@@ -49,4 +49,7 @@ abstract final class SettingsKeys {
 
   /// ID du compte principal (String)
   static const String primaryAccountId = 'primary_account_id';
+
+  /// Migration des catégories globales vers le scope perso effectuée (bool)
+  static const String categoriesMigrated = 'categories_migrated';
 }
